@@ -12,17 +12,15 @@
 #include <QString>
 #include <QTimer>
 
-#include "/home/walery/qtcustomplot/qcustomplot/qcustomplot.h"
+//#include "/home/walery/qtcustomplot/qcustomplot/qcustomplot.h"
+#include "qcustomplot.h"
 #include "exchange/thermothread.h"
 #include "myglobal.h"
 #include "ui_thermoplot.h"
+#include "eindicate.h"
 
 extern MyGlobal mglobal;
 
-enum eIndicate
-{
-    eiFail, eiGood
-};
 
 
 namespace Ui {
@@ -49,6 +47,7 @@ public:
 
 signals:
     void sg_statusChanged(const Status_t* status);
+    void sg_statusFailed();
 
 
 private slots:

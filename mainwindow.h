@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "rightarea.h"
+#include "statuslabel.h"
 
 #include <QMainWindow>
 
@@ -26,6 +27,8 @@ private:
     Ui::MainWindow *ui;
 
     RightArea *rightArea;
+
+    StatusLabel* statusLabel;
 
 };
 

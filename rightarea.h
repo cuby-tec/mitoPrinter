@@ -23,10 +23,15 @@ public:
     void resizeEvent(QResizeEvent *event) override;
 
 signals:
+    void sg_statusChanged(const Status_t* status);
+    void sg_statusFailed();
 
 public slots:
     void hide1(int state);
     void hide2(int state);
+    void updateStatus(const Status_t* status);
+    void failedStatus();
+
 
 
 private:

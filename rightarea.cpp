@@ -21,6 +21,9 @@ RightArea::RightArea(QWidget *parent) : QWidget(parent)
     connect(check1,SIGNAL(stateChanged(int)), this, SLOT(hide1(int)));
     connect(check2, SIGNAL(stateChanged(int)), this, SLOT(hide2(int)));
 
+    connect(plotter,SIGNAL(sg_statusChanged(const Status_t*)),this, SLOT(updateStatus(const Status_t*)) );
+    connect(plotter,SIGNAL(sg_statusFailed()), this,SLOT(failedStatus()) );
+
     QString styleSheet = "QCheckBox::indicator:unchecked "
                                     "{image: url(:/images/checkbox_unchecked.png); }"
                                     "QCheckBox::indicator:checked "
@@ -55,4 +58,14 @@ void RightArea::hide2(int state)
         ui->widget_2->hide();
     else
         ui->widget_2->setHidden(false);
+}
+
+void RightArea::updateStatus(const Status_t *status)
+{
+    emit sg_statusChanged(status);
+}
+
+void RightArea::failedStatus()
+{
+    emit sg_statusFailed();
 }

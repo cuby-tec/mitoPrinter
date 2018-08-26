@@ -79,6 +79,7 @@ const QString message3("Temperature in Hotend.(grad Celsium)");
 void
 ThermoPlot::indicateTemperature(eIndicate ind, QString message)
 {
+    qDebug()<<__FILE__<<__LINE__<<"indicateTemperature";
     QWidget* pa = plot->nativeParentWidget();
     QLabel* label =  pa->findChild<QLabel *>("temperatureIcon");//temperatureLabel
     QLabel * tempLabel = pa->findChild<QLabel*>("temperatureLabel");
@@ -112,11 +113,11 @@ ThermoPlot::indicateTemperature(eIndicate ind, QString message)
 void
 ThermoPlot::failedStatus()
 {
+    emit sg_statusFailed();
 //    dataTimer.stop();
 //    QMessageBox msgbox;
 //    msgbox.setText("Can't open device. maybe module not loaded. Use: $sudo insmod ./eclipse-workspace/usbtest/test1.ko \n \t or device dosn't connected.");
 //    msgbox.exec();
-
 //    QWidget* pa = plot->nativeParentWidget();
 //    QLabel* label =  pa->findChild<QLabel *>("temperatureIcon");//temperatureLabel
 //    if(label)
@@ -128,14 +129,12 @@ ThermoPlot::failedStatus()
 //    if(tempLabel)
 //    {
 //        tempLabel->setText("Can't open device. maybe module not loaded. Use: $sudo insmod ./eclipse-workspace/usbtest/test1.ko \n \t or device dosn't connected.");
-
 //    }
-
-
 //    dataTimer.stop();
 
-
+#ifdef THERMO_
     indicateTemperature(eiFail,QString("Can't open device. maybe module not loaded. Use: $sudo insmod ./eclipse-workspace/usbtest/test1.ko \n \t or device dosn't connected."));
+#endif
 }
 
 

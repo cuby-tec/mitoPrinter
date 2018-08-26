@@ -3,5 +3,12 @@
         <file>images/checkbox_unchecked.png</file>
         <file>images/checkbox_checked.png</file>
         <file>images/ico1.png</file>
+        <file>images/copy.png</file>
+        <file>images/cuby-logo-250-250t.png</file>
+        <file>images/exmple.gcode</file>
+        <file>images/goo_top.png</file>
+        <file>images/linestep.png</file>
+        <file>images/logo-16.png</file>
+        <file>images/write.png</file>
     </qresource>
 </RCC>

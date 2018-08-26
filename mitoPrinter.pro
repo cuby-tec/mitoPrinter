@@ -46,7 +46,8 @@ SOURCES += \
     thermolog/thermologview.cpp \
     links/json_sintax.c \
     links/parson.c \
-    qcustomplot.cpp
+    qcustomplot.cpp \
+    statuslabel.cpp
 
 
 HEADERS += \
@@ -90,7 +91,9 @@ HEADERS += \
     step_motor/trapeze_t.h \
     thermolog/thermologdialog.h \
     thermolog/thermologview.h \
-    qcustomplot.h
+    qcustomplot.h \
+    statuslabel.h \
+    eindicate.h
 
 
 FORMS += \
@@ -103,7 +106,8 @@ FORMS += \
     profiles/profiledialog.ui \
     profiles/thermopiddialog.ui \
     thermolog/thermologdialog.ui \
-    thermoplot.ui
+    thermoplot.ui \
+    statuslabel.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

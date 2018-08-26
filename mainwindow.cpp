@@ -12,6 +12,17 @@ MainWindow::MainWindow(QWidget *parent) :
 //------------------
     //rWidget
     rightArea = new RightArea(ui->rightWidget); // rWidget
+//------------------
+//    QLabel* statusl = ui->statusLabel;
+    statusLabel = new StatusLabel(ui->statusLabel);
+
+    connect(rightArea,SIGNAL(sg_statusChanged(const Status_t*)),statusLabel,SLOT(updateStatus(const Status_t*)) );
+    connect(rightArea,SIGNAL(sg_statusFailed()),statusLabel,SLOT(statusFailed()) );
+
+//---------
+
+//----------
+
 
     statusBar()->showMessage("Starting ..");
 }
