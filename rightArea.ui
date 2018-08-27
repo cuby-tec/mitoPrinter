@@ -36,7 +36,7 @@ padding-left:6px;
      <x>0</x>
      <y>0</y>
      <width>300</width>
-     <height>591</height>
+     <height>551</height>
     </rect>
    </property>
    <property name="sizePolicy">
@@ -203,11 +203,19 @@ padding-left:6px;
         <property name="minimumSize">
          <size>
           <width>0</width>
-          <height>200</height>
+          <height>280</height>
          </size>
         </property>
         <property name="styleSheet">
-         <string notr="true">background-color: rgb(245, 121, 0);</string>
+         <string notr="true">#widget_3{
+background-color: rgb(211, 215, 207);
+border-color: rgb(239, 41, 41);
+selection-color: rgb(153, 255, 0);
+margin-top:0px;
+border: 1px solid gray;
+border-radius: 8px;
+padding-left:6px;
+}</string>
         </property>
        </widget>
       </item>

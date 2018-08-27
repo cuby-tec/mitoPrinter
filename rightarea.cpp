@@ -32,6 +32,8 @@ RightArea::RightArea(QWidget *parent) : QWidget(parent)
                                     "{image: url(:/images/checkbox_checked.png); }"
                                     ;
     check1->setStyleSheet(styleSheet);
+    check2->setStyleSheet(styleSheet);
+    check3->setStyleSheet(styleSheet);
 
     QVBoxLayout *layout = ui->verticalLayout;
 //    layout->setAlignment(check1,Qt::AlignTop);
@@ -42,6 +44,11 @@ RightArea::RightArea(QWidget *parent) : QWidget(parent)
     widCoordinatus = new CoordinatusWidget(wd2);
 
     connect(plotter,SIGNAL(sg_statusChanged(const Status_t*)),widCoordinatus,SLOT(updateStatus(const Status_t*)) );
+
+
+    //------------- Gcosole
+    QWidget *wd3 = ui->widget_3;
+    gconsole = new GConsole(wd3);
 
     qDebug()<<__FILE__<<__LINE__<<layout->count();
 

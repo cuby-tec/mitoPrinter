@@ -144,7 +144,7 @@ Profile::readFile(const QString &filename)
     }else{
         QFileInfo* finfo = new QFileInfo(f);
 
-        qDebug() << "Profile [138]:" << finfo->absoluteFilePath();
+        qDebug() << __FILE__<< __LINE__ << "Profile not found:"<<finfo->absoluteFilePath()<<"\tfilename:"<<finfo->fileName();
     }
 
     return result;

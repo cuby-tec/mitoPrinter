@@ -48,7 +48,13 @@ SOURCES += \
     links/parson.c \
     qcustomplot.cpp \
     statuslabel.cpp \
-    coordinatuswidget.cpp
+    coordinatuswidget.cpp \
+    gconsole.cpp \
+    geometry/Arc.cpp \
+    geometry/mLine.cpp \
+    geometry/Point.cpp \
+    gparcer/comdata.cpp \
+    gparcer/lexer.cpp
 
 
 HEADERS += \
@@ -95,7 +101,13 @@ HEADERS += \
     qcustomplot.h \
     statuslabel.h \
     eindicate.h \
-    coordinatuswidget.h
+    coordinatuswidget.h \
+    gconsole.h \
+    geometry/Arc.h \
+    geometry/mLine.h \
+    geometry/Point.h \
+    gparcer/comdata.h \
+    gparcer/lexer.h
 
 
 FORMS += \
@@ -110,12 +122,16 @@ FORMS += \
     thermolog/thermologdialog.ui \
     thermoplot.ui \
     statuslabel.ui \
-    coordinatuswidget.ui
+    coordinatuswidget.ui \
+    gconsole.ui
 
+unix:!macx: LIBS += -L/usr/lib/mito -lgcode-lexer
+INCLUDEPATH += /usr/include/mito
+DEPENDPATH += /usr/lib/mito
 # Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
-!isEmpty(target.path): INSTALLS += target
+#qnx: target.path = /tmp/$${TARGET}/bin
+#else: unix:!android: target.path = /opt/$${TARGET}/bin
+#!isEmpty(target.path): INSTALLS += target
 
 DISTFILES += \
     profile/Profile1.json \

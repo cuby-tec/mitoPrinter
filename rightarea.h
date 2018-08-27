@@ -5,6 +5,7 @@
 
 #include "thermoplot.h"
 #include "coordinatuswidget.h"
+#include "gconsole.h"
 
 #include <QWidget>
 
@@ -42,6 +43,8 @@ private:
     ThermoPlot *plotter;
 
     CoordinatusWidget *widCoordinatus;
+
+    GConsole * gconsole;
 
 //    OneForm *oneform;
 

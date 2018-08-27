@@ -5,7 +5,7 @@
 #include "statuslabel.h"
 
 #include <QMainWindow>
-
+#include "ui_mainwindow.h"
 
 
 namespace Ui {
