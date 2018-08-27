@@ -47,7 +47,8 @@ SOURCES += \
     links/json_sintax.c \
     links/parson.c \
     qcustomplot.cpp \
-    statuslabel.cpp
+    statuslabel.cpp \
+    coordinatuswidget.cpp
 
 
 HEADERS += \
@@ -93,7 +94,8 @@ HEADERS += \
     thermolog/thermologview.h \
     qcustomplot.h \
     statuslabel.h \
-    eindicate.h
+    eindicate.h \
+    coordinatuswidget.h
 
 
 FORMS += \
@@ -107,7 +109,8 @@ FORMS += \
     profiles/thermopiddialog.ui \
     thermolog/thermologdialog.ui \
     thermoplot.ui \
-    statuslabel.ui
+    statuslabel.ui \
+    coordinatuswidget.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

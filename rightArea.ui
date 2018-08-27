@@ -19,13 +19,24 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QCheckBox{
+background-color: rgb(211, 215, 207);
+border-color: rgb(239, 41, 41);
+selection-color: rgb(153, 255, 0);
+margin-top:5px;
+border: 1px solid gray;
+border-radius: 4px;
+padding-left:6px;
+}</string>
+  </property>
   <widget class="QScrollArea" name="scrollArea">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
      <width>300</width>
-     <height>450</height>
+     <height>591</height>
     </rect>
    </property>
    <property name="sizePolicy">
@@ -37,7 +48,7 @@
    <property name="maximumSize">
     <size>
      <width>350</width>
-     <height>450</height>
+     <height>1000</height>
     </size>
    </property>
    <property name="verticalScrollBarPolicy">
@@ -52,7 +63,7 @@
       <x>0</x>
       <y>0</y>
       <width>284</width>
-      <height>500</height>
+      <height>1000</height>
      </rect>
     </property>
     <property name="sizePolicy">
@@ -64,7 +75,7 @@
     <property name="minimumSize">
      <size>
       <width>0</width>
-      <height>500</height>
+      <height>1000</height>
      </size>
     </property>
     <property name="maximumSize">
@@ -85,10 +96,13 @@
        <x>0</x>
        <y>0</y>
        <width>282</width>
-       <height>501</height>
+       <height>826</height>
       </rect>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
+      <property name="spacing">
+       <number>1</number>
+      </property>
       <property name="leftMargin">
        <number>0</number>
       </property>
@@ -104,9 +118,7 @@
       <item>
        <widget class="QCheckBox" name="checkBox_1">
         <property name="styleSheet">
-         <string notr="true">background-color: rgb(211, 215, 207);
-border-color: rgb(239, 41, 41);
-selection-color: rgb(153, 255, 0);</string>
+         <string notr="true"/>
         </property>
         <property name="text">
          <string>CheckBox</string>
@@ -153,14 +165,49 @@ selection-color: rgb(153, 255, 0);</string>
       </item>
       <item>
        <widget class="QWidget" name="widget_2" native="true">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>230</height>
+         </size>
+        </property>
         <property name="maximumSize">
          <size>
           <width>16777215</width>
-          <height>60</height>
+          <height>300</height>
+         </size>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>280</width>
+          <height>230</height>
          </size>
         </property>
         <property name="styleSheet">
          <string notr="true">background-color: rgb(114, 159, 207);</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBox_3">
+        <property name="text">
+         <string>CheckBox</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QWidget" name="widget_3" native="true">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>200</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(245, 121, 0);</string>
         </property>
        </widget>
       </item>

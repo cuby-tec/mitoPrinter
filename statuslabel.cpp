@@ -19,7 +19,8 @@ void StatusLabel::statusFailed()
 
 void StatusLabel::updateStatus(const Status_t* status)
 {
-    qDebug()<<__FILE__<<__LINE__;
+//    qDebug()<<__FILE__<<__LINE__;
+    indicateTemperature(eiGood,QString("now: %1").arg(status->temperature));
 }
 
 const QString message1("Can't open device. maybe module not loaded. Use: $sudo insmod ./eclipse-workspace/usbtest/test1.ko \n \t or device dosn't connected.");
@@ -33,7 +34,7 @@ StatusLabel::indicateTemperature(eIndicate ind, QString message)
 //    QWidget* pa = plot->nativeParentWidget();
 //    QLabel* label =  pa->findChild<QLabel *>("temperatureIcon");//temperatureLabel
 //    QLabel * tempLabel = pa->findChild<QLabel*>("temperatureLabel");
-//            qDebug()<<__FILE__<<__LINE__<<"indicateTemperature:";
+//    qDebug()<<__FILE__<<__LINE__<<"indicateTemperature:";
 
     QLabel *label = ui->temperatureIcon;
     QLabel * tempLabel = ui->temperatureLabel;

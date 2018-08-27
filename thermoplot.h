@@ -78,10 +78,10 @@ private:
     const Status_t* status;
 
     void setupPlot(QCustomPlot* customPlot);
-
+#ifdef THERMO_
     void printStatus(const Status_t *c_status);
-
     void  indicateTemperature(eIndicate ind, QString message);
+#endif
 
     void createLog();
 

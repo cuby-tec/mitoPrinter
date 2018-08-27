@@ -72,6 +72,7 @@ qDebug()<<__FILE__<<__LINE__<<plotName;
     dataTimer.start(1001); // Interval 0 means to refresh as fast as possible // DEBUG
 }
 
+#ifdef THERMO_
 const QString message1("Can't open device. maybe module not loaded. Use: $sudo insmod ./eclipse-workspace/usbtest/test1.ko \n \t or device dosn't connected.");
 const QString message2("Can't open device.");
 const QString message3("Temperature in Hotend.(grad Celsium)");
@@ -79,7 +80,7 @@ const QString message3("Temperature in Hotend.(grad Celsium)");
 void
 ThermoPlot::indicateTemperature(eIndicate ind, QString message)
 {
-    qDebug()<<__FILE__<<__LINE__<<"indicateTemperature";
+//    qDebug()<<__FILE__<<__LINE__<<"indicateTemperature";
     QWidget* pa = plot->nativeParentWidget();
     QLabel* label =  pa->findChild<QLabel *>("temperatureIcon");//temperatureLabel
     QLabel * tempLabel = pa->findChild<QLabel*>("temperatureLabel");
@@ -109,6 +110,7 @@ ThermoPlot::indicateTemperature(eIndicate ind, QString message)
         break;
     }
 }
+#endif
 
 void
 ThermoPlot::failedStatus()
@@ -137,7 +139,7 @@ ThermoPlot::failedStatus()
 #endif
 }
 
-
+#ifdef THERMO_
 void
 ThermoPlot::printStatus(const Status_t *c_status)
 {
@@ -190,6 +192,7 @@ ThermoPlot::printStatus(const Status_t *c_status)
     indicateTemperature(eiGood,QString("now: %1").arg(c_status->temperature));
 #endif
 }
+#endif
 
 QString
 ThermoPlot::datetime()
@@ -300,9 +303,9 @@ ThermoPlot::updateStatus(const Status_t *status)
     // calculate two new data points:
     double key = time.elapsed()/1000.0; // time elapsed since start of demo, in seconds
     static double lastPointKey = 0;
-
+#ifdef THERMO_
     printStatus(status);
-
+#endif
     if (key-lastPointKey > 0.002) // at most add point every 2 ms
     {
       // add data to lines:

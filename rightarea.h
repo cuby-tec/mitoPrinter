@@ -4,10 +4,7 @@
 #include "ui_rightArea.h"
 
 #include "thermoplot.h"
-
-//#include "oneform.h"
-//#include "secondform.h"
-
+#include "coordinatuswidget.h"
 
 #include <QWidget>
 
@@ -29,6 +26,7 @@ signals:
 public slots:
     void hide1(int state);
     void hide2(int state);
+    void hide3(int state);
     void updateStatus(const Status_t* status);
     void failedStatus();
 
@@ -39,8 +37,11 @@ private:
 
     QCheckBox * check1;
     QCheckBox * check2;
+    QCheckBox * check3;
 
     ThermoPlot *plotter;
+
+    CoordinatusWidget *widCoordinatus;
 
 //    OneForm *oneform;
 
