@@ -6,6 +6,7 @@
 #include "thermoplot.h"
 #include "coordinatuswidget.h"
 #include "gconsole.h"
+#include "modelstatistic.h"
 
 #include <QWidget>
 
@@ -28,6 +29,7 @@ public slots:
     void hide1(int state);
     void hide2(int state);
     void hide3(int state);
+    void hide4(int state);
     void updateStatus(const Status_t* status);
     void failedStatus();
 
@@ -39,6 +41,7 @@ private:
     QCheckBox * check1;
     QCheckBox * check2;
     QCheckBox * check3;
+    QCheckBox * check4;
 
     ThermoPlot *plotter;
 
@@ -46,9 +49,7 @@ private:
 
     GConsole * gconsole;
 
-//    OneForm *oneform;
-
-//    SecondForm * secondForm;
+    ModelStatistic *modelStatistic;
 
 };
 

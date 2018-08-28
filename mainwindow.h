@@ -3,7 +3,9 @@
 
 #include "rightarea.h"
 #include "statuslabel.h"
-
+#include "opengl/graphicsview.h"
+#include "opengl/openglscene.h"
+#include "opengl/model.h"
 #include <QMainWindow>
 #include "ui_mainwindow.h"
 
@@ -29,6 +31,10 @@ private:
     RightArea *rightArea;
 
     StatusLabel* statusLabel;
+
+    GraphicsView *view;
+
+    OpenGLScene *scene;
 
 };
 

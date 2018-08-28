@@ -18,10 +18,12 @@ RightArea::RightArea(QWidget *parent) : QWidget(parent)
     check1 = ui->checkBox_1;
     check2 = ui->checkBox_2;
     check3 = ui->checkBox_3;
+    check4 = ui->checkBox_4;
 
     connect(check1,SIGNAL(stateChanged(int)), this, SLOT(hide1(int)));
     connect(check2, SIGNAL(stateChanged(int)), this, SLOT(hide2(int)));
     connect(check3, SIGNAL(stateChanged(int)), this, SLOT(hide3(int)) );
+    connect(check4, SIGNAL(stateChanged(int)), this, SLOT(hide4(int)) );
 
     connect(plotter,SIGNAL(sg_statusChanged(const Status_t*)),this, SLOT(updateStatus(const Status_t*)) );
     connect(plotter,SIGNAL(sg_statusFailed()), this,SLOT(failedStatus()) );
@@ -34,6 +36,7 @@ RightArea::RightArea(QWidget *parent) : QWidget(parent)
     check1->setStyleSheet(styleSheet);
     check2->setStyleSheet(styleSheet);
     check3->setStyleSheet(styleSheet);
+    check4->setStyleSheet(styleSheet);
 
     QVBoxLayout *layout = ui->verticalLayout;
 //    layout->setAlignment(check1,Qt::AlignTop);
@@ -49,6 +52,14 @@ RightArea::RightArea(QWidget *parent) : QWidget(parent)
     //------------- Gcosole
     QWidget *wd3 = ui->widget_3;
     gconsole = new GConsole(wd3);
+
+
+    //---------------- model statistic
+
+    QWidget *wd4 = ui->widget_4;
+    modelStatistic = new ModelStatistic(wd4);
+
+
 
     qDebug()<<__FILE__<<__LINE__<<layout->count();
 
@@ -82,6 +93,17 @@ void RightArea::hide3(int state)
     else
         ui->widget_3->setHidden(false);
 }
+
+void RightArea::hide4(int state)
+{
+    if(state == 0)
+        ui->widget_4->hide();
+    else
+        ui->widget_4->setHidden(false);
+}
+
+
+
 
 void RightArea::updateStatus(const Status_t *status)
 {

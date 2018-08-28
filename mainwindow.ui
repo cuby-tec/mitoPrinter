@@ -32,7 +32,7 @@
      <number>5</number>
     </property>
     <item row="0" column="0">
-     <widget class="QGraphicsView" name="graphicsView"/>
+     <widget class="GraphicsView" name="graphicsView"/>
     </item>
     <item row="0" column="1">
      <widget class="QWidget" name="rightWidget" native="true">
@@ -101,6 +101,13 @@
   <widget class="QStatusBar" name="statusBar"/>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>GraphicsView</class>
+   <extends>QGraphicsView</extends>
+   <header>opengl/graphicsview.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="resource.qrc"/>
  </resources>

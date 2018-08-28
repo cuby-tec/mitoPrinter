@@ -1,7 +1,10 @@
 #include "mainwindow.h"
 
-
 #include <QDebug>
+#include <QtGui>
+#include <QGLWidget>
+#include <QtWidgets>
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -19,8 +22,12 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(rightArea,SIGNAL(sg_statusChanged(const Status_t*)),statusLabel,SLOT(updateStatus(const Status_t*)) );
     connect(rightArea,SIGNAL(sg_statusFailed()),statusLabel,SLOT(statusFailed()) );
 
-//---------
-
+//--------- openGL
+    view = ui->graphicsView;
+    view->setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
+    view->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+    scene = new OpenGLScene;
+    view->setScene(scene);
 //----------
 
 

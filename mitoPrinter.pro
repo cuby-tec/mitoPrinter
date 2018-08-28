@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui widgets printsupport
+QT       += core gui widgets printsupport opengl
 
 TARGET = mitoPrinter
 TEMPLATE = app
@@ -54,7 +54,12 @@ SOURCES += \
     geometry/mLine.cpp \
     geometry/Point.cpp \
     gparcer/comdata.cpp \
-    gparcer/lexer.cpp
+    gparcer/lexer.cpp \
+    modelstatistic.cpp \
+    opengl/model.cpp \
+    opengl/openglscene.cpp \
+    opengl/trackball.cpp \
+    opengl/workareadialog.cpp
 
 
 HEADERS += \
@@ -107,7 +112,15 @@ HEADERS += \
     geometry/mLine.h \
     geometry/Point.h \
     gparcer/comdata.h \
-    gparcer/lexer.h
+    gparcer/lexer.h \
+    modelstatistic.h \
+    opengl/graphicsview.h \
+    opengl/model.h \
+    opengl/modelworkarea.h \
+    opengl/openglscene.h \
+    opengl/point3d.h \
+    opengl/trackball.h \
+    opengl/workareadialog.h
 
 
 FORMS += \
@@ -123,9 +136,12 @@ FORMS += \
     thermoplot.ui \
     statuslabel.ui \
     coordinatuswidget.ui \
-    gconsole.ui
+    gconsole.ui \
+    modelstatistic.ui \
+    opengl/workareadialog.ui
 
 unix:!macx: LIBS += -L/usr/lib/mito -lgcode-lexer
+unix:LIBS += -lglut -lGL -lGLU
 INCLUDEPATH += /usr/include/mito
 DEPENDPATH += /usr/lib/mito
 # Default rules for deployment.
@@ -157,7 +173,8 @@ DISTFILES += \
     profile/Profile8.json \
     profile/Profile9.json \
     profile/profiles.json \
-    profile/aboutcomment.txt
+    profile/aboutcomment.txt \
+    README.txt
 
 RESOURCES += \
     resource.qrc

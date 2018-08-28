@@ -61,9 +61,9 @@ padding-left:6px;
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>0</y>
+      <y>-551</y>
       <width>284</width>
-      <height>1000</height>
+      <height>1100</height>
      </rect>
     </property>
     <property name="sizePolicy">
@@ -75,7 +75,7 @@ padding-left:6px;
     <property name="minimumSize">
      <size>
       <width>0</width>
-      <height>1000</height>
+      <height>1100</height>
      </size>
     </property>
     <property name="maximumSize">
@@ -96,7 +96,7 @@ padding-left:6px;
        <x>0</x>
        <y>0</y>
        <width>282</width>
-       <height>826</height>
+       <height>1081</height>
       </rect>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
@@ -208,6 +208,40 @@ padding-left:6px;
         </property>
         <property name="styleSheet">
          <string notr="true">#widget_3{
+background-color: rgb(211, 215, 207);
+border-color: rgb(239, 41, 41);
+selection-color: rgb(153, 255, 0);
+margin-top:0px;
+border: 1px solid gray;
+border-radius: 8px;
+padding-left:6px;
+}</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBox_4">
+        <property name="text">
+         <string>model staatstic</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QWidget" name="widget_4" native="true">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>120</height>
+         </size>
+        </property>
+        <property name="toolTip">
+         <string>model statistic</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">#widget_4{
 background-color: rgb(211, 215, 207);
 border-color: rgb(239, 41, 41);
 selection-color: rgb(153, 255, 0);
