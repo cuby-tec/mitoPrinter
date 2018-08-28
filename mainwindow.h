@@ -22,6 +22,11 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+
+public slots:
+    void s_openFileDo();
+    void modelLoaded(Model *model);
+
 protected:
     void resizeEvent(QResizeEvent *event);
 
@@ -35,6 +40,13 @@ private:
     GraphicsView *view;
 
     OpenGLScene *scene;
+
+//----------- Menu
+    QMenu* menuFile;
+    QAction* actionOpenModel;
+
+
+    void setupMenu();
 
 };
 
