@@ -21,6 +21,10 @@ public:
     explicit RightArea(QWidget *parent = nullptr);
     void resizeEvent(QResizeEvent *event) override;
 
+    CoordinatusWidget *getWidCoordinatus() const;
+
+    ModelStatistic *getModelStatistic() { return modelStatistic;}
+
 signals:
     void sg_statusChanged(const Status_t* status);
     void sg_statusFailed();

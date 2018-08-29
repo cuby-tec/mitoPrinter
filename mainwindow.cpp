@@ -97,6 +97,10 @@ void MainWindow::s_openFileDo()
 void MainWindow::modelLoaded(Model *model)
 {
     qDebug()<<__FILE__<<__LINE__<<"modelLoaded";
+
+    ModelStatistic * modelstatistic = rightArea->getModelStatistic();
+
+    modelstatistic->setModelStatistic(model);
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event)

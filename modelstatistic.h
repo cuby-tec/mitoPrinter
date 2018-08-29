@@ -2,8 +2,10 @@
 #define OPENSTATISTIC_H
 
 #include "ui_modelstatistic.h"
+#include "opengl/model.h"
 
 #include <QWidget>
+#include <QString>
 
 namespace Ui {
 class ModelStatistic;
@@ -16,6 +18,7 @@ class ModelStatistic : public QWidget
 
 public:
     explicit ModelStatistic(QWidget *parent = nullptr);
+    void setModelStatistic(Model *model);
 
 signals:
 
