@@ -2,12 +2,14 @@
 
 #include "ui_profiledialog.h"
 
+#include <QDebug>
+
 ProfileDialog::ProfileDialog(QWidget *parent) :
     QDialog(parent),
     uia(new Ui::ProfileDialog)
 {
     uia->setupUi(this);
-    setupPlot(uia->customPlot);
+//    setupPlot(uia->customPlot);
     setupExchange();
     setupProfile(uia->tab_3);
     profileSaved = true;
@@ -19,7 +21,7 @@ ProfileDialog::~ProfileDialog()
 }
 
 #define RealtimeData
-
+/*
 void ProfileDialog::setupPlot(QCustomPlot *customPlot)
 {
     plotName = "Hotend temperature";
@@ -47,7 +49,7 @@ void ProfileDialog::setupPlot(QCustomPlot *customPlot)
     customPlot->yAxis->setRange(0, 1);
 
 }
-
+*/
 
 void ProfileDialog::setupExchange()
 {

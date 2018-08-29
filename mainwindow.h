@@ -26,6 +26,10 @@ public:
 public slots:
     void s_openFileDo();
     void modelLoaded(Model *model);
+    void editProfile();
+    void actTermoDo();
+    void aboutWindowDo();
+
 
 protected:
     void resizeEvent(QResizeEvent *event);
@@ -45,8 +49,24 @@ private:
     QMenu* menuFile;
     QAction* actionOpenModel;
 
+    QMenu *optionsMenu;
+
+    QAction* optionEditAct; // Profile
+
+    QMenu * menuTools;
+
+    QAction* actThermo;
+
+    QAction* actConfig;
+
+    QAction* pidParams;
+
+    QMenu * menuHelp;
+
+    void pidParamsDo();
 
     void setupMenu();
+
 
 };
 

@@ -4,12 +4,11 @@
 #include <QDialog>
 #include <QButtonGroup>
 #include <QWidget>
-#include "qcustomplot.h"
+//#include "qcustomplot.h"
 
 #include "exchange/exchange.h"
 #include "profile.h"
 
-#include "profiles/profiledialog.h"
 
 namespace Ui {
 class ProfileDialog;
@@ -20,7 +19,7 @@ class ProfileDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit ProfileDialog(QWidget *parent = 0);
+    explicit ProfileDialog(QWidget *parent = nullptr);
     ~ProfileDialog();
 
 private slots:
@@ -89,7 +88,6 @@ private slots:
 
     void on_LineEdit_HOMING_PULLOFF_textEdited(const QString &arg1);
 
-
     void on_lineEdit_E_RATE_textEdited(const QString &arg1);
 
     void on_lineEdit_E_ACCELERATION_textEdited(const QString &arg1);
@@ -103,7 +101,7 @@ private:
 
     void setupExchange();
 
-    void setupPlot(QCustomPlot *customPlot);
+//    void setupPlot(QCustomPlot *customPlot);
 
     void setupProfile(QWidget * tab);
 
@@ -112,6 +110,7 @@ private:
     void indicate_ProfileSaved();
 
     bool profileSaved;
+
 };
 
 #endif // PROFILEDIALOG_H
