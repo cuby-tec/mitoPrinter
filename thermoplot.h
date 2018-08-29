@@ -36,15 +36,16 @@ public:
     explicit ThermoPlot(QWidget *parent = nullptr);
 
     ThermoPlot(QCustomPlot *plot);
-
+/*
     ~ThermoPlot()
     {
         delete (ui);
         logfile.close();
-        thread.terminate();
+//        thread.terminate();
+        thread.exit();
         thread.wait(5000);
     }
-
+*/
 signals:
     void sg_statusChanged(const Status_t* status);
     void sg_statusFailed();

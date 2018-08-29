@@ -1,6 +1,7 @@
 #include "thermothread.h"
 
-ThermoThread::ThermoThread()
+ThermoThread::ThermoThread(QObject *parent)
+    :QThread(parent)
 {
     abort = false;
     restart = false;
@@ -10,6 +11,18 @@ ThermoThread::ThermoThread()
 //    start();
     exch = new UsbExchange();
 
+}
+
+ThermoThread::~ThermoThread()
+{
+    mutex.lock();
+    delete exch;
+    abort = true;
+    condition.wakeOne();
+    mutex.unlock();
+    int s = wait(5000);
+    if(s == false)
+        qWarning()<<__FILE__<<__LINE__<<"isFinished:"<<isFinished()<<"\twait:"<<s;
 }
 
 
@@ -53,14 +66,10 @@ ThermoThread::process()
              status = exch->getStatus();
          }
 
-
-//         mutex.unlock();
          thermo_gmutex.unlock();
 
-         // do .... : timeout
-//         msleep(200);
-
-//         MGlobal::M_mutex->unlock();
+         if (abort)
+             return;
 
          if (!restart && (result_exch == EXIT_SUCCESS ))
              emit sg_temperature_updated(status);

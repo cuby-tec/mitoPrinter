@@ -19,13 +19,9 @@ class ThermoThread : public QThread
     Q_OBJECT
 
 public:
-    ThermoThread();
+    ThermoThread(QObject *parent = nullptr);
 
-    ~ThermoThread()
-    {
-        free(exch);
-
-    }
+    ~ThermoThread();
 
     void process();
 
