@@ -8,7 +8,7 @@
 #include "opengl/model.h"
 #include <QMainWindow>
 #include "ui_mainwindow.h"
-
+#include "command/executeprogramm.h"
 
 namespace Ui {
 class MainWindow;
@@ -29,6 +29,9 @@ public slots:
     void editProfile();
     void actTermoDo();
     void aboutWindowDo();
+    void on_commandExecuteProgram();
+    void on_commandOpenFile();
+    void on_gprogrammFinish();
 
 
 protected:
@@ -44,6 +47,13 @@ private:
     GraphicsView *view;
 
     OpenGLScene *scene;
+
+    QFile gcodeFile;
+
+    ExecuteProgramm* executeProgramm;
+
+    // -------- Status
+    QLabel *fileLabel;
 
 //----------- Menu
     QMenu* menuFile;

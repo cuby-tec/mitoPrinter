@@ -58,6 +58,14 @@ public:
 //signals:
     void sg_coordUpdated();
 
+    double_t getFan_value() const;
+    void setFan_value(const double_t &value);
+
+    double getTemperature() const;
+    void setTemperature(double value);
+
+    bool getExtruder_mode() const;
+    void setExtruder_mode(bool value);
 private:
 
     double_t current[N_AXIS];
@@ -71,11 +79,19 @@ private:
 
     bool absrel;
 
+    double_t fan_value;
+
+    double temperature;
+
+    bool extruder_mode;// true - absolute, false - relative
+
     void sendSignalCoord();
 
     Coordinatus()
     {
         absrel = true; // true - absolute, false - relative
+        extruder_mode = true; // true - absolute, false - relative
+        fan_value = 0.0;
     }
 
     ~Coordinatus() {}

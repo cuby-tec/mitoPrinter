@@ -8,12 +8,6 @@ RightArea::RightArea(QWidget *parent) : QWidget(parent)
     Q_ASSERT(parent);
     ui->setupUi(parent);
 
-    QWidget *wd = ui->widget_1;
-//    oneform = new OneForm(wd);
-
-//    secondForm = new SecondForm(ui->widget_2);
-    plotter = new ThermoPlot(wd);
-
 
     check1 = ui->checkBox_1;
     check2 = ui->checkBox_2;
@@ -25,8 +19,6 @@ RightArea::RightArea(QWidget *parent) : QWidget(parent)
     connect(check3, SIGNAL(stateChanged(int)), this, SLOT(hide3(int)) );
     connect(check4, SIGNAL(stateChanged(int)), this, SLOT(hide4(int)) );
 
-    connect(plotter,SIGNAL(sg_statusChanged(const Status_t*)),this, SLOT(updateStatus(const Status_t*)) );
-    connect(plotter,SIGNAL(sg_statusFailed()), this,SLOT(failedStatus()) );
 
     QString styleSheet = "QCheckBox::indicator:unchecked "
                                     "{image: url(:/images/checkbox_unchecked.png); }"
@@ -42,9 +34,21 @@ RightArea::RightArea(QWidget *parent) : QWidget(parent)
 //    layout->setAlignment(check1,Qt::AlignTop);
     layout->setAlignment(ui->line,Qt::AlignTop);
 
+    //----------- ThermoPlot
+
+    QWidget *wd = ui->widget_1;
+    plotter = new ThermoPlot(wd);
+    connect(plotter,SIGNAL(sg_statusChanged(const Status_t*)),this, SLOT(updateStatus(const Status_t*)) );
+    connect(plotter,SIGNAL(sg_statusFailed()), this,SLOT(failedStatus()) );
+
+    check1->setText("ThermoPlot");
+
+
     //--------- Coordinatus
     QWidget *wd2 = ui->widget_2;
     widCoordinatus = new CoordinatusWidget(wd2);
+    check2->setText("Coordinatus");
+    check2->setChecked(false);
 
     connect(plotter,SIGNAL(sg_statusChanged(const Status_t*)),widCoordinatus,SLOT(updateStatus(const Status_t*)) );
 
@@ -52,14 +56,15 @@ RightArea::RightArea(QWidget *parent) : QWidget(parent)
     //------------- Gcosole
     QWidget *wd3 = ui->widget_3;
     gconsole = new GConsole(wd3);
+    check3->setText("GConsole");
 
 
     //---------------- model statistic
 
     QWidget *wd4 = ui->widget_4;
     modelStatistic = new ModelStatistic(wd4);
-
-
+    check4->setText("Model statistic");
+    check4->setChecked(false);
 
     qDebug()<<__FILE__<<__LINE__<<layout->count();
 

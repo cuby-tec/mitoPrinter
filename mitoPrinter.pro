@@ -59,7 +59,12 @@ SOURCES += \
     opengl/model.cpp \
     opengl/openglscene.cpp \
     opengl/trackball.cpp \
-    opengl/workareadialog.cpp
+    opengl/workareadialog.cpp \
+    command/executeprogramm.cpp \
+    command/icommand.cpp \
+    gparcer/gcodeworker.cpp \
+    gparcer/comdataproxy.cpp \
+    gparcer/araytag.cpp
 
 
 HEADERS += \
@@ -120,7 +125,13 @@ HEADERS += \
     opengl/openglscene.h \
     opengl/point3d.h \
     opengl/trackball.h \
-    opengl/workareadialog.h
+    opengl/workareadialog.h \
+    command/executeprogramm.h \
+    command/icommand.h \
+    gparcer/gcodeworker.h \
+    gparcer/comdataproxy.h \
+    gparcer/araytag.h \
+    gparcer/structtag.h
 
 
 FORMS += \

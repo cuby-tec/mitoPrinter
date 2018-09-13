@@ -14,7 +14,8 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    executeProgramm(new ExecuteProgramm)
 {
     ui->setupUi(this);
 
@@ -38,8 +39,18 @@ MainWindow::MainWindow(QWidget *parent) :
     //    OpenGLScene * scene = static_cast<OpenGLScene*>( view->scene());
     connect(scene,SIGNAL(modelFileOpened(Model*)),this,SLOT(modelLoaded(Model*)));
 
+    connect(executeProgramm,SIGNAL(sg_executionFinished()), this, SLOT(on_gprogrammFinish()) );
+
 //----------
     setupMenu();
+
+
+    fileLabel = new QLabel();
+    fileLabel->setText("not opened");
+    QString style("background-color: rgb(203, 237, 191);");
+    fileLabel->setStyleSheet(style);
+    statusBar()->addPermanentWidget(fileLabel);
+
 //------------
     statusBar()->showMessage("Starting ..");
 }
@@ -180,6 +191,14 @@ void MainWindow::setupMenu()
         menuHelp->addAction(aboutAction);
 //        connect(aboutAction,&QAction::triggered,w,&MainWindow::aboutWindowDo);
         connect(aboutAction,SIGNAL(triggered()),this,SLOT(aboutWindowDo()));
+// --------- Execute menu
+
+        QAction *executeProgramAction = ui->actionRun;
+        executeProgramAction->setEnabled(false);
+        connect(executeProgramAction, SIGNAL(triggered()),this,SLOT(on_commandExecuteProgram()));
+
+        QAction *openAction = ui->actionOpen_GCode;
+        connect(openAction, SIGNAL(triggered()),this, SLOT(on_commandOpenFile()));
 
 }
 
@@ -212,5 +231,51 @@ MainWindow::aboutWindowDo()
         about->baseSize();
     }
 }
+
+void MainWindow::on_commandExecuteProgram()
+{
+ //TODO
+
+    qDebug()<<__FILE__<<__LINE__;
+    QAction *action = ui->actionRun;
+    action->setEnabled(false);
+
+    action = ui->actionOpen_GCode;
+    action->setEnabled(false);
+//    QTextStream stream(&gcodeFile);
+    statusBar()->showMessage("Program executing ...");
+    executeProgramm->execute(gcodeFile);
+}
+
+void MainWindow::on_commandOpenFile()
+{
+    QString folder("/home/walery/Документы/3d-printer/ragel"); //home/walery/Документы/3d-printer/ragel/exmple.gcode
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open G-Code file"),folder,tr("Gcode (*.gcode *.ngx);;All (*.*)"));//,nullptr,QFileDialog::DontUseNativeDialog
+
+    if(filename.isNull())
+    {
+        qDebug() << "File don't selected.";
+    }else{
+
+        qDebug()<< "Open file with G-code file:"<<filename;
+        gcodeFile.setFileName(filename);
+        if(gcodeFile.open(QIODevice::ReadOnly | QIODevice::Text)){
+            qDebug()<<__FILE__<<__LINE__<<"File opened:"<<filename;
+
+            QAction *actionRun = ui->actionRun;
+            actionRun->setEnabled(true);
+            //TODO Check file for errors.
+//            statusBar()->showMessage(QString("Opened: %1").arg(gcodeFile.fileName()));
+            fileLabel->setText(gcodeFile.fileName());
+        }
+
+    }
+
+}
+
+void MainWindow::on_gprogrammFinish()
+{
+    statusBar()->showMessage("Programm finished.");
+} //
 
 
