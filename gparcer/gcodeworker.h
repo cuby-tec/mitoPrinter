@@ -101,6 +101,8 @@ private:
 
     QFile *_file;
 
+    uint linecounter;
+
     void readCommandLine();
 
     sGcode gcode;

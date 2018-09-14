@@ -26,19 +26,23 @@ Lexer::parcer(char *buf, int len)
 
     //===============
 
+#if lEVEL==1
     qDebug()<<__FILE__<< __LINE__ <<"::"<<buf;
     qDebug()<<"=======  %s  ==========\n"<<__FILE__<<"\tresult:"<<res_parcer;
 //    printf("_h_report: line number:%i  \tgroup:%c \tindex:%s \tcomment:%s \n",dst->line,dst->group,dst->value , dst->comment);
     qDebug()<<"_h_report: line number:"<<dst->line<<"\tgroup:"<<dst->group<<"\tindex:"<<dst->value<<"\tcomment:"<<dst->comment;
+#endif
     for(int i=0;i<dst->param_number;i++)
     {
         struct sGparam *param = &dst->param[i];
 //        printf("\t_h_param: group:%c \tvalue:%s\n",param->group,param->value);
+#if LEVEL==1
         qDebug()<<"\t_h_param: group:"<<param->group<<"\tvalue:"<<param->value;
+#endif
     }
-
+#if LEVEL==1
     qDebug()<<"=================";
-
+#endif
 
 
     //================

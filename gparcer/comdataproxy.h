@@ -4,7 +4,7 @@
 #include "araytag.h"
 #include "coordinatus.h"
 //#include "lexer.h"
-
+#include "step_motor/controller.h"
 
 #include <QObject>
 
@@ -50,6 +50,11 @@ private:
 
     Coordinatus *coordinatus;
 
+    Controller* controller;
+
+    bool isPlaneHasSteps();
+
+    void buildComdata(uint linenumber);
 
 };
 

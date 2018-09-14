@@ -1,4 +1,5 @@
 #include "comdataproxy.h"
+#include "links/ComDataReq_t.h"
 
 #include <QDebug>
 
@@ -6,6 +7,7 @@
 
 ComdataProxy::ComdataProxy(QObject *parent) : QObject(parent)
   , line_counter(0)
+  , controller(new Controller)
 {
     coordinatus = Coordinatus::instance();
 }
@@ -13,13 +15,33 @@ ComdataProxy::ComdataProxy(QObject *parent) : QObject(parent)
 //Line motion
 void ComdataProxy::sendG0Line(sG0_t *data)
 {
+
     //TODO
     line_counter++;
 #if DEBUGLEVEL==2
     qDebug()<<__FILE__<<__LINE__ <<"G0:"<<"x:"<<data->x <<"\ty:"<<data->y<<"\tz:"<<data->z;
 #endif
+    //setParam_coord
+    coordinatus->setWorkValue(X_AXIS, data->x);
+    coordinatus->setWorkValue(Y_AXIS, data->y);
+    coordinatus->setWorkValue(Z_AXIS, data->z);
+    coordinatus->setWorkValue(E_AXIS, data->e);
+    // line number
+    //buildG0command
+    if(!isPlaneHasSteps())
+    {
+        return;
+    }
+    coordinatus->moveNextToCurrent();
+    coordinatus->moveWorkToNext();
+
+    controller->buildBlock(coordinatus);
+
+    buildComdata(data->n);
 
 }
+
+#define diff(M) coordinatus->getCurrentValue(M##_AXIS) - coordinatus->getNextValue(M##_AXIS)
 
 //Line motion
 void ComdataProxy::sendG1Line(sG1_t *data)
@@ -29,6 +51,31 @@ void ComdataProxy::sendG1Line(sG1_t *data)
 #if DEBUGLEVEL==2
     qDebug()<<__FILE__<<__LINE__<<"G1:"<<"x:"<<data->x <<"\ty:"<<data->y<<"\tz:"<<data->z;
 #endif
+    //setParam_coord
+    coordinatus->setWorkValue(X_AXIS, data->x);
+    coordinatus->setWorkValue(Y_AXIS, data->y);
+    coordinatus->setWorkValue(Z_AXIS, data->z);
+    coordinatus->setWorkValue(E_AXIS, data->e);
+    // line number
+    //buildG0command
+    if(!isPlaneHasSteps())
+    {
+        return;
+    }
+    coordinatus->moveNextToCurrent();
+    coordinatus->moveWorkToNext();
+//    double_t xC = coordinatus->getCurrentValue(X_AXIS);
+//    double_t cN = coordinatus->getNextValue(X_AXIS);
+
+//    double_t r = coordinatus->getCurrentValue(X_AXIS) - coordinatus->getNextValue(X_AXIS);
+
+#if DEBUGLEVEL==1
+    qDebug()<<__FILE__<<__LINE__<<"X:"<<diff(X) <<"\tY:"<<diff(Y)<<"\tZ:"<<diff(Z);
+#endif
+    controller->buildBlock(coordinatus);
+
+    buildComdata(data->n);
+
 }
 
 //Circle motion
@@ -181,11 +228,6 @@ void ComdataProxy::sendG92Tag(sG92_t *data)
 
 }
 
-uint ComdataProxy::getLine_counter() const
-{
-    return line_counter;
-}
-
 
 //Set param send
 //Deprecated in Teacup firmware and in RepRapFirmware. Use M106 S0 instead.
@@ -245,4 +287,93 @@ void ComdataProxy::sendM84_Tag(sM84_t *data)
 }
 
 //M83: Set extruder to relative mode
+
+
+uint ComdataProxy::getLine_counter() const
+{
+    return line_counter;
+}
+
+bool ComdataProxy::isPlaneHasSteps()
+{
+    double_t sum = 0.0;
+    for(size_t i=0; i<N_AXIS;i++)
+    {
+        sum +=  fabs(coordinatus->getWorkvalue(i) - coordinatus->getNextValue(i));
+    }
+    return (sum != 0.0);
+}
+#define cout qDebug()<<__FILE__<<__LINE__
+void ComdataProxy::buildComdata(uint linenumber)
+{
+//    ComDataReq_t* req = &request;
+    ComDataReq_t* req = new ComDataReq_t;
+    sSegment* segment;
+    sControl* control;
+    block_state_t* bstates = coordinatus->nextBlocks;
+
+    memset(req,0,sizeof(ComDataReq_t));
+
+//	req->requestNumber = 0;//++MyGlobal::requestIndex;// TODO get request number
+    req->instruments = 1;
+
+    req->command.order = eoSegment;
+    req->command.instrument = 1;
+    req->command.reserved = 0;
+
+    segment = &req->payload.instrument1_parameter;
+
+    //------------ payload =============================
+    segment->head.linenumber = linenumber;//sgCode->line ;
+    segment->head.axis_number = M_AXIS;//0;
+
+    //if(segment->head.reserved == EXIT_CONTINUE)
+    //    ms_finBlock = continueBlock;
+    //else
+    //    ms_finBlock = exitBlock;
+    segment->head.reserved &= ~EXIT_CONTINUE;
+
+    for(int i=0;i<M_AXIS;i++)
+    {
+        if(bstates[i].steps>0)
+            segment->head.axis_mask |= (1<<i);
+        else
+            segment->head.axis_mask &= ~(1<<i);
+    }
+    //======== sControl =========
+
+    for(int i =0;i<M_AXIS;i++){
+        control = &segment->axis[i];
+        block_state_t* bstate = &bstates[i];
+
+        control->accelerate_until = bstate->accelerate_until;
+        control->decelerate_after = bstate->decelerate_after;
+
+        if(bstate->path>0)
+            control->direction = forward;
+        else
+            control->direction = backward;
+
+        control->final_rate = bstate->final_rate;
+        control->initial_rate = bstate->initial_rate;
+        control->nominal_rate = bstate->nominal_rate;
+        control->final_speedLevel = bstate->final_speedLevel;
+
+        control->speedLevel = bstate->accelerate_until;// TODO Attention
+
+        control->microsteps = bstate->microstep;
+
+        for(int j=0;j<3;j++){
+            control->schem[j] = bstate->schem[j];
+        }
+
+        control->steps = bstate->steps;
+        control->axis = bstate->axis_mask;
+
+    }
+    cout<<segment->axis[X_AXIS].steps<<"\t"<<segment->axis[Y_AXIS].steps<<"\tline"<<segment->head.linenumber;
+}
+
+
+
 

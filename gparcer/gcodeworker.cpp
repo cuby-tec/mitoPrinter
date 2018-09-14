@@ -32,6 +32,7 @@ GcodeWorker::GcodeWorker(QObject *parent) : QObject(parent)
   , arraytag (new ArrayTag)
   , errorCounter(0)
   , comproxy(new ComdataProxy)
+  , linecounter(0)
   , lexer( new Lexer(dst))
 
 {
@@ -234,6 +235,7 @@ GcodeWorker::tagG0_Do(sGcode *sgCode)
     sG0_t * vTag =  reinterpret_cast<sG0_t *>( arraytag->getTagValue(eG0));
     sG0_t valueTag ;
     vTag->get(&valueTag);
+    valueTag.n = 0;
 
     bool ok = false;
 
@@ -285,6 +287,8 @@ GcodeWorker::tagG0_Do(sGcode *sgCode)
         }
     }
 
+    if(valueTag.n == 0)
+        valueTag.n = linecounter;
     vTag->set(&valueTag);
     syncXYZ(valueTag.x, valueTag.y, valueTag.z);
 
@@ -302,6 +306,7 @@ void GcodeWorker::tagG1_Do(sGcode *sgCode)
     sG1_t valueTag ;
     vTag->get(&valueTag);
 //    double v;
+    valueTag.n = 0;
     bool ok = false;
 
 //    char buf[20];
@@ -363,9 +368,10 @@ void GcodeWorker::tagG1_Do(sGcode *sgCode)
 //        if(!ok) {qDebug()<<__FILE__<<__LINE__<<value; }
     }
 
+    if(valueTag.n == 0)
+        valueTag.n = linecounter;
     vTag->set(&valueTag);
     syncXYZ(valueTag.x, valueTag.y, valueTag.z);
-
     comproxy->sendG1Line(vTag);
 #endif
 
@@ -379,6 +385,7 @@ void GcodeWorker::tagG2_Do(sGcode *sgCode)
     sG2_t * vTag =  reinterpret_cast<sG2_t *>( arraytag->getTagValue(eG2));
     sG2_t valueTag ;
     vTag->get(&valueTag);
+    valueTag.n = 0;
 
     bool ok = false;
     double dvalue;
@@ -435,9 +442,10 @@ void GcodeWorker::tagG2_Do(sGcode *sgCode)
         }
 
     }
+    if(valueTag.n == 0)
+        valueTag.n = linecounter;
     vTag->set(&valueTag);
     syncXY(valueTag.x, valueTag.y);
-
     comproxy->sendG2Line(vTag);
 #endif
 }
@@ -448,7 +456,7 @@ void GcodeWorker::tagG3_Do(sGcode *sgCode)
     sG3_t * vTag =  reinterpret_cast<sG3_t *>( arraytag->getTagValue(eG3));
     sG3_t valueTag ;
     vTag->get(&valueTag);
-
+    valueTag.n = 0;
     bool ok = false;
     double dvalue;
 
@@ -503,9 +511,10 @@ void GcodeWorker::tagG3_Do(sGcode *sgCode)
             break;
         }
     }
+    if(valueTag.n == 0)
+        valueTag.n = linecounter;
     vTag->set(&valueTag);
     syncXY(valueTag.x, valueTag.y);
-
     comproxy->sendG3Line(vTag);
 #endif
 }
@@ -516,7 +525,7 @@ void GcodeWorker::tagG4_Do(sGcode *sgCode)
     sG4_t * vTag =  reinterpret_cast<sG4_t *>( arraytag->getTagValue(eG4));
     sG4_t valueTag ;
     vTag->get(&valueTag);
-
+    valueTag.n = 0;
     bool ok = false;
     double dvalue;
 
@@ -546,8 +555,9 @@ void GcodeWorker::tagG4_Do(sGcode *sgCode)
             break;
         }
     }
+    if(valueTag.n == 0)
+        valueTag.n = linecounter;
     vTag->set(&valueTag);
-
     comproxy->sendG3Tag(vTag);
 #endif
 }
@@ -559,6 +569,7 @@ void GcodeWorker::tagG6_Do(sGcode *sgCode)
     sG6_t valueTag ;
     vTag->get(&valueTag);
     vTag->r = false;
+    valueTag.n = 0;
     bool ok = false;
     double dvalue;
 
@@ -595,8 +606,9 @@ void GcodeWorker::tagG6_Do(sGcode *sgCode)
              break;
          }
      }
+     if(valueTag.n == 0)
+         valueTag.n = linecounter;
      vTag->set(&valueTag);
-
      comproxy->sendG6Tag(vTag);
 #endif
 
@@ -608,7 +620,7 @@ void GcodeWorker::tagG10_Do(sGcode *sgCode)
     sG10_t * vTag =  reinterpret_cast<sG10_t *>( arraytag->getTagValue(eG10));
     sG10_t valueTag ;
     vTag->get(&valueTag);
-
+    valueTag.n = 0;
     bool ok = false;
     double dvalue;
 
@@ -677,8 +689,9 @@ void GcodeWorker::tagG10_Do(sGcode *sgCode)
             break;
         }
     }
+    if(valueTag.n == 0)
+        valueTag.n = linecounter;
     vTag->set(&valueTag);
-
     comproxy->sendG10Tag(vTag);
 #endif
 }
@@ -690,6 +703,7 @@ void GcodeWorker::tagG20_Do(sGcode *sgCode)
     sG20_21_t * vTag =  reinterpret_cast<sG20_21_t *>( arraytag->getTagValue(eG20));
     sG20_21_t valueTag ;
     vTag->get(&valueTag);
+    valueTag.n = 0;
     bool ok = false;
 
     valueTag.a = false; // G20: Set Units to Inches
@@ -705,8 +719,9 @@ void GcodeWorker::tagG20_Do(sGcode *sgCode)
             break;
         }
     }
+    if(valueTag.n == 0)
+        valueTag.n = linecounter;
     vTag->set(&valueTag);
-
     comproxy->sendG20_21Tag(vTag);
 #endif
 
@@ -719,6 +734,7 @@ void GcodeWorker::tagG21_Do(sGcode *sgCode)
     sG20_21_t * vTag =  reinterpret_cast<sG20_21_t *>( arraytag->getTagValue(eG21));
     sG20_21_t valueTag ;
     vTag->get(&valueTag);
+    valueTag.n = 0;
     bool ok = false;
 
     valueTag.a = true; // G21: Set Units to Millimeters
@@ -734,8 +750,9 @@ void GcodeWorker::tagG21_Do(sGcode *sgCode)
             break;
         }
     }
+    if(valueTag.n == 0)
+        valueTag.n = linecounter;
     vTag->set(&valueTag);
-
     comproxy->sendG20_21Tag(vTag);
 #endif
 }
@@ -748,13 +765,13 @@ void GcodeWorker::tagG28_Do(sGcode *sgCode)
 //    sG28_t * vTag =  reinterpret_cast<sG28_t *>( arraytag->getTagValue(eG28));
     sG28_t valueTag ;
 //    vTag->get(&valueTag);
+    valueTag.n = 0;
     bool ok = false;
 //    double dvalue;
 
-    if(sgCode->param_number>0){
+//    if(sgCode->param_number>0){
         valueTag.reset();
-    }
-
+//    }
 
     for(int i=0;i<sgCode->param_number;i++){
         sGparam* gparam = &sgCode->param[i];
@@ -780,6 +797,8 @@ void GcodeWorker::tagG28_Do(sGcode *sgCode)
         }
     }
 
+    if(valueTag.n == 0)
+        valueTag.n = linecounter;
     comproxy->sendG28Tag(&valueTag);
 #endif
 
@@ -792,7 +811,7 @@ void GcodeWorker::tagG29_1_Do(sGcode *sgCode)
     sG29_1_t * vTag =  reinterpret_cast<sG29_1_t *>( arraytag->getTagValue(eG29_1));
     sG29_1_t valueTag ;
     vTag->get(&valueTag);
-
+    valueTag.n = 0;
     bool ok = false;
     double dvalue;
 
@@ -825,6 +844,9 @@ void GcodeWorker::tagG29_1_Do(sGcode *sgCode)
                 break;
             }
         }
+
+        if(valueTag.n == 0)
+            valueTag.n = linecounter;
         vTag->set(&valueTag);
 
         comproxy->sendG29_1Tag(vTag);
@@ -837,7 +859,7 @@ void GcodeWorker::tagG29_2_Do(sGcode *sgCode)
     sG29_2_t * vTag =  reinterpret_cast<sG29_2_t *>( arraytag->getTagValue(eG29_2));
     sG29_2_t valueTag ;
     vTag->get(&valueTag);
-
+    valueTag.n = 0;
     bool ok = false;
     double dvalue;
 
@@ -870,6 +892,8 @@ void GcodeWorker::tagG29_2_Do(sGcode *sgCode)
                 break;
             }
         }
+        if(valueTag.n == 0)
+            valueTag.n = linecounter;
         vTag->set(&valueTag);
 
         comproxy->sendG29_2Tag(vTag);
@@ -886,6 +910,7 @@ void GcodeWorker::tagG30_Do(sGcode *sgCode)
     sG30_t * vTag =  reinterpret_cast<sG30_t *>( arraytag->getTagValue(eG30));
     sG30_t valueTag ;
     vTag->get(&valueTag);
+    valueTag.n = 0;
     bool ok = false;
     double dvalue;
 
@@ -963,6 +988,8 @@ void GcodeWorker::tagG30_Do(sGcode *sgCode)
                 break;
             }
         }
+        if(valueTag.n == 0)
+            valueTag.n = linecounter;
         vTag->set(&valueTag);
 
         comproxy->sendG30Tag(vTag);
@@ -976,6 +1003,7 @@ void GcodeWorker::tagG33_Do(sGcode *sgCode)
     sG33_t * vTag =  reinterpret_cast<sG33_t *>( arraytag->getTagValue(eG33));
     sG33_t valueTag ;
     vTag->get(&valueTag);
+    valueTag.n = 0;
     bool ok = false;
     double dvalue;
 
@@ -1032,6 +1060,8 @@ void GcodeWorker::tagG33_Do(sGcode *sgCode)
             break;
         }
     }
+    if(valueTag.n == 0)
+        valueTag.n = linecounter;
     vTag->set(&valueTag);
 
 //    comproxy->sendG30Tag(vTag);
@@ -1045,6 +1075,22 @@ void GcodeWorker::tagG90_Do(sGcode *sgCode)
 //    sG90_t valueTag ;
 //    vTag->get(&valueTag);
     vTag->value = true;
+    vTag->n = 0;
+    bool ok = false;
+    for(int i=0;i<sgCode->param_number;i++){
+        sGparam* gparam = &sgCode->param[i];
+        QString value(clearNumValue(gparam->value));
+        switch (gparam->group){
+        case 'N':
+            uint number = QString(gparam->value).toUInt(&ok);
+            Q_ASSERT(ok);
+            if(ok) {vTag->n = number; }
+            break;
+        }
+
+    }
+    if(vTag->n == 0)
+        vTag->n = linecounter;
     comproxy->sendG90_Tag(vTag);
 }
 
@@ -1055,6 +1101,24 @@ void GcodeWorker::tagG91_Do(sGcode *sgCode)
 //    sG90_t valueTag ;
 //    vTag->get(&valueTag);
     vTag->value = false;
+    vTag->n = 0;
+    bool ok = false;
+
+    for(int i=0;i<sgCode->param_number;i++){
+        sGparam* gparam = &sgCode->param[i];
+        QString value(clearNumValue(gparam->value));
+        switch (gparam->group){
+        case 'N':
+            uint number = QString(gparam->value).toUInt(&ok);
+            Q_ASSERT(ok);
+            if(ok) {vTag->n = number; }
+            break;
+        }
+
+    }
+    if(vTag->n == 0)
+        vTag->n = linecounter;
+
     comproxy->sendG90_Tag(vTag);
 }
 
@@ -1063,6 +1127,7 @@ void GcodeWorker::tagG92_Do(sGcode *sgCode)
     sG92_t * vTag =  reinterpret_cast<sG92_t *>( arraytag->getTagValue(eG92));
     sG92_t valueTag ;
     vTag->get(&valueTag);
+    valueTag.n = 0;
     bool ok = false;
     double dvalue;
 
@@ -1101,6 +1166,8 @@ void GcodeWorker::tagG92_Do(sGcode *sgCode)
         }
 
     }
+    if(valueTag.n == 0)
+        valueTag.n = linecounter;
     vTag->set(&valueTag);
 
     comproxy->sendG92Tag(vTag);
@@ -1121,6 +1188,7 @@ void GcodeWorker::tagM104_Do(sGcode *sgCode)
     sM104_t * vTag =  reinterpret_cast<sM104_t *>( arraytag->getTagValue(eM104));
     sM104_t valueTag ;
     vTag->get(&valueTag);
+    valueTag.n = 0;
     bool ok = false;
     double dvalue;
      for(int i=0;i<sgCode->param_number;i++){
@@ -1146,6 +1214,8 @@ void GcodeWorker::tagM104_Do(sGcode *sgCode)
              break;
          }
      }
+     if(valueTag.n == 0)
+         valueTag.n = linecounter;
      vTag->set(&valueTag);
 
      comproxy->sendM104Tag(vTag);
@@ -1157,7 +1227,7 @@ void GcodeWorker::tagM106_Do(sGcode *sgCode)
     sM106_t *vTag =  reinterpret_cast<sM106_t *>( arraytag->getTagValue(eM106));
     sM106_t valueTag ;
     vTag->get(&valueTag);
-
+    valueTag.n = 0;
     bool ok = false;
     double dvalue;
 
@@ -1185,6 +1255,8 @@ void GcodeWorker::tagM106_Do(sGcode *sgCode)
         }
     }
 
+    if(valueTag.n == 0)
+        valueTag.n = linecounter;
     vTag->set(&valueTag);
     comproxy->sendM106_Tag(vTag);
 }
@@ -1197,9 +1269,9 @@ void GcodeWorker::tagM107_Do(sGcode *sgCode)
     sM106_t *vTag =  reinterpret_cast<sM106_t *>( arraytag->getTagValue(eM106));
     sM106_t valueTag ;
     vTag->get(&valueTag);
-
+    valueTag.n = 0;
     bool ok = false;
-    double dvalue;
+//    double dvalue;
 
     for(int i=0;i<sgCode->param_number;i++){
         sGparam* gparam = &sgCode->param[i];
@@ -1214,8 +1286,9 @@ void GcodeWorker::tagM107_Do(sGcode *sgCode)
         }
     }
 
-
     valueTag.s = 0.0;
+    if(valueTag.n == 0)
+        valueTag.n = linecounter;
     vTag->set(&valueTag);
     comproxy->sendM107_Tag(vTag);
 
@@ -1227,6 +1300,7 @@ void GcodeWorker::tagM109_Do(sGcode *sgCode)
     sM109_t *vTag =  reinterpret_cast<sM109_t *>( arraytag->getTagValue(eM109));
     sM109_t valueTag ;
     vTag->get(&valueTag);
+    valueTag.n = 0;
     bool ok = false;
     double dvalue;
 
@@ -1253,6 +1327,8 @@ void GcodeWorker::tagM109_Do(sGcode *sgCode)
             break;
         }
     }
+    if(valueTag.n == 0)
+        valueTag.n = linecounter;
     vTag->set(&valueTag);
     comproxy->sendM109_Tag(vTag);
 
@@ -1263,6 +1339,7 @@ void GcodeWorker::tagM82_Do(sGcode *sgCode)
 {
     sM82_t *vTag =  reinterpret_cast<sM82_t *>( arraytag->getTagValue(eM82));
     vTag->a = true;
+    vTag->n = 0;
     bool ok;
 
     for(int i=0;i<sgCode->param_number;i++){
@@ -1276,6 +1353,8 @@ void GcodeWorker::tagM82_Do(sGcode *sgCode)
             break;
         }
     }
+    if(vTag->n == 0)
+        vTag->n = linecounter;
     comproxy->sendM82_Tag(vTag);
 
 }
@@ -1285,6 +1364,7 @@ void GcodeWorker::tagM83_Do(sGcode *sgCode)
 {
     sM82_t *vTag =  reinterpret_cast<sM82_t *>( arraytag->getTagValue(eM82));
     vTag->a = false;
+    vTag->n = 0;
     bool ok;
     for(int i=0;i<sgCode->param_number;i++){
         sGparam* gparam = &sgCode->param[i];
@@ -1297,6 +1377,9 @@ void GcodeWorker::tagM83_Do(sGcode *sgCode)
             break;
         }
     }
+    if(vTag->n == 0)
+        vTag->n = linecounter;
+
     comproxy->sendM82_Tag(vTag);
 }
 
@@ -1304,6 +1387,7 @@ void GcodeWorker::tagM84_Do(sGcode *sgCode)
 {
     sM84_t *vTag =  reinterpret_cast<sM84_t *>( arraytag->getTagValue(eM84));
     vTag->a = false;
+    vTag->n = 0;
     bool ok;
     for(int i=0;i<sgCode->param_number;i++){
         sGparam* gparam = &sgCode->param[i];
@@ -1316,6 +1400,8 @@ void GcodeWorker::tagM84_Do(sGcode *sgCode)
             break;
         }
     }
+    if(vTag->n == 0)
+        vTag->n = linecounter;
     comproxy->sendM84_Tag(vTag);
 
 }
@@ -1426,7 +1512,7 @@ GcodeWorker::fileOpen(QString filename)
 //	char buffer[128];
     int result;
 
-    uint linecounter = 0;
+    linecounter = 0;
 
 
 
@@ -1494,14 +1580,12 @@ void GcodeWorker::readCommandLine()
     bool loop = true;
     int result;
 
-    QString line = _file->readLine();
-    qDebug()<<__FILE__<<__LINE__<<line;
+    QString line;// = _file->readLine();
 
 
     while(loop){
         // loop
         memset(dst,0,sizeof(sGcode));
-        line = _file->readLine();
 
         if(_file->atEnd()){
             timer->stop();
@@ -1510,17 +1594,25 @@ void GcodeWorker::readCommandLine()
             return;
         }
 
+        line = _file->readLine(); linecounter++;
+
         if(line.isEmpty())
             continue;
         result = lexer->parcer(line);
+        qDebug()<<__FILE__<<__LINE__<<line<<"\tline:"<<linecounter;
+
+#if LEVEL == 1
         qDebug()<<__FILE__<<__LINE__<<"result:"<<result<<"\tgroup:"<<gcode.group;
+#endif
         char comment = ';';
         int k = strcmp( &gcode.group,&comment);
         if(k!=0)
             loop = false;
 
     }
+#if LEVEL==1
     qDebug()<<__FILE__<<__LINE__<<"result:"<<result<<"\tgroup:"<<gcode.group<<gcode.value;
+#endif
     //checkBox_immediately
     buildAction(dst);
 
@@ -1537,10 +1629,11 @@ void GcodeWorker::fileExecute(QFile &file)
     in = &str;
 
     _file = &file;
+    linecounter = 0;
 
 //    QFileInfo info(file);
-    QString line = this->_file->readLine();
-    qDebug()<<__FILE__<<__LINE__<<line;
+//    QString line = this->_file->readLine();
+//    qDebug()<<__FILE__<<__LINE__<<line;
 
     timer->start(100);
 // State is Programm mode.

@@ -30,6 +30,7 @@ struct sG0_t : NumberedTag {
         e = src->e;
         f = src->f;
         s = src->s;
+        n = src->n;
     }
 
     void get(sG0_t* dst){
@@ -57,6 +58,7 @@ struct sG1_t :NumberedTag {
         e = src->e;
         f = src->f;
         s = src->s;
+        n = src->n;
     }
 
     void get(sG1_t* dst){
@@ -66,6 +68,7 @@ struct sG1_t :NumberedTag {
         dst->e = e;
         dst->f = f;
         dst->s = s;
+        dst->n = n;
     }
 };
 
@@ -84,6 +87,7 @@ struct sG2_t :NumberedTag {
         f = src->f;
         i = src->i;
         j = src->j;
+        n = src->n;
     }
 
     void get(sG2_t* dst){
@@ -93,6 +97,7 @@ struct sG2_t :NumberedTag {
         dst->f = f;
         dst->i = i;
         dst->j = j;
+        dst->n = n;
     }
 };
 
@@ -111,6 +116,7 @@ struct sG3_t :NumberedTag {
         f = src->f;
         i = src->i;
         j = src->j;
+        n = src->n;
     }
 
     void get(sG3_t* dst){
@@ -120,6 +126,7 @@ struct sG3_t :NumberedTag {
         dst->f = f;
         dst->i = i;
         dst->j = j;
+        dst->n = n;
     }
 };
 
@@ -130,10 +137,12 @@ struct sG4_t :NumberedTag {
     void set(sG4_t* src){
         p = src->p;
         s = src->s;
+        n = src->n;
     }
     void get(sG4_t* dst){
         dst->p = p;
         dst->s = s;
+        dst->n = n;
     }
 };
 
@@ -148,12 +157,14 @@ struct sG6_t :NumberedTag {
         b = src->b;
         c = src->c;
         r = src->r;
+        n = src->n;
     }
     void get(sG6_t *dst){
         dst->a = a;
         dst->b = b;
         dst->c = c;
         dst->r = r;
+        dst->n = n;
     }
 
 
@@ -181,6 +192,7 @@ struct sG10_t :NumberedTag {
         u = src->u;
         v = src->v;
         w = src->w;
+        n = src->n;
     }
 
     void get(sG10_t* dst){
@@ -193,6 +205,7 @@ struct sG10_t :NumberedTag {
         dst->u = u;
         dst->v = v;
         dst->w = w;
+        dst->n = n;
     }
 
 };
@@ -204,10 +217,12 @@ struct sG20_21_t :NumberedTag{
     sG20_21_t():a(true){}// Millimeters
     void set(sG20_21_t * src){
         a = src->a;
+        n = src->n;
     }
 
     void get(sG20_21_t * dst){
         dst->a = a;
+        dst->n = n;
     }
 };
 
@@ -228,11 +243,13 @@ struct sG28_t :NumberedTag {
         x = src->x;
         y = src->y;
         z = src->z;
+        n = src->n;
     }
     void get(sG28_t* dst){
         dst->x = x;
         dst->y = y;
         dst->z = z;
+        dst->n = n;
     }
 };
 
@@ -245,11 +262,13 @@ struct sG29_1_t:NumberedTag {
         x = src->x;
         y = src->y;
         z = src->z;
+        n = src->n;
     }
     void get(sG29_1_t* dst){
         dst->x = x;
         dst->y = y;
         dst->z = z;
+        dst->n = n;
     }
 };
 
@@ -261,11 +280,13 @@ struct sG29_2_t:NumberedTag {
         x = src->x;
         y = src->y;
         z = src->z;
+        n = src->n;
     }
     void get(sG29_2_t* dst){
         dst->x = x;
         dst->y = y;
         dst->z = z;
+        dst->n = n;
     }
 };
 
@@ -298,6 +319,7 @@ struct sG30_t:NumberedTag {
         s = src->s;
         t = src->t;
         u = src->u;
+        n = src->n;
     }
     void get(sG30_t* dst){
         dst->x = x;
@@ -313,6 +335,7 @@ struct sG30_t:NumberedTag {
         dst->s = s;
         dst->t = t;
         dst->u = u;
+        dst->n = n;
     }
 };
 
@@ -333,6 +356,7 @@ struct sG33_t:NumberedTag {
         s = src->s;
         t = src->t;
         v = src->v;
+        n = src->n;
     }
     void get(sG33_t* dst){
         dst->c = c;
@@ -342,6 +366,7 @@ struct sG33_t:NumberedTag {
         dst->s = s;
         dst->t = t;
         dst->v = v;
+        dst->n = n;
     }
 };
 
@@ -368,12 +393,14 @@ struct sG92_t:NumberedTag {
         y = src->y;
         z = src->z;
         e = src->e;
+        n = src->n;
     }
     void get(sG92_t* dst){
         dst->x = x;
         dst->y = y;
         dst->z = z;
         dst->e = e;
+        dst->n = n;
     }
 };
 
@@ -396,10 +423,12 @@ struct sM104_t:NumberedTag {
     void set(sM104_t* src){
         r = src->r;
         s = src->s;
+        n = src->n;
     }
     void get(sM104_t* dst){
         dst->r = r;
         dst->s = s;
+        dst->n = n;
     }
 
 };
@@ -411,10 +440,12 @@ struct sM106_t:NumberedTag {
     void set(sM106_t* src){
         p = src->p;
         s = src->s;
+        n = src->n;
     }
     void get(sM106_t* dst){
         dst->p = p;
         dst->s = s;
+        dst->n = n;
     }
 };
 
@@ -430,10 +461,12 @@ struct sM109_t:NumberedTag {
     void set(sM109_t* src){
         r = src->r;
         s = src->s;
+        n = src->n;
     }
     void get(sM109_t* dst){
         dst->r = r;
         dst->s = s;
+        dst->n = n;
     }
 
 };
