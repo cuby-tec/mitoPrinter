@@ -131,7 +131,8 @@ HEADERS += \
     gparcer/gcodeworker.h \
     gparcer/comdataproxy.h \
     gparcer/araytag.h \
-    gparcer/structtag.h
+    gparcer/structtag.h \
+    gparcer/mitoaction.h
 
 
 FORMS += \

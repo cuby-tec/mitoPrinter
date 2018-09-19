@@ -1511,18 +1511,12 @@ GcodeWorker::fileOpen(QString filename)
 
 //	char buffer[128];
     int result;
-
     linecounter = 0;
 
-
-
-
 //	ComData* req_builder = new ComData();
-
 	QFile file(filename);
 
 	// Прочитать файл для проверки на наличие ошибок.
-
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
 
@@ -1624,16 +1618,16 @@ void GcodeWorker::fileExecute(QFile &file)
 //    bool loop = true;
 
 //    this->in = &file;
-    QTextStream str(&file);
+//    QTextStream str(&file);
 //    in = QTextStream(&file);
-    in = &str;
+//    in = &str;
 
     _file = &file;
     linecounter = 0;
 
-//    QFileInfo info(file);
+    QFileInfo info(file);
 //    QString line = this->_file->readLine();
-//    qDebug()<<__FILE__<<__LINE__<<line;
+    qDebug()<<__FILE__<<__LINE__<<"File info:"<<info.size();
 
     timer->start(100);
 // State is Programm mode.

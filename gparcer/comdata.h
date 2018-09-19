@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QChar>
 
+
+#include "mitoaction.h"
 #include <sgcode.h>
 
 #include "links/ComDataReq_t.h"
@@ -61,7 +63,7 @@ class ComData : public QObject
     Q_OBJECT
 
 public:
-    explicit ComData(QObject *parent = 0);
+    explicit ComData(QObject *parent = nullptr);
 
     ComDataReq_t* getRequest()
     {

@@ -4,6 +4,7 @@
 #include "araytag.h"
 #include "coordinatus.h"
 //#include "lexer.h"
+#include "mitoaction.h"
 #include "step_motor/controller.h"
 
 #include <QObject>
@@ -54,7 +55,7 @@ private:
 
     bool isPlaneHasSteps();
 
-    void buildComdata(uint linenumber);
+    ComDataReq_t *buildComdata(uint linenumber);
 
 };
 

@@ -5,6 +5,9 @@
 
 #define DEBUGLEVEL  1
 
+#define cout qDebug()<<__FILE__<<__LINE__
+
+
 ComdataProxy::ComdataProxy(QObject *parent) : QObject(parent)
   , line_counter(0)
   , controller(new Controller)
@@ -47,6 +50,8 @@ void ComdataProxy::sendG0Line(sG0_t *data)
 void ComdataProxy::sendG1Line(sG1_t *data)
 {
     //TODO
+    mito::Action_t *action = new mito::Action_t;
+
     line_counter++;
 #if DEBUGLEVEL==2
     qDebug()<<__FILE__<<__LINE__<<"G1:"<<"x:"<<data->x <<"\ty:"<<data->y<<"\tz:"<<data->z;
@@ -74,7 +79,15 @@ void ComdataProxy::sendG1Line(sG1_t *data)
 #endif
     controller->buildBlock(coordinatus);
 
-    buildComdata(data->n);
+    ComDataReq_t* req = buildComdata(data->n);
+    req->requestNumber = line_counter;
+    action->queue.enqueue(*req);
+    delete req;
+
+
+    ComDataReq_t &r = action->queue.head();//DEBUG
+    cout<<r.requestNumber;// DEBUG
+
 
 }
 
@@ -303,8 +316,10 @@ bool ComdataProxy::isPlaneHasSteps()
     }
     return (sum != 0.0);
 }
-#define cout qDebug()<<__FILE__<<__LINE__
-void ComdataProxy::buildComdata(uint linenumber)
+
+
+ComDataReq_t*
+ComdataProxy::buildComdata(uint linenumber)
 {
 //    ComDataReq_t* req = &request;
     ComDataReq_t* req = new ComDataReq_t;
@@ -372,6 +387,7 @@ void ComdataProxy::buildComdata(uint linenumber)
 
     }
     cout<<segment->axis[X_AXIS].steps<<"\t"<<segment->axis[Y_AXIS].steps<<"\tline"<<segment->head.linenumber;
+    return req;
 }
 
 

@@ -97,7 +97,7 @@ private:
     ComdataProxy* comproxy;
 #endif
 
-    QTextStream *in;
+//    QTextStream *in;
 
     QFile *_file;
 
