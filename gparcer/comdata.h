@@ -1,8 +1,6 @@
 #ifndef COMDATA_H
 #define COMDATA_H
 
-#include <QObject>
-#include <QChar>
 
 
 #include "mitoaction.h"
@@ -21,7 +19,11 @@
 #include "exchange/threadexchange.h"
 #include "exchange/threadarc.h"
 
+#include "gparcer/gcodeworker.h"
+#include "messager.h"
 
+#include <QObject>
+#include <QChar>
 
 #define DIRECTION_BIT    	1  // Port X Pin X
 #define STEP_BIT         	2  // Port X pin X
@@ -57,6 +59,11 @@ enum eCDstate{
 };
 
 
+enum runStates{
+    ersError,ersRunning=1
+};
+
+
 class ComData : public QObject
 {
 
@@ -86,6 +93,8 @@ public:
 
     void buildComData(sGcode* sgcode, bool checkBox_immediately);
 
+
+    void run(GcodeWorker *gworker);
 
 signals:
     void sg_updateStatus(const Status_t* status);
@@ -153,6 +162,10 @@ private:
     void buildG2Command();
 
     void setupThread();
+
+    runStates runState;
+
+    void _run();
 
 };
 

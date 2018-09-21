@@ -53,6 +53,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
 //------------
     statusBar()->showMessage("Starting ..");
+
+    messager = Messager::instance();
+    connect(messager, SIGNAL(sg_Message(QString)),this, SLOT(on_message(QString)));
 }
 
 MainWindow::~MainWindow()
@@ -276,6 +279,24 @@ void MainWindow::on_commandOpenFile()
 void MainWindow::on_gprogrammFinish()
 {
     statusBar()->showMessage("Programm finished.");
+}
+
+void MainWindow::on_message(QString msg)
+{
+    /*
+     * 		printf("Can't open device. maybe module not loaded. Use: $sudo insmod ./eclipse-workspace/usbtest/test1.ko \n"
+                "or device dosn't connected.\n");
+     */
+    QString err("Can't open device. maybe module not loaded."
+                " maybe module not loaded."
+                "Use: $sudo insmod ./eclipse-workspace/usbtest/test1.ko");
+
+    statusBar()->showMessage(msg);
+    QMessageBox box;
+    box.setText(err);
+    QAction *actionRun = ui->actionRun;
+    actionRun->setEnabled(true);
+    int ret = box.exec();
 } //
 
 

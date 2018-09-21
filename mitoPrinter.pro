@@ -64,7 +64,9 @@ SOURCES += \
     command/icommand.cpp \
     gparcer/gcodeworker.cpp \
     gparcer/comdataproxy.cpp \
-    gparcer/araytag.cpp
+    gparcer/araytag.cpp \
+    exchange/requestfactory.cpp \
+    messager.cpp
 
 
 HEADERS += \
@@ -132,7 +134,9 @@ HEADERS += \
     gparcer/comdataproxy.h \
     gparcer/araytag.h \
     gparcer/structtag.h \
-    gparcer/mitoaction.h
+    gparcer/mitoaction.h \
+    exchange/requestfactory.h \
+    messager.h
 
 
 FORMS += \

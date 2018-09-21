@@ -289,7 +289,7 @@ ThermoPlot::writeLog()
 
 }
 
-
+// SLOT
 void
 ThermoPlot::updateStatus(const Status_t *status)
 {

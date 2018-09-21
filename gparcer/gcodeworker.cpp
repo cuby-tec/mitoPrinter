@@ -74,9 +74,10 @@ GcodeWorker::GcodeWorker(QObject *parent) : QObject(parent)
 #endif
 
 //    comproxy = new ComdataProxy;
-
+#if lEVEL==4
     timer = new QTimer(this);
     connect(timer,SIGNAL(timeout()), this, SLOT(queueReady()) );
+#endif
 
 }
 
@@ -1582,7 +1583,9 @@ void GcodeWorker::readCommandLine()
         memset(dst,0,sizeof(sGcode));
 
         if(_file->atEnd()){
+#if LEVEL==4
             timer->stop();
+#endif
             emit sg_executeComplite();
              qDebug()<<__FILE__<<__LINE__<<"Stopped.";
             return;
@@ -1598,6 +1601,9 @@ void GcodeWorker::readCommandLine()
 #if LEVEL == 1
         qDebug()<<__FILE__<<__LINE__<<"result:"<<result<<"\tgroup:"<<gcode.group;
 #endif
+        if(gcode.group==0)
+            continue;
+
         char comment = ';';
         int k = strcmp( &gcode.group,&comment);
         if(k!=0)
@@ -1613,7 +1619,7 @@ void GcodeWorker::readCommandLine()
 }
 
 
-void GcodeWorker::fileExecute(QFile &file)
+void GcodeWorker::setFileExecute(QFile &file)
 {
 //    bool loop = true;
 
@@ -1628,8 +1634,9 @@ void GcodeWorker::fileExecute(QFile &file)
     QFileInfo info(file);
 //    QString line = this->_file->readLine();
     qDebug()<<__FILE__<<__LINE__<<"File info:"<<info.size();
-
+#if LEVEL==4
     timer->start(100);
+#endif
 // State is Programm mode.
 
 }

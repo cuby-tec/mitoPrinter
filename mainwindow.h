@@ -9,6 +9,7 @@
 #include <QMainWindow>
 #include "ui_mainwindow.h"
 #include "command/executeprogramm.h"
+#include "messager.h"
 
 namespace Ui {
 class MainWindow;
@@ -32,7 +33,7 @@ public slots:
     void on_commandExecuteProgram();
     void on_commandOpenFile();
     void on_gprogrammFinish();
-
+    void on_message(QString msg);
 
 protected:
     void resizeEvent(QResizeEvent *event);
@@ -54,6 +55,8 @@ private:
 
     // -------- Status
     QLabel *fileLabel;
+
+    Messager *messager;
 
 //----------- Menu
     QMenu* menuFile;

@@ -3,6 +3,8 @@
 
 #include "icommand.h"
 #include "gparcer/gcodeworker.h"
+#include "gparcer/comdata.h"
+
 #include <QTextStream>
 //#include <QObject>
 
@@ -27,6 +29,8 @@ signals:
 
 private:
     GcodeWorker *gcodeworker;
+
+    ComData * comdata;
 
 };
 

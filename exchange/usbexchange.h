@@ -31,7 +31,7 @@ class UsbExchange : public QObject
 
 public:
     //explicit Base(QObject *parent = 0);
-     explicit UsbExchange(QObject * parent = 0);
+     explicit UsbExchange(QObject * parent = nullptr);
 
     ~UsbExchange(){}
 

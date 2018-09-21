@@ -79,7 +79,9 @@ void ComdataProxy::sendG1Line(sG1_t *data)
 #endif
     controller->buildBlock(coordinatus);
 
-    ComDataReq_t* req = buildComdata(data->n);
+//    ComDataReq_t* req = buildComdata(data->n);
+    RequestFactory *factory = new RequestFactory();
+    ComDataReq_t* req = factory->build(data->n);
     req->requestNumber = line_counter;
     action->queue.enqueue(*req);
     delete req;

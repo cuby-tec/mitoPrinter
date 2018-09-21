@@ -6,6 +6,7 @@
 //#include "lexer.h"
 #include "mitoaction.h"
 #include "step_motor/controller.h"
+#include "exchange/requestfactory.h"
 
 #include <QObject>
 
@@ -56,6 +57,8 @@ private:
     bool isPlaneHasSteps();
 
     ComDataReq_t *buildComdata(uint linenumber);
+
+    RequestFactory* factory;
 
 };
 

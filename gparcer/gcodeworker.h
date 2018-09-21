@@ -38,7 +38,13 @@ public:
 
     void fileOpen(QString filename);
 
-    void fileExecute(QFile &file);
+    void setFileExecute(QFile &file);
+
+    bool isFileOpened(){
+        return _file->isOpen();
+    }
+
+    void readCommandLine();
 
 public slots:
     void queueReady();
@@ -103,14 +109,13 @@ private:
 
     uint linecounter;
 
-    void readCommandLine();
 
     sGcode gcode;
     sGcode* dst = &gcode;
     Lexer* lexer;
-
+#if LEVEL==4
     QTimer *timer;
-
+#endif
 
     QString clearNumValue(QString value);
 

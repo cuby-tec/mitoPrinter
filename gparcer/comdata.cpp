@@ -13,6 +13,7 @@
 
 #include <cmath>
 
+#define cout qDebug()<<__FILE__<<__LINE__
 
 //const QString msg3 = "Conversion error.";
 //const QString msg4 = "Profile should be selected.";
@@ -51,7 +52,6 @@ ComData::setupThread()
     connect(&threadarc,SIGNAL(sg_failed_status()),this,SLOT(failedStatus()) );
 
 }
-
 
 void
 ComData::setWorkValue(QString value, size_t axis_num)
@@ -504,7 +504,7 @@ ComData::build(sGcode *sgcode)
     return(&request);
 }
 
-#define cout	qDebug()
+#define cout	qDebug()<<__FILE__<<__LINE__
 // from GConsole
 void ComData::buildComData(sGcode *sgcode, bool checkBox_immediately)
 {
@@ -628,19 +628,67 @@ void ComData::buildComData(sGcode *sgcode, bool checkBox_immediately)
 
 }
 
+void ComData::run(GcodeWorker* gworker)
+{
+    //TODO
+    cout<<"run:"<<gworker->isFileOpened();
+
+    // Check Controller@USB
+    RequestFactory* factory = new RequestFactory();
+    ComDataReq_t *request = new ComDataReq_t;
+    factory->build(request,eoState);
+    threadarc.putInArray(request);
+    threadarc.process();
+    runState = ersRunning;
+    delete request;
+    delete factory;
+
+    //wait answer ...
+
+    // Build request
+    // Send request
+    // wait answer
+    gworker->readCommandLine();
+
+}
+
+
+void ComData::_run()
+{
+    // TODO execute by states;
+    switch (runState) {
+    case ersRunning:
+        cout<<"Running";
+        break;
+
+    case ersError:
+        cout<<"Device is unreachable.";
+        Messager* messaager = Messager::instance();
+        messaager->putMessage(QString("Device is unreachable."));
+        break;
+
+    }
+}
+
+
+
 void ComData::updateStatus(const Status_t *status)
 {
 	acknowledge_flag = true;
     emit sg_updateStatus(status);
 
-//    qDebug()<<"ComData[694] updateStatus";
+        cout<<"updateStatus";
+    _run();
+
 }
 
 void ComData::failedStatus()
 {
  //TODO failed Status
-	qDebug()<<"ComData[722]::failedStatus[700].";
-
+//	qDebug()<<"ComData[722]::failedStatus[700].";
+    cout<<"failedStatus";
+    runState = ersError;
+    _run();
 }
 
 void
