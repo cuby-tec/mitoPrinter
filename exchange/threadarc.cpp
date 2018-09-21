@@ -65,7 +65,7 @@ void ThreadArc::run()
                 thermo_gmutex.unlock();
 
                 // check flag, and wait and resend if needed
-                if((!status.modelState.reserved1)&COMMAND_ACKNOWLEDGED)
+                if(!(status.modelState.reserved1&COMMAND_ACKNOWLEDGED))
                 {
                     try_counter++;
                     msleep(mdelay);
@@ -74,7 +74,7 @@ void ThreadArc::run()
                     break;
                 }
 
-            }while((!status.modelState.reserved1)&COMMAND_ACKNOWLEDGED);
+            }while(!(status.modelState.reserved1&COMMAND_ACKNOWLEDGED));
 
             if(try_counter>=max_tryCounter){
                 break;
