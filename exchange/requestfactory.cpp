@@ -10,7 +10,15 @@ RequestFactory::RequestFactory()
 
 }
 
-void RequestFactory::build(ComDataReq_t *comdata, eOrder order)
+void RequestFactory::build(ComDataReq_t *comdata, eOrder order, NumberedTag *tag)
+{
+    //TODO
+    sM106_t* mtag = static_cast<sM106_t*>(tag);
+    cout<<mtag->s;
+
+}
+
+void RequestFactory::build(ComDataReq_t *comdata, eOrder order )
 {
     /* UsbExchange::buildComData(ComDataReq_t *comdata, eOrder order)
      * eoState,            // Запрос состояния устройства.
@@ -24,6 +32,15 @@ void RequestFactory::build(ComDataReq_t *comdata, eOrder order)
 //        comdata->requestNumber = ++MyGlobal::requestIndex;
         comdata->command.order = eoState;
 //        sendRequest(comdata);
+        break;
+
+    case eoFunControl: //управление Вентилятором
+//        Pnnn Fan number (optional, defaults to 0)2
+//        Snnn Fan speed (0 to 255; RepRapFirmware also accepts 0.0 to 1.0))
+
+
+
+
         break;
 
     case eoProfile:

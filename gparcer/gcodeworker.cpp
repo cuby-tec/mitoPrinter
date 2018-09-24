@@ -1596,7 +1596,9 @@ void GcodeWorker::readCommandLine()
         if(line.isEmpty())
             continue;
         result = lexer->parcer(line);
+#if LEVEL==1
         qDebug()<<__FILE__<<__LINE__<<line<<"\tline:"<<linecounter;
+#endif
 
 #if LEVEL == 1
         qDebug()<<__FILE__<<__LINE__<<"result:"<<result<<"\tgroup:"<<gcode.group;
@@ -1606,11 +1608,11 @@ void GcodeWorker::readCommandLine()
 
         char comment = ';';
         int k = strcmp( &gcode.group,&comment);
-        if(k!=0)
+        if(k!=0 && result>0)
             loop = false;
 
     }
-#if LEVEL==1
+#if LEVEL==0
     qDebug()<<__FILE__<<__LINE__<<"result:"<<result<<"\tgroup:"<<gcode.group<<gcode.value;
 #endif
     //checkBox_immediately

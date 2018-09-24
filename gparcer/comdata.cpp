@@ -631,7 +631,7 @@ void ComData::buildComData(sGcode *sgcode, bool checkBox_immediately)
 void ComData::run(GcodeWorker* gworker)
 {
     //TODO
-    cout<<"run:"<<gworker->isFileOpened();
+    this->gworker = gworker;
 
     // Check Controller@USB
     RequestFactory* factory = new RequestFactory();
@@ -645,20 +645,24 @@ void ComData::run(GcodeWorker* gworker)
 
     //wait answer ...
 
-    // Build request
-    // Send request
-    // wait answer
-    gworker->readCommandLine();
+//    gworker->readCommandLine();
+    connect(gworker, SIGNAL(sg_executeComplite()),this, SLOT(slot_fileComplite()));
 
 }
 
 
 void ComData::_run()
 {
+//    cout<<"run:"<<gworker->isFileOpened();
+
     // TODO execute by states;
     switch (runState) {
     case ersRunning:
         cout<<"Running";
+        // Build request
+        gworker->readCommandLine();
+        // Send request
+        // wait answer
         break;
 
     case ersError:
@@ -670,24 +674,35 @@ void ComData::_run()
     }
 }
 
-
+void ComData::slot_fileComplite()
+{
+    //TODO slot_fileComplite
+    cout<<"slot_fileComplite";
+}
 
 void ComData::updateStatus(const Status_t *status)
 {
 	acknowledge_flag = true;
     emit sg_updateStatus(status);
 
-        cout<<"updateStatus";
+    runState = ersRunning;
+    cout<<"updateStatus";
     _run();
 
 }
 
+
+#define DEBUG
 void ComData::failedStatus()
 {
  //TODO failed Status
 //	qDebug()<<"ComData[722]::failedStatus[700].";
     cout<<"failedStatus";
+#ifdef DEBUG
+    runState = ersRunning;
+#else
     runState = ersError;
+#endif
     _run();
 }
 

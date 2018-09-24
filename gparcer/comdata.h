@@ -99,6 +99,10 @@ public:
 signals:
     void sg_updateStatus(const Status_t* status);
 
+
+public slots:
+    void slot_fileComplite();   // file reach EOF.
+
 private slots:
     void updateStatus(const Status_t* status);
     void failedStatus();
@@ -117,6 +121,7 @@ private:
 
     Controller* controller;
 
+    GcodeWorker *gworker;
 
     int a;
 

@@ -19,6 +19,7 @@ enum eOrder{
     eoState,            // Запрос состояния устройства.
     eoProfile,      // Задание параметров Profile include Hotend
     eoSegment           // Семент движения.
+    , eoFunControl      // управление Вентилятором
 };
 
 /**

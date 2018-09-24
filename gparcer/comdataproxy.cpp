@@ -1,6 +1,8 @@
 #include "comdataproxy.h"
 #include "links/ComDataReq_t.h"
 
+#include "mitoaction.h"
+
 #include <QDebug>
 
 #define DEBUGLEVEL  1
@@ -246,6 +248,7 @@ void ComdataProxy::sendG92Tag(sG92_t *data)
 
 //Set param send
 //Deprecated in Teacup firmware and in RepRapFirmware. Use M106 S0 instead.
+// M107: Fan Off
 void ComdataProxy::sendM107_Tag(sM106_t *data)
 {
 //    Coordinatus *crd = Coordinatus::instance();
@@ -255,7 +258,15 @@ void ComdataProxy::sendM107_Tag(sM106_t *data)
 #endif
     //TODO send Command
     line_counter++;
+
+    mito::Action_t* action = new mito::Action_t;
+    ComDataReq_t* request = new ComDataReq_t;
+    RequestFactory* factory = new RequestFactory();
+    factory->build(request, eoFunControl, data);
+
+
 }
+
 //Wait param
 void ComdataProxy::sendM109_Tag(sM109_t *data)
 {

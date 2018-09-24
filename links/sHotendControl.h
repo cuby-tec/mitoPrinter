@@ -8,9 +8,11 @@
 #ifndef EXCHANGE_SHOTENDCONTROL_H_
 #define EXCHANGE_SHOTENDCONTROL_H_
 
-
+#include <stdint.h>
 
 //------------- defs
+#define use_float
+
 
 /**
  * Включение/выключение нагревателя/вентилятора. false/true.
@@ -23,7 +25,7 @@ struct sHotendSwitch {
 /**
  * Передача параметров управления инструментом Hotend.
  */
-#ifdef float32
+#ifdef use_float
 struct sHotendControl_t {
     float temperature;
     float kp;     // Коэффициент пропорциональной составляющей.
