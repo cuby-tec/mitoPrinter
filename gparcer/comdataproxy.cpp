@@ -226,9 +226,11 @@ void ComdataProxy::sendG91_Tag(sG90_t *data)
 void ComdataProxy::sendM106_Tag(sM106_t *data)
 {
     Coordinatus *crd = Coordinatus::instance();
-    crd->setFan_value(data->s);
+//    crd->setFan_value(data->s);
+    sHotendControl_t *hend = crd->getHotend();
+    hend->_switch.cooler = static_cast<uint16_t>(data->s);
 #if DEBUGLEVEL==1
-    qDebug()<<__FILE__<<__LINE__<<"GM106:"<<"s:"<< data->s<<"crd:"<<crd->getFan_value() ;
+    qDebug()<<__FILE__<<__LINE__<<"GM106:"<<"s:"<< data->s<<"crd:"<<hend->_switch.cooler ;
 #endif
     //Fan speed (0 to 255; RepRapFirmware also accepts 0.0 to 1.0))
     // TODO Send Command
@@ -249,12 +251,14 @@ void ComdataProxy::sendG92Tag(sG92_t *data)
 //Set param send
 //Deprecated in Teacup firmware and in RepRapFirmware. Use M106 S0 instead.
 // M107: Fan Off
-void ComdataProxy::sendM107_Tag(sM106_t *data)
+//void
+mito::Action_t*
+ComdataProxy::sendM107_Tag(sM106_t *data)
 {
-//    Coordinatus *crd = Coordinatus::instance();
-        coordinatus->setFan_value(data->s);
+        sHotendControl_t *hend = coordinatus->getHotend();
+        hend->_switch.cooler = static_cast<uint16_t>(data->s);
 #if DEBUGLEVEL==1
-    qDebug()<<__FILE__<<__LINE__<<"M107:"<< data->s<<"crd:"<<coordinatus->getFan_value();
+    qDebug()<<__FILE__<<__LINE__<<"M107:"<< data->s<<"crd:"<<hend->_switch.cooler;
 #endif
     //TODO send Command
     line_counter++;
@@ -262,22 +266,29 @@ void ComdataProxy::sendM107_Tag(sM106_t *data)
     mito::Action_t* action = new mito::Action_t;
     ComDataReq_t* request = new ComDataReq_t;
     RequestFactory* factory = new RequestFactory();
-    factory->build(request, eoFunControl, data);
+    factory->build(request, eoHotendControl, data);
+    action->queue.enqueue(*request);
+    action->a = 0;//TODO
 
-
+    return action;
 }
 
 //Wait param
-void ComdataProxy::sendM109_Tag(sM109_t *data)
+//void
+mito::Action_t*
+ComdataProxy::sendM109_Tag(sM109_t *data)
 {
     //TODO
     line_counter++;
     //M109: Set Extruder Temperature and Wait
-    Coordinatus *crd = Coordinatus::instance();
-    crd->setTemperature(data->s);
+//    Coordinatus *crd = Coordinatus::instance();
+//    crd->setTemperature(data->s);
+    sHotendControl_t *hend = coordinatus->getHotend();
+    hend->temperature = static_cast<float_t>(data->s);
 #if DEBUGLEVEL==1
-    qDebug()<<__FILE__<<__LINE__<<"M109:"<< data->s<<"crd:"<<crd->getTemperature();
+    qDebug()<<__FILE__<<__LINE__<<"M109:"<< data->s<<"crd:"<<hend->temperature;
 #endif
+    return new mito::Action_t;
 }
 
 void ComdataProxy::sendM104Tag(sM104_t *data)
@@ -285,9 +296,12 @@ void ComdataProxy::sendM104Tag(sM104_t *data)
     //TODO
     line_counter++;
     //M104: Set Extruder Temperature
-    coordinatus->setTemperature(data->s);
+//    coordinatus->setTemperature(data->s);
+    sHotendControl_t *hend = coordinatus->getHotend();
+    hend->temperature = static_cast<float_t>(data->s);
+
 #if DEBUGLEVEL==1
-    qDebug()<<__FILE__<<__LINE__<<"M104:"<< data->s<<"coordinatus:"<<coordinatus->getTemperature();
+    qDebug()<<__FILE__<<__LINE__<<"M104:"<< data->s<<"coordinatus:"<<hend->temperature;
 #endif
 
 }

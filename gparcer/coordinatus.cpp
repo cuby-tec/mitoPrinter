@@ -78,15 +78,7 @@ void Coordinatus::setExtruder_mode(bool value)
     extruder_mode = value;
 }
 
-double Coordinatus::getTemperature() const
-{
-    return temperature;
-}
 
-void Coordinatus::setTemperature(double value)
-{
-    temperature = value;
-}
 
 /**
  * Загрузка данных из профиля.
@@ -149,15 +141,6 @@ Coordinatus::setupProfileData() {
 	    }
 }
 
-double_t Coordinatus::getFan_value() const
-{
-    return fan_value;
-}
-
-void Coordinatus::setFan_value(const double_t &value)
-{
-    fan_value = value;
-}
 
 
 

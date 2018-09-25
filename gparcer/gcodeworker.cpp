@@ -83,10 +83,12 @@ GcodeWorker::GcodeWorker(QObject *parent) : QObject(parent)
 
 
 
-void
+//void
+mito::Action_t*
 GcodeWorker::buildAction(sGcode *src)
 {
     eGCodeTag etag = eError;
+    mito::Action_t* action = nullptr;
 
 //    void *action = nullptr;
 
@@ -96,7 +98,7 @@ GcodeWorker::buildAction(sGcode *src)
         tag.append(src->value);
     }else if (tag == '(' || tag == ";" || QString(tag).isEmpty() ){
         //comment
-        return ;
+        return action;
     }
 
     if(tag == "G0") etag = eG0;
@@ -189,7 +191,7 @@ GcodeWorker::buildAction(sGcode *src)
         (this->*callTagRef[etag])(src); //tagM106_Do
         break;
     case eM107:
-        (this->*callTagRef[etag])(src); //tagM107_Do
+        action = (this->*callTagRef[etag])(src); //tagM107_Do
         break;
     case eM109:
         (this->*callTagRef[etag])(src); //tagM109_Do
@@ -221,17 +223,18 @@ GcodeWorker::buildAction(sGcode *src)
 
 
 //    qDebug()<<__FILE__<<__LINE__<<":"<<tag;
-    return;
+    return (action);
 }
 
 /*
  struct sG0_t{
     double x;     double y;     double z;     double e;    double f;    double s; };
 */
-void
+//void
+mito::Action_t*
 GcodeWorker::tagG0_Do(sGcode *sgCode)
 {
-//    mitoAction * action = nullptr;
+    mito::Action_t * action = nullptr;
 #if VERSION==1
     sG0_t * vTag =  reinterpret_cast<sG0_t *>( arraytag->getTagValue(eG0));
     sG0_t valueTag ;
@@ -297,11 +300,13 @@ GcodeWorker::tagG0_Do(sGcode *sgCode)
 #endif
 //    qDebug()<<__FILE__<<__LINE__<<"tagG0_Do"<<"\tx:"<<vTag->x<<"\ty:"<<vTag->y<<"\tz:"<<vTag->z<<"\te:"<<vTag->e; // Level2
 
-    return ;
+    return action;
 }
 
-void GcodeWorker::tagG1_Do(sGcode *sgCode)
+mito::Action_t*
+GcodeWorker::tagG1_Do(sGcode *sgCode)
 {
+    mito::Action_t * action = nullptr;
 #if VERSION==1
     sG1_t * vTag =  reinterpret_cast<sG1_t *>( arraytag->getTagValue(eG1));
     sG1_t valueTag ;
@@ -378,10 +383,13 @@ void GcodeWorker::tagG1_Do(sGcode *sgCode)
 
 
     //    qDebug()<<__FILE__<<__LINE__;
+    return action;
 }
 
-void GcodeWorker::tagG2_Do(sGcode *sgCode)
+mito::Action_t*
+GcodeWorker::tagG2_Do(sGcode *sgCode)
 {
+    mito::Action_t * action = nullptr;
 #if VERSION==1
     sG2_t * vTag =  reinterpret_cast<sG2_t *>( arraytag->getTagValue(eG2));
     sG2_t valueTag ;
@@ -449,10 +457,13 @@ void GcodeWorker::tagG2_Do(sGcode *sgCode)
     syncXY(valueTag.x, valueTag.y);
     comproxy->sendG2Line(vTag);
 #endif
+    return action;
 }
 
-void GcodeWorker::tagG3_Do(sGcode *sgCode)
+mito::Action_t*
+GcodeWorker::tagG3_Do(sGcode *sgCode)
 {
+    mito::Action_t * action = nullptr;
 #if VERSION==1
     sG3_t * vTag =  reinterpret_cast<sG3_t *>( arraytag->getTagValue(eG3));
     sG3_t valueTag ;
@@ -518,10 +529,13 @@ void GcodeWorker::tagG3_Do(sGcode *sgCode)
     syncXY(valueTag.x, valueTag.y);
     comproxy->sendG3Line(vTag);
 #endif
+    return action;
 }
 
-void GcodeWorker::tagG4_Do(sGcode *sgCode)
+mito::Action_t*
+GcodeWorker::tagG4_Do(sGcode *sgCode)
 {
+    mito::Action_t * action = nullptr;
 #if VERSION==1
     sG4_t * vTag =  reinterpret_cast<sG4_t *>( arraytag->getTagValue(eG4));
     sG4_t valueTag ;
@@ -561,10 +575,13 @@ void GcodeWorker::tagG4_Do(sGcode *sgCode)
     vTag->set(&valueTag);
     comproxy->sendG3Tag(vTag);
 #endif
+    return action;
 }
 
-void GcodeWorker::tagG6_Do(sGcode *sgCode)
+mito::Action_t*
+GcodeWorker::tagG6_Do(sGcode *sgCode)
 {
+    mito::Action_t * action = nullptr;
 #if VERSION==1
     sG6_t * vTag =  reinterpret_cast<sG6_t *>( arraytag->getTagValue(eG6));
     sG6_t valueTag ;
@@ -612,11 +629,13 @@ void GcodeWorker::tagG6_Do(sGcode *sgCode)
      vTag->set(&valueTag);
      comproxy->sendG6Tag(vTag);
 #endif
-
+     return action;
 }
 
-void GcodeWorker::tagG10_Do(sGcode *sgCode)
+mito::Action_t*
+GcodeWorker::tagG10_Do(sGcode *sgCode)
 {
+    mito::Action_t * action = nullptr;
 #if VERSION==1
     sG10_t * vTag =  reinterpret_cast<sG10_t *>( arraytag->getTagValue(eG10));
     sG10_t valueTag ;
@@ -695,11 +714,14 @@ void GcodeWorker::tagG10_Do(sGcode *sgCode)
     vTag->set(&valueTag);
     comproxy->sendG10Tag(vTag);
 #endif
+    return action;
 }
 
 //G20: Set Units to Inches
-void GcodeWorker::tagG20_Do(sGcode *sgCode)
+mito::Action_t*
+GcodeWorker::tagG20_Do(sGcode *sgCode)
 {
+    mito::Action_t * action = nullptr;
 #if VERSION==1
     sG20_21_t * vTag =  reinterpret_cast<sG20_21_t *>( arraytag->getTagValue(eG20));
     sG20_21_t valueTag ;
@@ -725,12 +747,14 @@ void GcodeWorker::tagG20_Do(sGcode *sgCode)
     vTag->set(&valueTag);
     comproxy->sendG20_21Tag(vTag);
 #endif
-
+    return action;
 }
 
 //G21: Set Units to Millimeters
-void GcodeWorker::tagG21_Do(sGcode *sgCode)
+mito::Action_t*
+GcodeWorker::tagG21_Do(sGcode *sgCode)
 {
+    mito::Action_t * action = nullptr;
 #if VERSION==1
     sG20_21_t * vTag =  reinterpret_cast<sG20_21_t *>( arraytag->getTagValue(eG21));
     sG20_21_t valueTag ;
@@ -756,12 +780,15 @@ void GcodeWorker::tagG21_Do(sGcode *sgCode)
     vTag->set(&valueTag);
     comproxy->sendG20_21Tag(vTag);
 #endif
+    return action;
 }
 
 
 
-void GcodeWorker::tagG28_Do(sGcode *sgCode)
+mito::Action_t*
+GcodeWorker::tagG28_Do(sGcode *sgCode)
 {
+    mito::Action_t * action = nullptr;
 #if VERSION==1
 //    sG28_t * vTag =  reinterpret_cast<sG28_t *>( arraytag->getTagValue(eG28));
     sG28_t valueTag ;
@@ -802,12 +829,14 @@ void GcodeWorker::tagG28_Do(sGcode *sgCode)
         valueTag.n = linecounter;
     comproxy->sendG28Tag(&valueTag);
 #endif
-
+    return action;
 }
 
 //Set Z probe head offset
-void GcodeWorker::tagG29_1_Do(sGcode *sgCode)
+mito::Action_t*
+GcodeWorker::tagG29_1_Do(sGcode *sgCode)
 {
+    mito::Action_t * action = nullptr;
 #if VERSION==1
     sG29_1_t * vTag =  reinterpret_cast<sG29_1_t *>( arraytag->getTagValue(eG29_1));
     sG29_1_t valueTag ;
@@ -852,10 +881,13 @@ void GcodeWorker::tagG29_1_Do(sGcode *sgCode)
 
         comproxy->sendG29_1Tag(vTag);
 #endif
+        return action;
 }
 
-void GcodeWorker::tagG29_2_Do(sGcode *sgCode)
+mito::Action_t*
+GcodeWorker::tagG29_2_Do(sGcode *sgCode)
 {
+    mito::Action_t * action = nullptr;
 #if VERSION==1
     sG29_2_t * vTag =  reinterpret_cast<sG29_2_t *>( arraytag->getTagValue(eG29_2));
     sG29_2_t valueTag ;
@@ -899,14 +931,18 @@ void GcodeWorker::tagG29_2_Do(sGcode *sgCode)
 
         comproxy->sendG29_2Tag(vTag);
 #endif
+
+        return action;
 }
 
 //Single Z-Probe
 // 5181-5189
 // "G30" Home for X, Y, Z, A, B, C, U, V & W. Persistent.
 //http://linuxcnc.org/docs/2.6/html/gcode/overview.html#sub:numbered-parameters
-void GcodeWorker::tagG30_Do(sGcode *sgCode)
+mito::Action_t*
+GcodeWorker::tagG30_Do(sGcode *sgCode)
 {
+    mito::Action_t * action = nullptr;
 #if VERSION==1
     sG30_t * vTag =  reinterpret_cast<sG30_t *>( arraytag->getTagValue(eG30));
     sG30_t valueTag ;
@@ -995,11 +1031,14 @@ void GcodeWorker::tagG30_Do(sGcode *sgCode)
 
         comproxy->sendG30Tag(vTag);
 #endif
+        return action;
 }
 
 // STUB
-void GcodeWorker::tagG33_Do(sGcode *sgCode)
+mito::Action_t*
+GcodeWorker::tagG33_Do(sGcode *sgCode)
 {
+    mito::Action_t * action = nullptr;
 #if VERSION==1
     sG33_t * vTag =  reinterpret_cast<sG33_t *>( arraytag->getTagValue(eG33));
     sG33_t valueTag ;
@@ -1067,11 +1106,14 @@ void GcodeWorker::tagG33_Do(sGcode *sgCode)
 
 //    comproxy->sendG30Tag(vTag);
 #endif
+    return action;
 }
 
 //Set to Absolute Positioning
-void GcodeWorker::tagG90_Do(sGcode *sgCode)
+mito::Action_t*
+GcodeWorker::tagG90_Do(sGcode *sgCode)
 {
+    mito::Action_t * action = nullptr;
     sG90_t * vTag =  reinterpret_cast<sG90_t *>( arraytag->getTagValue(eG90));
 //    sG90_t valueTag ;
 //    vTag->get(&valueTag);
@@ -1093,11 +1135,14 @@ void GcodeWorker::tagG90_Do(sGcode *sgCode)
     if(vTag->n == 0)
         vTag->n = linecounter;
     comproxy->sendG90_Tag(vTag);
+    return action;
 }
 
 //Set to Relative Positioning
-void GcodeWorker::tagG91_Do(sGcode *sgCode)
+mito::Action_t*
+GcodeWorker::tagG91_Do(sGcode *sgCode)
 {
+    mito::Action_t * action = nullptr;
     sG90_t * vTag =  reinterpret_cast<sG90_t *>( arraytag->getTagValue(eG90));
 //    sG90_t valueTag ;
 //    vTag->get(&valueTag);
@@ -1121,10 +1166,13 @@ void GcodeWorker::tagG91_Do(sGcode *sgCode)
         vTag->n = linecounter;
 
     comproxy->sendG90_Tag(vTag);
+    return action;
 }
 
-void GcodeWorker::tagG92_Do(sGcode *sgCode)
+mito::Action_t*
+GcodeWorker::tagG92_Do(sGcode *sgCode)
 {
+    mito::Action_t * action = nullptr;
     sG92_t * vTag =  reinterpret_cast<sG92_t *>( arraytag->getTagValue(eG92));
     sG92_t valueTag ;
     vTag->get(&valueTag);
@@ -1172,20 +1220,27 @@ void GcodeWorker::tagG92_Do(sGcode *sgCode)
     vTag->set(&valueTag);
 
     comproxy->sendG92Tag(vTag);
+    return action;
 }
 
-void GcodeWorker::tagG92_1_Do(sGcode *sgCode)
-{    sG92_1_t * vTag =  reinterpret_cast<sG92_1_t *>( arraytag->getTagValue(eG92_1));
+mito::Action_t*
+GcodeWorker::tagG92_1_Do(sGcode *sgCode)
+{
+    mito::Action_t * action = nullptr;
+    sG92_1_t * vTag =  reinterpret_cast<sG92_1_t *>( arraytag->getTagValue(eG92_1));
      sG92_1_t valueTag ;
 //     vTag->get(&valueTag);
      bool ok = false;
      double dvalue;
       //TODO
+     return action;
 }
 
  //M104: Set Extruder Temperature
-void GcodeWorker::tagM104_Do(sGcode *sgCode)
+mito::Action_t*
+GcodeWorker::tagM104_Do(sGcode *sgCode)
 {
+    mito::Action_t * action = nullptr;
     sM104_t * vTag =  reinterpret_cast<sM104_t *>( arraytag->getTagValue(eM104));
     sM104_t valueTag ;
     vTag->get(&valueTag);
@@ -1220,11 +1275,14 @@ void GcodeWorker::tagM104_Do(sGcode *sgCode)
      vTag->set(&valueTag);
 
      comproxy->sendM104Tag(vTag);
+     return action;
 }
 
 //M106: Fan On
-void GcodeWorker::tagM106_Do(sGcode *sgCode)
+mito::Action_t*
+GcodeWorker::tagM106_Do(sGcode *sgCode)
 {
+    mito::Action_t * action = nullptr;
     sM106_t *vTag =  reinterpret_cast<sM106_t *>( arraytag->getTagValue(eM106));
     sM106_t valueTag ;
     vTag->get(&valueTag);
@@ -1260,12 +1318,16 @@ void GcodeWorker::tagM106_Do(sGcode *sgCode)
         valueTag.n = linecounter;
     vTag->set(&valueTag);
     comproxy->sendM106_Tag(vTag);
+    return action;
 }
 
 //M107: Fan Off
 //Deprecated in Teacup firmware and in RepRapFirmware. Use M106 S0 instead.
-void GcodeWorker::tagM107_Do(sGcode *sgCode)
+//void
+mito::Action_t*
+GcodeWorker::tagM107_Do(sGcode *sgCode)
 {
+    mito::Action_t * action = nullptr;
     //Use M106 S0 instead.
     sM106_t *vTag =  reinterpret_cast<sM106_t *>( arraytag->getTagValue(eM106));
     sM106_t valueTag ;
@@ -1291,13 +1353,16 @@ void GcodeWorker::tagM107_Do(sGcode *sgCode)
     if(valueTag.n == 0)
         valueTag.n = linecounter;
     vTag->set(&valueTag);
-    comproxy->sendM107_Tag(vTag);
+    action = comproxy->sendM107_Tag(vTag);
 
+    return action;
 }
 
 //M109: Set Extruder Temperature and Wait
-void GcodeWorker::tagM109_Do(sGcode *sgCode)
+mito::Action_t*
+GcodeWorker::tagM109_Do(sGcode *sgCode)
 {
+    mito::Action_t * action = nullptr;
     sM109_t *vTag =  reinterpret_cast<sM109_t *>( arraytag->getTagValue(eM109));
     sM109_t valueTag ;
     vTag->get(&valueTag);
@@ -1332,12 +1397,14 @@ void GcodeWorker::tagM109_Do(sGcode *sgCode)
         valueTag.n = linecounter;
     vTag->set(&valueTag);
     comproxy->sendM109_Tag(vTag);
-
+    return action;
 }
 
 //M82: Set extruder to absolute mode
-void GcodeWorker::tagM82_Do(sGcode *sgCode)
+mito::Action_t*
+GcodeWorker::tagM82_Do(sGcode *sgCode)
 {
+    mito::Action_t * action = nullptr;
     sM82_t *vTag =  reinterpret_cast<sM82_t *>( arraytag->getTagValue(eM82));
     vTag->a = true;
     vTag->n = 0;
@@ -1357,12 +1424,14 @@ void GcodeWorker::tagM82_Do(sGcode *sgCode)
     if(vTag->n == 0)
         vTag->n = linecounter;
     comproxy->sendM82_Tag(vTag);
-
+    return action;
 }
 
 //M83: Set extruder to relative mode
-void GcodeWorker::tagM83_Do(sGcode *sgCode)
+mito::Action_t*
+GcodeWorker::tagM83_Do(sGcode *sgCode)
 {
+    mito::Action_t * action = nullptr;
     sM82_t *vTag =  reinterpret_cast<sM82_t *>( arraytag->getTagValue(eM82));
     vTag->a = false;
     vTag->n = 0;
@@ -1382,10 +1451,13 @@ void GcodeWorker::tagM83_Do(sGcode *sgCode)
         vTag->n = linecounter;
 
     comproxy->sendM82_Tag(vTag);
+    return action;
 }
 
-void GcodeWorker::tagM84_Do(sGcode *sgCode)
+mito::Action_t*
+GcodeWorker::tagM84_Do(sGcode *sgCode)
 {
+    mito::Action_t * action = nullptr;
     sM84_t *vTag =  reinterpret_cast<sM84_t *>( arraytag->getTagValue(eM84));
     vTag->a = false;
     vTag->n = 0;
@@ -1404,13 +1476,15 @@ void GcodeWorker::tagM84_Do(sGcode *sgCode)
     if(vTag->n == 0)
         vTag->n = linecounter;
     comproxy->sendM84_Tag(vTag);
-
+    return action;
 }
 
 
 
-void GcodeWorker::tagF_Do(sGcode *sgCode)
+mito::Action_t*
+GcodeWorker::tagF_Do(sGcode *sgCode)
 {
+    mito::Action_t * action = nullptr;
     uint number;
     bool ok;
 
@@ -1418,6 +1492,7 @@ void GcodeWorker::tagF_Do(sGcode *sgCode)
     Q_ASSERT(ok);
 
     //qDebug()<<__FILE__<<__LINE__<<"F:"<<number;
+    return action;
 }
 
 
@@ -1570,10 +1645,13 @@ GcodeWorker::fileOpen(QString filename)
 
 
 
-void GcodeWorker::readCommandLine()
+//void
+mito::Action_t*
+GcodeWorker::readCommandLine()
 {
     bool loop = true;
     int result;
+    mito::Action_t* action = nullptr;
 
     QString line;// = _file->readLine();
 
@@ -1588,7 +1666,7 @@ void GcodeWorker::readCommandLine()
 #endif
             emit sg_executeComplite();
              qDebug()<<__FILE__<<__LINE__<<"Stopped.";
-            return;
+            return (action);
         }
 
         line = _file->readLine(); linecounter++;
@@ -1616,8 +1694,9 @@ void GcodeWorker::readCommandLine()
     qDebug()<<__FILE__<<__LINE__<<"result:"<<result<<"\tgroup:"<<gcode.group<<gcode.value;
 #endif
     //checkBox_immediately
-    buildAction(dst);
+    action = buildAction(dst);
 
+    return (action);
 }
 
 

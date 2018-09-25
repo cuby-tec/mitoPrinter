@@ -2,6 +2,8 @@
 #define COORDINATUS_H
 
 #include "links/msmotor/msport.h"
+#include "links/ComDataReq_t.h"
+
 #include <QString>
 #include <QObject>
 #include "step_motor/block_state_t.h"
@@ -66,12 +68,14 @@ public:
 
     bool getExtruder_mode() const;
     void setExtruder_mode(bool value);
+
+    sHotendControl_t* getHotend() { return &hotend;  }
+
 private:
 
     double_t current[N_AXIS];
 
     double_t next[N_AXIS];
-
 
    double_t work[N_AXIS];
 
@@ -79,11 +83,10 @@ private:
 
     bool absrel;
 
-    double_t fan_value;
-
-    double temperature;
-
+// Hotend state
     bool extruder_mode;// true - absolute, false - relative
+
+    sHotendControl_t hotend;
 
     void sendSignalCoord();
 
@@ -91,7 +94,12 @@ private:
     {
         absrel = true; // true - absolute, false - relative
         extruder_mode = true; // true - absolute, false - relative
-        fan_value = 0.0;
+        hotend._switch.cooler = 0;
+        hotend._switch.heater = 0;
+        hotend.kd = static_cast<int32_t>(12.5*1000); //#define KD  12.5//0.1//0.013
+        hotend.kp = static_cast<int32_t>(0.6*1000); //#define KP  0.6//0.75
+        hotend.ki = static_cast<int32_t>(0.1*1000) ;//#define KI  0.1
+        hotend.temperature = static_cast<int32_t>(40*100) ;//#define SETPOINT    40
     }
 
     ~Coordinatus() {}

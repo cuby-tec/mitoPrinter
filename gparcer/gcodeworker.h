@@ -44,7 +44,7 @@ public:
         return _file->isOpen();
     }
 
-    void readCommandLine();
+    mito::Action_t *readCommandLine();
 
 public slots:
     void queueReady();
@@ -62,39 +62,39 @@ private:
     ArrayTag *arraytag; // Data storege
 #endif
 
-    void buildAction(sGcode * src);
+    mito::Action_t *buildAction(sGcode * src);
 
-    void tagG0_Do(sGcode * sgCode);
-    void tagG1_Do(sGcode * sgCode);
-    void tagG2_Do(sGcode * sgCode);
-    void tagG3_Do(sGcode * sgCode);
-    void tagG4_Do(sGcode * sgCode);
-    void tagG6_Do(sGcode * sgCode);
-    void tagG10_Do(sGcode * sgCode);
-    void tagG20_Do(sGcode * sgCode);
-    void tagG21_Do(sGcode * sgCode);
-    void tagG28_Do(sGcode * sgCode);
-    void tagG29_1_Do(sGcode * sgCode);
-    void tagG29_2_Do(sGcode * sgCode);
-    void tagG30_Do(sGcode * sgCode);
+    mito::Action_t* tagG0_Do(sGcode * sgCode);
+    mito::Action_t* tagG1_Do(sGcode * sgCode);
+    mito::Action_t* tagG2_Do(sGcode * sgCode);
+    mito::Action_t* tagG3_Do(sGcode * sgCode);
+    mito::Action_t* tagG4_Do(sGcode * sgCode);
+    mito::Action_t* tagG6_Do(sGcode * sgCode);
+    mito::Action_t* tagG10_Do(sGcode * sgCode);
+    mito::Action_t* tagG20_Do(sGcode * sgCode);
+    mito::Action_t* tagG21_Do(sGcode * sgCode);
+    mito::Action_t* tagG28_Do(sGcode * sgCode);
+    mito::Action_t* tagG29_1_Do(sGcode * sgCode);
+    mito::Action_t* tagG29_2_Do(sGcode * sgCode);
+    mito::Action_t* tagG30_Do(sGcode * sgCode);
     //Delta Auto Calibration
-    void tagG33_Do(sGcode * sgCode);
-    void tagG90_Do(sGcode * sgCode); //Set to Absolute Positioning
-    void tagG91_Do(sGcode * sgCode); //Set to Relative Positioning
-    void tagG92_Do(sGcode * sgCode); //Set Position
-    void tagG92_1_Do(sGcode * sgCode); //reset axis offsets to zero and set parameters 5211 - 5219 to zero
-    void tagM104_Do(sGcode * sgCode); //M104: Set Extruder Temperature
-    void tagM106_Do(sGcode * sgCode); //M106: Fan On
-    void tagM107_Do(sGcode * sgCode); //M107: Fan Off
-    void tagM109_Do(sGcode * sgCode); //M109: Set Extruder Temperature and Wait
-    void tagM82_Do(sGcode * sgCode); //M82: Set extruder to absolute mode
-    void tagM83_Do(sGcode * sgCode); //M83: Set extruder to relative mode
-    void tagM84_Do(sGcode * sgCode); //M84: Stop idle hold
+    mito::Action_t* tagG33_Do(sGcode * sgCode);
+    mito::Action_t* tagG90_Do(sGcode * sgCode); //Set to Absolute Positioning
+    mito::Action_t* tagG91_Do(sGcode * sgCode); //Set to Relative Positioning
+    mito::Action_t* tagG92_Do(sGcode * sgCode); //Set Position
+    mito::Action_t* tagG92_1_Do(sGcode * sgCode); //reset axis offsets to zero and set parameters 5211 - 5219 to zero
+    mito::Action_t* tagM104_Do(sGcode * sgCode); //M104: Set Extruder Temperature
+    mito::Action_t* tagM106_Do(sGcode * sgCode); //M106: Fan On
+    mito::Action_t *tagM107_Do(sGcode * sgCode); //M107: Fan Off
+    mito::Action_t* tagM109_Do(sGcode * sgCode); //M109: Set Extruder Temperature and Wait
+    mito::Action_t* tagM82_Do(sGcode * sgCode); //M82: Set extruder to absolute mode
+    mito::Action_t* tagM83_Do(sGcode * sgCode); //M83: Set extruder to relative mode
+    mito::Action_t* tagM84_Do(sGcode * sgCode); //M84: Stop idle hold
 
-    void tagF_Do(sGcode * sgCode);
+    mito::Action_t* tagF_Do(sGcode * sgCode);
 
 
-    typedef void (GcodeWorker::*tag)(sGcode* );
+    typedef mito::Action_t* (GcodeWorker::*tag)(sGcode* ); // void
 
     tag callTagRef[31];
 

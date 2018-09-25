@@ -20,18 +20,32 @@
 struct sHotendSwitch {
     uint16_t cooler;
     uint16_t heater;
+//    void operator = (sHotendSwitch& src)
+    void operator = (sHotendSwitch* src)
+    {
+        cooler = src->cooler;
+        heater = src->heater;
+    }
 };
 
 /**
  * Передача параметров управления инструментом Hotend.
  */
-#ifdef use_float
+#ifdef use_float_no
 struct sHotendControl_t {
     float temperature;
     float kp;     // Коэффициент пропорциональной составляющей.
     float ki;     // Коэффициент интегральной составляющей.
     float kd;     // Коэффициент дифференциальной составляющей.
     struct sHotendSwitch _switch;    // Включение/выключение нагревателя/вентилятора. false/true.
+    void operator = (sHotendControl_t* src)
+    {
+        temperature = src->temperature;
+        kp = src->kp;
+        ki = src->ki;
+        kd = src->kd;
+        _switch = src->_switch;
+    }
 };
 #else
 struct sHotendControl_t {
@@ -40,6 +54,15 @@ struct sHotendControl_t {
     int32_t ki;     // Коэффициент интегральной составляющей.
     int32_t kd;     // Коэффициент дифференциальной составляющей.
     struct sHotendSwitch _switch;    // Включение/выключение нагревателя/вентилятора. false/true.
+    void operator = (sHotendControl_t* src)
+    {
+        temperature = src->temperature;
+        kp = src->kp;
+        ki = src->ki;
+        kd = src->kd;
+        _switch = src->_switch;
+    }
+
 };
 
 #endif

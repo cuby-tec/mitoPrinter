@@ -13,8 +13,26 @@ RequestFactory::RequestFactory()
 void RequestFactory::build(ComDataReq_t *comdata, eOrder order, NumberedTag *tag)
 {
     //TODO
+    //eoFunControl
     sM106_t* mtag = static_cast<sM106_t*>(tag);
-    cout<<mtag->s;
+    cout<<mtag->s<<":"<<mtag->n;
+
+    Coordinatus *coord = Coordinatus::instance();
+    sHotendControl_t* hend_src = coord->getHotend();
+    hend_src->_switch.cooler = static_cast<uint16_t>( mtag->s );
+
+    if(order == eoHotendControl){
+        sHotendControl_t *hend =  &comdata->payload.instrument_hotend;
+        hend = hend_src;
+//        hend->kp = 55;//DEBUG VALUE
+        cout<<hend->_switch.cooler<<"\t"<<hend->kp;
+        comdata->instruments = 1;
+        comdata->size = sizeof (ComDataReq_t);
+        sControlCommand_t *cmd = &comdata->command;
+        cmd->instrument = 1; // TODO
+        cmd->order = eoHotendControl;
+        cmd->reserved = 0; //TODO
+    }
 
 }
 
@@ -34,7 +52,7 @@ void RequestFactory::build(ComDataReq_t *comdata, eOrder order )
 //        sendRequest(comdata);
         break;
 
-    case eoFunControl: //управление Вентилятором
+    case eoHotendControl: //управление Вентилятором
 //        Pnnn Fan number (optional, defaults to 0)2
 //        Snnn Fan speed (0 to 255; RepRapFirmware also accepts 0.0 to 1.0))
 

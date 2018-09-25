@@ -654,15 +654,25 @@ void ComData::run(GcodeWorker* gworker)
 void ComData::_run()
 {
 //    cout<<"run:"<<gworker->isFileOpened();
-
+    mito::Action_t* action;
     // TODO execute by states;
     switch (runState) {
     case ersRunning:
         cout<<"Running";
         // Build request
-        gworker->readCommandLine();
+        action = gworker->readCommandLine();
         // Send request
-        // wait answer
+
+        if(action != nullptr){
+            while (!action->queue.isEmpty()){
+                ComDataReq_t req = action->queue.dequeue();
+                req.requestNumber = ++MyGlobal::requestIndex;
+                threadarc.putInArray(&req);
+            }
+            threadarc.process();
+            cout<<"process";
+        }
+    // wait answer
         break;
 
     case ersError:
@@ -692,7 +702,7 @@ void ComData::updateStatus(const Status_t *status)
 }
 
 
-#define DEBUG
+#define DEBUG_no
 void ComData::failedStatus()
 {
  //TODO failed Status
