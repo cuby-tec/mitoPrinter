@@ -230,9 +230,35 @@ void ComdataProxy::sendG92Tag(sG92_t *data)
 
 }
 
-//Set param send
-void ComdataProxy::sendM106_Tag(sM106_t *data)
+mito::Action_t*
+ComdataProxy::sendM104Tag(sM104_t *data)
 {
+    //TODO
+    mito::Action_t* action = new mito::Action_t;
+    line_counter++;
+    //M104: Set Extruder Temperature
+//    coordinatus->setTemperature(data->s);
+    sHotendControl_t *hend = coordinatus->getHotend();
+    hend->temperature = static_cast<int32_t>(data->s);
+
+#if DEBUGLEVEL==1
+    qDebug()<<__FILE__<<__LINE__<<"M104:"<< data->s<<"coordinatus:"<<hend->temperature;
+#endif
+    line_counter++;
+    ComDataReq_t* request = new ComDataReq_t;
+    RequestFactory* factory = new RequestFactory();
+    factory->build(request, eoHotendControl, data);
+    action->queue.enqueue(*request);
+    action->a = 0;//TODO
+
+    return action;
+}
+
+//Set param send
+mito::Action_t*
+ComdataProxy::sendM106_Tag(sM106_t *data)
+{
+    mito::Action_t* action = new mito::Action_t;
     Coordinatus *crd = Coordinatus::instance();
 //    crd->setFan_value(data->s);
     sHotendControl_t *hend = crd->getHotend();
@@ -243,7 +269,13 @@ void ComdataProxy::sendM106_Tag(sM106_t *data)
     //Fan speed (0 to 255; RepRapFirmware also accepts 0.0 to 1.0))
     // TODO Send Command
     line_counter++;
+    ComDataReq_t* request = new ComDataReq_t;
+    RequestFactory* factory = new RequestFactory();
+    factory->build(request, eoHotendControl, data);
+    action->queue.enqueue(*request);
+    action->a = 0;//TODO
 
+    return action;
 }
 
 //Set param send
@@ -289,20 +321,6 @@ ComdataProxy::sendM109_Tag(sM109_t *data)
     return new mito::Action_t;
 }
 
-void ComdataProxy::sendM104Tag(sM104_t *data)
-{
-    //TODO
-    line_counter++;
-    //M104: Set Extruder Temperature
-//    coordinatus->setTemperature(data->s);
-    sHotendControl_t *hend = coordinatus->getHotend();
-    hend->temperature = static_cast<float_t>(data->s);
-
-#if DEBUGLEVEL==1
-    qDebug()<<__FILE__<<__LINE__<<"M104:"<< data->s<<"coordinatus:"<<hend->temperature;
-#endif
-
-}
 //Set param
 void ComdataProxy::sendM82_Tag(sM82_t *data)
 {

@@ -658,7 +658,7 @@ void ComData::_run()
     // TODO execute by states;
     switch (runState) {
     case ersRunning:
-        cout<<"Running";
+        cout<<"Running,=======\n";
         // Build request
         action = gworker->readCommandLine();
         // Send request
@@ -670,7 +670,7 @@ void ComData::_run()
                 threadarc.putInArray(&req);
             }
             threadarc.process();
-            cout<<"process";
+            cout<<"process==========<<"<<MyGlobal::requestIndex;
         }
     // wait answer
         break;

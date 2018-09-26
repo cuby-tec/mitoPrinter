@@ -188,7 +188,7 @@ GcodeWorker::buildAction(sGcode *src)
     case eM104: (this->*callTagRef[etag])(src); //tagM104_Do
         break;
     case eM106:
-        (this->*callTagRef[etag])(src); //tagM106_Do
+        action = (this->*callTagRef[etag])(src); //tagM106_Do
         break;
     case eM107:
         action = (this->*callTagRef[etag])(src); //tagM107_Do
@@ -1274,7 +1274,7 @@ GcodeWorker::tagM104_Do(sGcode *sgCode)
          valueTag.n = linecounter;
      vTag->set(&valueTag);
 
-     comproxy->sendM104Tag(vTag);
+     action = comproxy->sendM104Tag(vTag);
      return action;
 }
 
@@ -1317,7 +1317,7 @@ GcodeWorker::tagM106_Do(sGcode *sgCode)
     if(valueTag.n == 0)
         valueTag.n = linecounter;
     vTag->set(&valueTag);
-    comproxy->sendM106_Tag(vTag);
+    action = comproxy->sendM106_Tag(vTag);
     return action;
 }
 

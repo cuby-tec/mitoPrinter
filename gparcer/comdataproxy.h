@@ -34,10 +34,10 @@ public:
     void sendG91_Tag(sG90_t * data);
     void sendM82_Tag(sM82_t * data);
     void sendM84_Tag(sM84_t * data);
-    void sendM106_Tag(sM106_t * data);
-    mito::Action_t *sendM107_Tag(sM106_t * data);
-    mito::Action_t *sendM109_Tag(sM109_t * data);
-    void sendM104Tag(sM104_t *data);
+    mito::Action_t* sendM106_Tag(sM106_t * data);
+    mito::Action_t* sendM107_Tag(sM106_t * data);
+    mito::Action_t* sendM109_Tag(sM109_t * data);
+    mito::Action_t *sendM104Tag(sM104_t *data);
 
     void sendG92Tag(sG92_t * data);
 
