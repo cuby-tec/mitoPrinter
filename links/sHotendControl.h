@@ -54,13 +54,14 @@ struct sHotendControl_t {
     int32_t ki;     // Коэффициент интегральной составляющей.
     int32_t kd;     // Коэффициент дифференциальной составляющей.
     struct sHotendSwitch _switch;    // Включение/выключение нагревателя/вентилятора. false/true.
-    void operator = (sHotendControl_t* src)
+    sHotendControl_t& operator = (const sHotendControl_t* src)
     {
         temperature = src->temperature;
         kp = src->kp;
         ki = src->ki;
         kd = src->kd;
         _switch = src->_switch;
+        return *this;
     }
 
 };

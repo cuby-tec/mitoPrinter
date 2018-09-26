@@ -221,6 +221,14 @@ void ComdataProxy::sendG91_Tag(sG90_t *data)
      qDebug()<<__FILE__<<__LINE__<<"G91:"<<  (crd->isAbsolute() == true?"Absolute":"Relative" );
 #endif
 }
+//Set param
+void ComdataProxy::sendG92Tag(sG92_t *data)
+{
+    //TODO
+    line_counter++;
+//    qDebug()<<__FILE__<<__LINE__<<"G92:" <<"x:"<<data->x <<"\ty:"<<data->y <<"\tz:"<<data->z <<"\te:"<<data->e ;
+
+}
 
 //Set param send
 void ComdataProxy::sendM106_Tag(sM106_t *data)
@@ -237,16 +245,6 @@ void ComdataProxy::sendM106_Tag(sM106_t *data)
     line_counter++;
 
 }
-
-//Set param
-void ComdataProxy::sendG92Tag(sG92_t *data)
-{
-    //TODO
-    line_counter++;
-//    qDebug()<<__FILE__<<__LINE__<<"G92:" <<"x:"<<data->x <<"\ty:"<<data->y <<"\tz:"<<data->z <<"\te:"<<data->e ;
-
-}
-
 
 //Set param send
 //Deprecated in Teacup firmware and in RepRapFirmware. Use M106 S0 instead.

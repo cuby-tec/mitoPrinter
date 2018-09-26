@@ -10,6 +10,16 @@ RequestFactory::RequestFactory()
 
 }
 
+static void assignHotendParam(sHotendControl_t* dst, sHotendControl_t* src)
+{
+    dst->kd = src->kd;
+    dst->ki = src->ki;
+    dst->kp = src->kp;
+    dst->temperature = src->temperature;
+    dst->_switch.cooler = src->_switch.cooler;
+    dst->_switch.heater = src->_switch.heater;
+}
+
 void RequestFactory::build(ComDataReq_t *comdata, eOrder order, NumberedTag *tag)
 {
     //TODO
@@ -23,8 +33,10 @@ void RequestFactory::build(ComDataReq_t *comdata, eOrder order, NumberedTag *tag
 
     if(order == eoHotendControl){
         sHotendControl_t *hend =  &comdata->payload.instrument_hotend;
-        hend = hend_src;
+//        hend = hend_src;
+        assignHotendParam(hend,hend_src);
 //        hend->kp = 55;//DEBUG VALUE
+//        hend->_switch.cooler = 1; //DEBUG VALUE
         cout<<hend->_switch.cooler<<"\t"<<hend->kp;
         comdata->instruments = 1;
         comdata->size = sizeof (ComDataReq_t);

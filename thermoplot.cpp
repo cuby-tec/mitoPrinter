@@ -69,7 +69,7 @@ qDebug()<<__FILE__<<__LINE__<<plotName;
 
     // setup a timer that repeatedly calls MainWindow::realtimeDataSlot:
     connect(&dataTimer, SIGNAL(timeout()), this, SLOT(realtimeDataSlot()));
-    dataTimer.start(1001); // Interval 0 means to refresh as fast as possible // DEBUG
+//    dataTimer.start(1001); // Interval 0 means to refresh as fast as possible // DEBUG
 }
 
 #ifdef THERMO_
