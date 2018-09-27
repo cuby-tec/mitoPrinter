@@ -20,16 +20,16 @@ static void assignHotendParam(sHotendControl_t* dst, sHotendControl_t* src)
     dst->_switch.heater = src->_switch.heater;
 }
 
-void RequestFactory::build(ComDataReq_t *comdata, eOrder order, NumberedTag *tag)
+void RequestFactory::build(ComDataReq_t *comdata, eOrder order, sHotendControl_t *hend_src)
 {
     //TODO
     //eoFunControl
-    sM106_t* mtag = static_cast<sM106_t*>(tag);
-    cout<<mtag->s<<":"<<mtag->n;
+//    sM106_t* mtag = static_cast<sM106_t*>(tag);
+//    cout<<mtag->s<<":"<<mtag->n;
 
-    Coordinatus *coord = Coordinatus::instance();
-    sHotendControl_t* hend_src = coord->getHotend();
-    hend_src->_switch.cooler = static_cast<uint16_t>( mtag->s );
+//    Coordinatus *coord = Coordinatus::instance();
+//    sHotendControl_t* hend_src = coord->getHotend();
+//    hend_src->_switch.cooler = static_cast<uint16_t>( mtag->s );
 
     if(order == eoHotendControl){
         sHotendControl_t *hend =  &comdata->payload.instrument_hotend;

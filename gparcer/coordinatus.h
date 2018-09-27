@@ -99,7 +99,7 @@ private:
         hotend.kd = static_cast<int32_t>(12.5*1000); //#define KD  12.5//0.1//0.013
         hotend.kp = static_cast<int32_t>(0.6*1000); //#define KP  0.6//0.75
         hotend.ki = static_cast<int32_t>(0.1*1000) ;//#define KI  0.1
-        hotend.temperature = static_cast<int32_t>(40*100) ;//#define SETPOINT    40
+        hotend.temperature = static_cast<int32_t>(40*10) ;//#define SETPOINT    40
     }
 
     ~Coordinatus() {}

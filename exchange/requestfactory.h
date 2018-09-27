@@ -11,7 +11,7 @@ public:
     RequestFactory();
 
     void build(ComDataReq_t *comdata, eOrder order);
-    void build(ComDataReq_t *comdata, eOrder order, NumberedTag *tag);
+    void build(ComDataReq_t *comdata, eOrder order, sHotendControl_t *hend_src);
 
     ComDataReq_t *build(uint linenumber);
 

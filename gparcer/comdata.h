@@ -98,6 +98,7 @@ public:
 
 signals:
     void sg_updateStatus(const Status_t* status);
+    void sg_executeComplite();
 
 
 public slots:

@@ -56,7 +56,7 @@ struct sHotendControl_t {
     struct sHotendSwitch _switch;    // Включение/выключение нагревателя/вентилятора. false/true.
     sHotendControl_t& operator = (const sHotendControl_t* src)
     {
-        temperature = src->temperature;
+        temperature = src->temperature;//Внутреннее значение в 10 раз больше действительного, т.к. integer.
         kp = src->kp;
         ki = src->ki;
         kd = src->kd;

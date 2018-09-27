@@ -56,6 +56,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     messager = Messager::instance();
     connect(messager, SIGNAL(sg_Message(QString)),this, SLOT(on_message(QString)));
+    //sg_executeComplite
+    connect(messager,SIGNAL(sg_executeComplite()),this, SLOT(on_gprogrammFinish()));
+
 }
 
 MainWindow::~MainWindow()
@@ -279,6 +282,10 @@ void MainWindow::on_commandOpenFile()
 void MainWindow::on_gprogrammFinish()
 {
     statusBar()->showMessage("Programm finished.");
+    QAction *actionRun = ui->actionRun;
+    actionRun->setEnabled(true);
+    QAction* action = ui->actionOpen_GCode;
+    action->setEnabled(true);
 }
 
 void MainWindow::on_message(QString msg)

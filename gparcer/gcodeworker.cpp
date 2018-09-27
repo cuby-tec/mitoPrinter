@@ -185,7 +185,8 @@ GcodeWorker::buildAction(sGcode *src)
         break;
     case eG92_1:
         break;
-    case eM104: (this->*callTagRef[etag])(src); //tagM104_Do
+    case eM104:
+        action = (this->*callTagRef[etag])(src); //tagM104_Do
         break;
     case eM106:
         action = (this->*callTagRef[etag])(src); //tagM106_Do

@@ -17,11 +17,16 @@ public:
 
 signals:
     void sg_Message(QString msg);
+    void sg_executeComplite();
 
 public slots:
     void putMessage(QString msg){
         message = msg;
         emit sg_Message(message);
+    }
+
+    void setProgramExecutionComplite(){
+        emit sg_executeComplite();
     }
 
 private:

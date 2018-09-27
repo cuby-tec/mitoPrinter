@@ -160,7 +160,7 @@ void ComdataProxy::sendG20_21Tag(sG20_21_t *data)
 //Line motion
 void ComdataProxy::sendG28Tag(sG28_t *data)
 {
-    //TODO
+    //TODOH
     line_counter++;
 #if DEBUGLEVEL==1
     qDebug()<<__FILE__<<__LINE__<<"G28:" <<"x:"<<data->x <<"\ty:"<<data->y <<"\tz:"<<data->z ;
@@ -239,15 +239,15 @@ ComdataProxy::sendM104Tag(sM104_t *data)
     //M104: Set Extruder Temperature
 //    coordinatus->setTemperature(data->s);
     sHotendControl_t *hend = coordinatus->getHotend();
-    hend->temperature = static_cast<int32_t>(data->s);
+    hend->temperature = static_cast<int32_t>(data->s*10);
 
 #if DEBUGLEVEL==1
-    qDebug()<<__FILE__<<__LINE__<<"M104:"<< data->s<<"coordinatus:"<<hend->temperature;
+    qDebug()<<__FILE__<<__LINE__<<"M104:"<< data->s<<"coordinatus:"<<hend->temperature/10;
 #endif
     line_counter++;
     ComDataReq_t* request = new ComDataReq_t;
     RequestFactory* factory = new RequestFactory();
-    factory->build(request, eoHotendControl, data);
+    factory->build(request, eoHotendControl, hend);
     action->queue.enqueue(*request);
     action->a = 0;//TODO
 
@@ -271,7 +271,7 @@ ComdataProxy::sendM106_Tag(sM106_t *data)
     line_counter++;
     ComDataReq_t* request = new ComDataReq_t;
     RequestFactory* factory = new RequestFactory();
-    factory->build(request, eoHotendControl, data);
+    factory->build(request, eoHotendControl, hend);
     action->queue.enqueue(*request);
     action->a = 0;//TODO
 
@@ -296,7 +296,7 @@ ComdataProxy::sendM107_Tag(sM106_t *data)
     mito::Action_t* action = new mito::Action_t;
     ComDataReq_t* request = new ComDataReq_t;
     RequestFactory* factory = new RequestFactory();
-    factory->build(request, eoHotendControl, data);
+    factory->build(request, eoHotendControl, hend);
     action->queue.enqueue(*request);
     action->a = 0;//TODO
 

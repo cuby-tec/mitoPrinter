@@ -688,6 +688,9 @@ void ComData::slot_fileComplite()
 {
     //TODO slot_fileComplite
     cout<<"slot_fileComplite";
+    emit sg_executeComplite();
+    Messager* message = Messager::instance();
+    message->setProgramExecutionComplite();
 }
 
 void ComData::updateStatus(const Status_t *status)
