@@ -19,7 +19,7 @@ struct sModelCompState{
     uint8_t modelState;
     uint8_t queueState;
     uint8_t reserved1;	//COMMAND_ACKNOWLEDGED
-    uint8_t reserved2;
+    uint8_t reserved2; // ENDERS
 };
 
 

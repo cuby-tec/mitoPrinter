@@ -11,6 +11,11 @@ CoordinatusWidget::CoordinatusWidget(QWidget *parent) : QWidget(parent)
     controller = new Controller;
 }
 
+#define M_CONC(A, B) M_CONC_(A, B)
+#define M_CONC_(A, B) A##B
+//#define enderValue(V) (M_CONC(status->modelState.reserved2,M_CONC( &,V)))?"ON":"OFF"
+#define enderValue(V) (status->modelState.reserved2&V)?"ON":"OFF"
+
 void CoordinatusWidget::updateStatus(const Status_t *status)
 {
     uint8_t ms_state;
@@ -57,6 +62,13 @@ void CoordinatusWidget::updateStatus(const Status_t *status)
     ui->c_label_posY_value->setText(QString("%1 (%2)").arg(controller->getPath_mm(Y_AXIS,status->coordinatus[Y_AXIS])).arg(status->coordinatus[Y_AXIS]));
     ui->c_label_posZ_value->setText(QString("%1 (%2)").arg(controller->getPath_mm(Z_AXIS,status->coordinatus[Z_AXIS])).arg(status->coordinatus[Z_AXIS]));
     ui->c_label_posE_value->setText(QString("%1").arg(status->coordinatus[E_AXIS]));
+
+    ui->label_ender_xmin_value->setText(enderValue(ENDER_X_MIN));
+    ui->label_ender_xmax_value->setText(enderValue(ENDER_X_MAX));
+    ui->label_ender_ymin_value->setText(enderValue(ENDER_Y_MIN));
+    ui->label_ender_ymax_value->setText(enderValue(ENDER_Y_MAX));
+    ui->label_ender_zmin_value->setText(enderValue(ENDER_Z_MIN));
+    ui->label_ender_zmax_value->setText(enderValue(ENDER_Z_MAX));
 
 
 }
