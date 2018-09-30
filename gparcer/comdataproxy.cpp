@@ -18,10 +18,12 @@ ComdataProxy::ComdataProxy(QObject *parent) : QObject(parent)
 }
 
 //Line motion
-void ComdataProxy::sendG0Line(sG0_t *data)
+mito::Action_t*
+ComdataProxy::sendG0Line(sG0_t *data)
 {
 
     //TODO
+    mito::Action_t *action = new mito::Action_t;
     line_counter++;
 #if DEBUGLEVEL==2
     qDebug()<<__FILE__<<__LINE__ <<"G0:"<<"x:"<<data->x <<"\ty:"<<data->y<<"\tz:"<<data->z;
@@ -35,21 +37,28 @@ void ComdataProxy::sendG0Line(sG0_t *data)
     //buildG0command
     if(!isPlaneHasSteps())
     {
-        return;
+        action->a = eNext;
+        return action;
     }
     coordinatus->moveNextToCurrent();
     coordinatus->moveWorkToNext();
 
     controller->buildBlock(coordinatus);
 
-    buildComdata(data->n);
+    //TODOH
+    RequestFactory *factory = new RequestFactory();
+//    buildComdata(data->n);
 
+    action->a = eNext;
+    return action;
 }
 
-#define diff(M) coordinatus->getCurrentValue(M##_AXIS) - coordinatus->getNextValue(M##_AXIS)
+//#define diff(M) coordinatus->getCurrentValue(M##_AXIS) - coordinatus->getNextValue(M##_AXIS)
+#define diff(M) coordinatus->getNextValue(M##_AXIS) - coordinatus->getCurrentValue(M##_AXIS)
 
 //Line motion
-void ComdataProxy::sendG1Line(sG1_t *data)
+mito::Action_t*
+ComdataProxy::sendG1Line(sG1_t *data)
 {
     //TODO
     mito::Action_t *action = new mito::Action_t;
@@ -67,7 +76,8 @@ void ComdataProxy::sendG1Line(sG1_t *data)
     //buildG0command
     if(!isPlaneHasSteps())
     {
-        return;
+        action->a = eNext;
+        return action;
     }
     coordinatus->moveNextToCurrent();
     coordinatus->moveWorkToNext();
@@ -77,7 +87,7 @@ void ComdataProxy::sendG1Line(sG1_t *data)
 //    double_t r = coordinatus->getCurrentValue(X_AXIS) - coordinatus->getNextValue(X_AXIS);
 
 #if DEBUGLEVEL==1
-    qDebug()<<__FILE__<<__LINE__<<"X:"<<diff(X) <<"\tY:"<<diff(Y)<<"\tZ:"<<diff(Z);
+    qDebug()<<__FILE__<<__LINE__<<"DIFF:"<<"X:"<<diff(X) <<"\tY:"<<diff(Y)<<"\tZ:"<<diff(Z);
 #endif
     controller->buildBlock(coordinatus);
 
@@ -92,7 +102,8 @@ void ComdataProxy::sendG1Line(sG1_t *data)
     ComDataReq_t &r = action->queue.head();//DEBUG
     cout<<r.requestNumber;// DEBUG
 
-
+    action->a = eSend;
+    return action;
 }
 
 //Circle motion
@@ -158,13 +169,40 @@ void ComdataProxy::sendG20_21Tag(sG20_21_t *data)
 }
 
 //Line motion
-void ComdataProxy::sendG28Tag(sG28_t *data)
+mito::Action_t*
+ComdataProxy::sendG28Tag(sG28_t *data)
 {
-    //TODOH
+    //TODO
+    mito::Action_t* action = new mito::Action_t;
+    // Если по данным Coordinatus инструмент находится в нуле, то действий не требуется.
+    // Если Coordinatus не в нуле, то сформировать запрос для перемещения инструмента в начало.
+    // Предполагается, что калибровка выполнена.
     line_counter++;
 #if DEBUGLEVEL==1
     qDebug()<<__FILE__<<__LINE__<<"G28:" <<"x:"<<data->x <<"\ty:"<<data->y <<"\tz:"<<data->z ;
 #endif
+    double_t sum = 0;
+    for (size_t i=0;i<3;i++){
+        sum += coordinatus->getCurrentValue(i);
+    }
+
+    if(sum > 0)
+    {
+        action->a = eSend;
+        //TODO build request.
+
+        coordinatus->setWorkValue(X_AXIS, 0.0);
+        coordinatus->setWorkValue(Y_AXIS, 0.0);
+        coordinatus->setWorkValue(Z_AXIS, 0.0);
+        coordinatus->moveWorkToNext();
+
+        RequestFactory* factory = new RequestFactory();
+        ComDataReq_t* request = factory->build(data->n);
+        action->queue.enqueue(*request);
+    }else{
+        action->a = eNext;
+    }
+    return action;
 }
 
 //Calibration
@@ -249,7 +287,7 @@ ComdataProxy::sendM104Tag(sM104_t *data)
     RequestFactory* factory = new RequestFactory();
     factory->build(request, eoHotendControl, hend);
     action->queue.enqueue(*request);
-    action->a = 0;//TODO
+    action->a = eSend;//TODO
 
     return action;
 }
@@ -273,7 +311,7 @@ ComdataProxy::sendM106_Tag(sM106_t *data)
     RequestFactory* factory = new RequestFactory();
     factory->build(request, eoHotendControl, hend);
     action->queue.enqueue(*request);
-    action->a = 0;//TODO
+    action->a = eSend;//TODO
 
     return action;
 }
@@ -298,7 +336,7 @@ ComdataProxy::sendM107_Tag(sM106_t *data)
     RequestFactory* factory = new RequestFactory();
     factory->build(request, eoHotendControl, hend);
     action->queue.enqueue(*request);
-    action->a = 0;//TODO
+    action->a = eSend;//TODO
 
     return action;
 }
@@ -332,6 +370,7 @@ void ComdataProxy::sendM82_Tag(sM82_t *data)
     qDebug()<<__FILE__<<__LINE__<<"M82:"<< crd->getExtruder_mode();
 #endif
 }
+
 //Set param
 void ComdataProxy::sendM84_Tag(sM84_t *data)
 {

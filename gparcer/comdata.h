@@ -61,6 +61,7 @@ enum eCDstate{
 
 enum runStates{
     ersError,ersRunning=1
+    , ersEOF // Конец файла.
 };
 
 

@@ -23,8 +23,14 @@
 -- ender5
 -- ender6
  */
+/* OLD depricated
 enum eModelstate{
     ehIdle, ehIwork, ehWait_instrument1, ehWait_instrument2,
+    ehException, ehEnder1, ehEnder2, ehEnder3, ehEnder4, ehEnder5, ehEnder6
+};
+*/
+enum eModelstate{
+    ehIdle = 1, ehIwork, ehWait_instrument1, ehWait_instrument2,
     ehException, ehEnder1, ehEnder2, ehEnder3, ehEnder4, ehEnder5, ehEnder6
 };
 

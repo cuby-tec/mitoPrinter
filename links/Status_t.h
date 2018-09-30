@@ -11,7 +11,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "msmotor/msport.h"
-#include "modelState.h"
+//#include "modelState.h"
 #include "sModelCompState.h"
 
 struct Status_t {

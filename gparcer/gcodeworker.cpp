@@ -134,10 +134,10 @@ GcodeWorker::buildAction(sGcode *src)
 
     switch (etag) {
     case eG0:
-        (this->*callTagRef[etag])(src); //tagG0_Do
+        action = (this->*callTagRef[etag])(src); //tagG0_Do
         break;
     case eG1:
-        (this->*callTagRef[etag])(src); //tagG1_Do
+        action = (this->*callTagRef[etag])(src); //tagG1_Do
         break;
     case eG2:
         (this->*callTagRef[etag])(src); //tagG2_Do
@@ -161,7 +161,7 @@ GcodeWorker::buildAction(sGcode *src)
         (this->*callTagRef[etag])(src); //tagG21_Do
         break;
     case eG28:
-        (this->*callTagRef[etag])(src); //tagG28_Do
+        action = (this->*callTagRef[etag])(src); //tagG28_Do
         break;
     case eG29_1:
         (this->*callTagRef[etag])(src); //tagG29.1_Do
@@ -297,7 +297,7 @@ GcodeWorker::tagG0_Do(sGcode *sgCode)
     vTag->set(&valueTag);
     syncXYZ(valueTag.x, valueTag.y, valueTag.z);
 
-    comproxy->sendG0Line(vTag);
+    action = comproxy->sendG0Line(vTag);
 #endif
 //    qDebug()<<__FILE__<<__LINE__<<"tagG0_Do"<<"\tx:"<<vTag->x<<"\ty:"<<vTag->y<<"\tz:"<<vTag->z<<"\te:"<<vTag->e; // Level2
 
@@ -379,7 +379,7 @@ GcodeWorker::tagG1_Do(sGcode *sgCode)
         valueTag.n = linecounter;
     vTag->set(&valueTag);
     syncXYZ(valueTag.x, valueTag.y, valueTag.z);
-    comproxy->sendG1Line(vTag);
+    action = comproxy->sendG1Line(vTag);
 #endif
 
 
@@ -828,7 +828,7 @@ GcodeWorker::tagG28_Do(sGcode *sgCode)
 
     if(valueTag.n == 0)
         valueTag.n = linecounter;
-    comproxy->sendG28Tag(&valueTag);
+    action = comproxy->sendG28Tag(&valueTag);
 #endif
     return action;
 }
@@ -1666,6 +1666,8 @@ GcodeWorker::readCommandLine()
             timer->stop();
 #endif
             emit sg_executeComplite();
+            action = new mito::Action_t;
+            action->a = eEOF;
              qDebug()<<__FILE__<<__LINE__<<"Stopped.";
             return (action);
         }

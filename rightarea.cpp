@@ -44,7 +44,7 @@ RightArea::RightArea(QWidget *parent) : QWidget(parent)
     check1->setText("ThermoPlot");
 
 
-    //--------- Coordinatus
+    //--------- CoordinatusWidget
     QWidget *wd2 = ui->widget_2;
     widCoordinatus = new CoordinatusWidget(wd2);
     check2->setText("Coordinatus");
@@ -52,6 +52,8 @@ RightArea::RightArea(QWidget *parent) : QWidget(parent)
 
     connect(plotter,SIGNAL(sg_statusChanged(const Status_t*)),widCoordinatus,SLOT(updateStatus(const Status_t*)) );
 
+    Messager* message = Messager::instance();
+    connect( message, SIGNAL(sg_statusChanged(const Status_t*)),widCoordinatus, SLOT(updateStatus(const Status_t*)) );
 
     //------------- Gcosole
     QWidget *wd3 = ui->widget_3;

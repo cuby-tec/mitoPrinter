@@ -29,7 +29,7 @@ ThermoPlot::ThermoPlot(QCustomPlot* plot)
     createLog();
 }
 
-
+#define TIMERINUSE 1
 
 void
 ThermoPlot::setupPlot(QCustomPlot* customPlot)
@@ -69,7 +69,9 @@ qDebug()<<__FILE__<<__LINE__<<plotName;
 
     // setup a timer that repeatedly calls MainWindow::realtimeDataSlot:
     connect(&dataTimer, SIGNAL(timeout()), this, SLOT(realtimeDataSlot()));
+#if TIMERINUSE == 1
     dataTimer.start(1001); // Interval 0 means to refresh as fast as possible // DEBUG
+#endif
 }
 
 #ifdef THERMO_

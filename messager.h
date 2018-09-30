@@ -1,6 +1,8 @@
 #ifndef MESSAGER_H
 #define MESSAGER_H
 
+#include "links/Status_t.h"
+
 #include <QObject>
 
 class Messager : public QObject
@@ -18,6 +20,7 @@ public:
 signals:
     void sg_Message(QString msg);
     void sg_executeComplite();
+    void sg_statusChanged(const Status_t* status);
 
 public slots:
     void putMessage(QString msg){
@@ -27,6 +30,9 @@ public slots:
 
     void setProgramExecutionComplite(){
         emit sg_executeComplite();
+    }
+    void putStatus(const Status_t* status){
+        emit sg_statusChanged(status);
     }
 
 private:

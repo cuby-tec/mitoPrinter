@@ -48,7 +48,8 @@ void RequestFactory::build(ComDataReq_t *comdata, eOrder order, sHotendControl_t
 
 }
 
-void RequestFactory::build(ComDataReq_t *comdata, eOrder order )
+void
+RequestFactory::build(ComDataReq_t *comdata, eOrder order )
 {
     /* UsbExchange::buildComData(ComDataReq_t *comdata, eOrder order)
      * eoState,            // Запрос состояния устройства.

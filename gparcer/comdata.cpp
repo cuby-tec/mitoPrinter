@@ -653,26 +653,47 @@ void ComData::run(GcodeWorker* gworker)
 
 void ComData::_run()
 {
-//    cout<<"run:"<<gworker->isFileOpened();
+    //    cout<<"run:"<<gworker->isFileOpened();
     mito::Action_t* action;
     // TODO execute by states;
     switch (runState) {
+
+    case ersEOF:
+        cout<<"end of file";
+        return;
+        break;
+
     case ersRunning:
         cout<<"Running,=======\n";
         // Build request
+_run1:
         action = gworker->readCommandLine();
         // Send request
 
-        if(action != nullptr){
-            while (!action->queue.isEmpty()){
-                ComDataReq_t req = action->queue.dequeue();
-                req.requestNumber = ++MyGlobal::requestIndex;
-                threadarc.putInArray(&req);
+        if(action != nullptr)
+        {
+            switch (action->a) {
+            case eNext:
+                goto _run1;
+                break;
+            case eSend:
+                while (!action->queue.isEmpty()){
+                    ComDataReq_t req = action->queue.dequeue();
+                    req.requestNumber = ++MyGlobal::requestIndex;
+                    threadarc.putInArray(&req);
+                }
+                threadarc.process();
+                cout<<"process==========<<"<<MyGlobal::requestIndex;
+                break;
+            case eEOF:
+                runState = ersEOF;
+                break;
             }
-            threadarc.process();
-            cout<<"process==========<<"<<MyGlobal::requestIndex;
+
+        }else{
+            goto _run1;
         }
-    // wait answer
+        // wait answer
         break;
 
     case ersError:
@@ -697,9 +718,11 @@ void ComData::updateStatus(const Status_t *status)
 {
 	acknowledge_flag = true;
     emit sg_updateStatus(status);
+    Messager* message = Messager::instance();
+    message->putStatus(status);
 
     runState = ersRunning;
-    cout<<"updateStatus";
+    cout<<"updateStatus" <<"\t" <<status->modelState.modelState;
     _run();
 
 }

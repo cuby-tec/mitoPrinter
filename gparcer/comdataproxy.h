@@ -18,15 +18,15 @@ public:
 
     virtual ~ComdataProxy(){}
 
-    void sendG0Line(sG0_t *data);
-    void sendG1Line(sG1_t *data);
+    mito::Action_t *sendG0Line(sG0_t *data);
+    mito::Action_t* sendG1Line(sG1_t *data);
     void sendG2Line(sG2_t *data);
     void sendG3Line(sG3_t *data);
     void sendG3Tag(sG4_t *data);
     void sendG6Tag(sG6_t *data);
     void sendG10Tag(sG10_t *data);
     void sendG20_21Tag(sG20_21_t *data);
-    void sendG28Tag(sG28_t *data);
+    mito::Action_t *sendG28Tag(sG28_t *data);
     void sendG29_1Tag(sG29_1_t *data);
     void sendG29_2Tag(sG29_2_t *data);
     void sendG30Tag(sG30_t * data);
