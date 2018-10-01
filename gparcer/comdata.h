@@ -25,6 +25,7 @@
 #include <QObject>
 #include <QChar>
 #include <QTimer>
+#include <QProgressDialog>
 
 #define DIRECTION_BIT    	1  // Port X Pin X
 #define STEP_BIT         	2  // Port X pin X
@@ -106,6 +107,7 @@ signals:
 
 public slots:
     void slot_fileComplite();   // file reach EOF.
+    void heatingCancel();
 
 private slots:
     void updateStatus(const Status_t* status);
@@ -158,7 +160,8 @@ private:
 
     QTimer testT;
 
-
+    int steps;
+    QProgressDialog* pd;
 
 //    block_state blocks[N_AXIS];
 

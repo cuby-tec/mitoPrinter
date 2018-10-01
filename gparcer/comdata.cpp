@@ -21,6 +21,7 @@
 //const char* msg4 = "Profile should be selected.";
 
 ComData::ComData(QObject *parent) : QObject(parent)
+  ,steps(0)
 {
 
     memset(&request,'\0',sizeof(ComDataReq_t));
@@ -645,7 +646,8 @@ void ComData::run(GcodeWorker* gworker)
 //    runState = ersWaitParamTemperature; // DEBUG
 /*    delete request;
     delete factory;*/
-waitParam();
+
+    waitParam();
     //wait answer ...
 
 //    gworker->readCommandLine();
@@ -702,6 +704,11 @@ _run1:
                 runState = ersWaitParamTemperature;
                 connect(&waitTimer, SIGNAL(timeout()),this ,SLOT(waitParam()) );
                 waitTimer.start(500);
+                pd = new QProgressDialog("Heating in progress.", "Cancel", 0, 100);
+                pd->setRange(0, static_cast<int>(param.d) );
+                pd->setMinimumDuration(0);
+                connect(pd,SIGNAL(canceled()), this, SLOT(heatingCancel()) );
+
 
                 break;
 
@@ -720,6 +727,11 @@ _run1:
         // Compare status and target param.
 //        float status_temperature = statusParam.f;
 //        double_t target = param.d;
+        if(steps++ > 50)
+            pd->cancel();
+        else
+            pd->setValue( static_cast<int>(statusParam.f));
+
         if(  static_cast<double_t>(statusParam.f) >= param.d ){
             waitTimer.stop();
             runState = ersRunning;
@@ -764,6 +776,13 @@ void ComData::slot_fileComplite()
     emit sg_executeComplite();
     Messager* message = Messager::instance();
     message->setProgramExecutionComplite();
+}
+
+void ComData::heatingCancel()
+{
+    cout<<"heatingCancel";
+    waitTimer.stop();
+    delete  pd;
 }
 
 void ComData::updateStatus(const Status_t *status)
