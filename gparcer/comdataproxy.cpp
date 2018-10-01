@@ -352,11 +352,19 @@ ComdataProxy::sendM109_Tag(sM109_t *data)
 //    Coordinatus *crd = Coordinatus::instance();
 //    crd->setTemperature(data->s);
     sHotendControl_t *hend = coordinatus->getHotend();
-    hend->temperature = static_cast<float_t>(data->s);
+    hend->temperature = static_cast<int32_t>(data->s);
 #if DEBUGLEVEL==1
     qDebug()<<__FILE__<<__LINE__<<"M109:"<< data->s<<"crd:"<<hend->temperature;
 #endif
-    return new mito::Action_t;
+    mito::Action_t* action = new mito::Action_t;
+    ComDataReq_t* request = new ComDataReq_t;
+    RequestFactory* factory = new RequestFactory();
+    factory->build(request, eoHotendControl, hend);
+    action->queue.enqueue(*request);
+    action->a = eSendWait;
+    action->param.d = data->s;
+
+    return action;
 }
 
 //Set param
@@ -369,6 +377,7 @@ void ComdataProxy::sendM82_Tag(sM82_t *data)
 #if DEBUGLEVEL==1
     qDebug()<<__FILE__<<__LINE__<<"M82:"<< crd->getExtruder_mode();
 #endif
+
 }
 
 //Set param

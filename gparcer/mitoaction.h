@@ -9,6 +9,7 @@
 enum eActionDo{
     eNext    // next string/command без допонительных действий; для команд типа set
     , eSend // отправить запрос или набор запросов из очереди.
+    ,eSendWait // отправить запрос и ожидать достижения параметра.
     , eEOF // конец программы.файла
 };
 
@@ -18,6 +19,11 @@ struct Action_t{
     eActionDo a;
 //    double b[20];
     QQueue<ComDataReq_t> queue;
+    union {
+        double_t d;
+        float f;
+        int32_t i;
+    }param;
 };
 
 } // namespace name

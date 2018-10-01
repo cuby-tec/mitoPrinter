@@ -24,6 +24,7 @@
 
 #include <QObject>
 #include <QChar>
+#include <QTimer>
 
 #define DIRECTION_BIT    	1  // Port X Pin X
 #define STEP_BIT         	2  // Port X pin X
@@ -61,6 +62,7 @@ enum eCDstate{
 
 enum runStates{
     ersError,ersRunning=1
+    ,ersWaitParamTemperature
     , ersEOF // Конец файла.
 };
 
@@ -108,11 +110,28 @@ public slots:
 private slots:
     void updateStatus(const Status_t* status);
     void failedStatus();
+    void waitParam();
+    void testTimer();
 
 
 private:
 
     bool acknowledge_flag;
+    int a;
+
+    union {
+        double_t d;
+        float f;
+        int32_t i;
+    }param; // wait param;
+
+    union {
+        double_t d;
+        float f;
+        int32_t i;
+    }statusParam; // wait param;
+
+
 
 //    ThreadExchange thread;
 
@@ -125,8 +144,6 @@ private:
 
     GcodeWorker *gworker;
 
-    int a;
-
     sGcode* sgCode;
 
     Profile* profile;
@@ -134,6 +151,14 @@ private:
     Coordinatus* cord;
 
     Arc* arc;
+
+    Messager* messager;
+
+    QTimer waitTimer;
+
+    QTimer testT;
+
+
 
 //    block_state blocks[N_AXIS];
 

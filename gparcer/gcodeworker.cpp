@@ -195,7 +195,7 @@ GcodeWorker::buildAction(sGcode *src)
         action = (this->*callTagRef[etag])(src); //tagM107_Do
         break;
     case eM109:
-        (this->*callTagRef[etag])(src); //tagM109_Do
+        action = (this->*callTagRef[etag])(src); //tagM109_Do
         break;
     case eM140:
         break;
@@ -1397,7 +1397,7 @@ GcodeWorker::tagM109_Do(sGcode *sgCode)
     if(valueTag.n == 0)
         valueTag.n = linecounter;
     vTag->set(&valueTag);
-    comproxy->sendM109_Tag(vTag);
+    action = comproxy->sendM109_Tag(vTag);
     return action;
 }
 

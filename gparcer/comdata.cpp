@@ -37,9 +37,9 @@ ComData::ComData(QObject *parent) : QObject(parent)
 
     controller = new Controller();
 
+    messager = Messager::instance();
+
     setupThread();
-
-
 
 }
 
@@ -632,17 +632,20 @@ void ComData::run(GcodeWorker* gworker)
 {
     //TODO
     this->gworker = gworker;
+//    connect(&testT, SIGNAL(timeout()),this ,SLOT(testTimer()) );
+//    testT.start(200);
 
     // Check Controller@USB
-    RequestFactory* factory = new RequestFactory();
+/*    RequestFactory* factory = new RequestFactory();
     ComDataReq_t *request = new ComDataReq_t;
     factory->build(request,eoState);
     threadarc.putInArray(request);
-    threadarc.process();
+    threadarc.process();*/
     runState = ersRunning;
-    delete request;
-    delete factory;
-
+//    runState = ersWaitParamTemperature; // DEBUG
+/*    delete request;
+    delete factory;*/
+waitParam();
     //wait answer ...
 
 //    gworker->readCommandLine();
@@ -685,6 +688,23 @@ _run1:
                 threadarc.process();
                 cout<<"process==========<<"<<MyGlobal::requestIndex;
                 break;
+
+            case eSendWait:
+                while (!action->queue.isEmpty()){
+                    ComDataReq_t req = action->queue.dequeue();
+                    req.requestNumber = ++MyGlobal::requestIndex;
+                    threadarc.putInArray(&req);
+                }
+                threadarc.process();
+                cout<<"process==========<<"<<MyGlobal::requestIndex;
+
+                param.d = action->param.d;// wait param;
+                runState = ersWaitParamTemperature;
+                connect(&waitTimer, SIGNAL(timeout()),this ,SLOT(waitParam()) );
+                waitTimer.start(500);
+
+                break;
+
             case eEOF:
                 runState = ersEOF;
                 break;
@@ -696,13 +716,45 @@ _run1:
         // wait answer
         break;
 
+    case ersWaitParamTemperature:
+        // Compare status and target param.
+//        float status_temperature = statusParam.f;
+//        double_t target = param.d;
+        if(  static_cast<double_t>(statusParam.f) >= param.d ){
+            waitTimer.stop();
+            runState = ersRunning;
+            cout<<"timer stoped.";
+            goto _run1;
+        }
+        cout<<"\ttemperature:"<<statusParam.f<<"\t"<<param.d;
+        break;
+
     case ersError:
         cout<<"Device is unreachable.";
-        Messager* messaager = Messager::instance();
-        messaager->putMessage(QString("Device is unreachable."));
+//        Messager* messaager = Messager::instance();
+        messager->putMessage(QString("Device is unreachable."));
         break;
 
     }
+}
+
+
+void ComData::waitParam()
+{
+    cout<<"waitParam";
+    RequestFactory* factory = new RequestFactory();
+    ComDataReq_t *request = new ComDataReq_t;
+    factory->build(request,eoState);
+    threadarc.putInArray(request);
+     threadarc.process();
+
+    delete request;
+     delete factory;
+}
+
+void ComData::testTimer()
+{
+    cout<<"testTimer";
 }
 
 void ComData::slot_fileComplite()
@@ -718,10 +770,11 @@ void ComData::updateStatus(const Status_t *status)
 {
 	acknowledge_flag = true;
     emit sg_updateStatus(status);
-    Messager* message = Messager::instance();
-    message->putStatus(status);
+//    Messager* message = Messager::instance();
+//    message->putStatus(status);
+    statusParam.f = status->temperature;
 
-    runState = ersRunning;
+//    runState = ersRunning;
     cout<<"updateStatus" <<"\t" <<status->modelState.modelState;
     _run();
 
@@ -741,6 +794,7 @@ void ComData::failedStatus()
 #endif
     _run();
 }
+
 
 void
 ComData::initWorkAray()
