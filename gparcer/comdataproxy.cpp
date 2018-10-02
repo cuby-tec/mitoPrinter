@@ -17,6 +17,9 @@ ComdataProxy::ComdataProxy(QObject *parent) : QObject(parent)
     coordinatus = Coordinatus::instance();
 }
 
+//#define diff(M) coordinatus->getCurrentValue(M##_AXIS) - coordinatus->getNextValue(M##_AXIS)
+#define diff(M) coordinatus->getNextValue(M##_AXIS) - coordinatus->getCurrentValue(M##_AXIS)
+
 //Line motion
 mito::Action_t*
 ComdataProxy::sendG0Line(sG0_t *data)
@@ -33,8 +36,7 @@ ComdataProxy::sendG0Line(sG0_t *data)
     coordinatus->setWorkValue(Y_AXIS, data->y);
     coordinatus->setWorkValue(Z_AXIS, data->z);
     coordinatus->setWorkValue(E_AXIS, data->e);
-    // line number
-    //buildG0command
+
     if(!isPlaneHasSteps())
     {
         action->a = eNext;
@@ -43,24 +45,31 @@ ComdataProxy::sendG0Line(sG0_t *data)
     coordinatus->moveNextToCurrent();
     coordinatus->moveWorkToNext();
 
+#if DEBUGLEVEL==1
+    qDebug()<<__FILE__<<__LINE__<<"DIFF:"<<"X:"<<diff(X) <<"\tY:"<<diff(Y)<<"\tZ:"<<diff(Z);
+#endif
     controller->buildBlock(coordinatus);
 
     //TODOH
     RequestFactory *factory = new RequestFactory();
 //    buildComdata(data->n);
+    ComDataReq_t* req = factory->build(data->n);
+    req->requestNumber = line_counter;
+    action->queue.enqueue(*req);
+    delete req;
 
-    action->a = eNext;
+    ComDataReq_t &r = action->queue.head();//DEBUG
+    cout<<r.requestNumber;// DEBUG
+
+    action->a = eSend;
     return action;
 }
-
-//#define diff(M) coordinatus->getCurrentValue(M##_AXIS) - coordinatus->getNextValue(M##_AXIS)
-#define diff(M) coordinatus->getNextValue(M##_AXIS) - coordinatus->getCurrentValue(M##_AXIS)
 
 //Line motion
 mito::Action_t*
 ComdataProxy::sendG1Line(sG1_t *data)
 {
-    //TODO
+    //TOD
     mito::Action_t *action = new mito::Action_t;
 
     line_counter++;
@@ -81,10 +90,7 @@ ComdataProxy::sendG1Line(sG1_t *data)
     }
     coordinatus->moveNextToCurrent();
     coordinatus->moveWorkToNext();
-//    double_t xC = coordinatus->getCurrentValue(X_AXIS);
-//    double_t cN = coordinatus->getNextValue(X_AXIS);
 
-//    double_t r = coordinatus->getCurrentValue(X_AXIS) - coordinatus->getNextValue(X_AXIS);
 
 #if DEBUGLEVEL==1
     qDebug()<<__FILE__<<__LINE__<<"DIFF:"<<"X:"<<diff(X) <<"\tY:"<<diff(Y)<<"\tZ:"<<diff(Z);

@@ -654,7 +654,8 @@ void ComData::run(GcodeWorker* gworker)
     connect(gworker, SIGNAL(sg_executeComplite()),this, SLOT(slot_fileComplite()));
 
 }
-
+#define FSMDEBUG  1
+#define FSMCOUNTER  10
 
 void ComData::_run()
 {
@@ -705,7 +706,11 @@ _run1:
                 connect(&waitTimer, SIGNAL(timeout()),this ,SLOT(waitParam()) );
                 waitTimer.start(500);
                 pd = new QProgressDialog("Heating in progress.", "Cancel", 0, 100);
+#if FSMDEBUG==1
+                pd->setRange(0, FSMCOUNTER );
+#else
                 pd->setRange(0, static_cast<int>(param.d) );
+#endif
                 pd->setMinimumDuration(0);
                 connect(pd,SIGNAL(canceled()), this, SLOT(heatingCancel()) );
 
@@ -727,11 +732,22 @@ _run1:
         // Compare status and target param.
 //        float status_temperature = statusParam.f;
 //        double_t target = param.d;
-        if(steps++ > 50)
-            pd->cancel();
+        if(steps++ >= FSMCOUNTER){
+//            pd->cancel();
+#if FSMDEBUG==1
+            waitTimer.stop();
+            runState = ersRunning;
+            cout<<"timer stoped.";
+            delete pd;
+            goto _run1;
+#endif
+        }
         else
+#if FSMDEBUG==1
+            pd->setValue(steps);
+#else
             pd->setValue( static_cast<int>(statusParam.f));
-
+#endif
         if(  static_cast<double_t>(statusParam.f) >= param.d ){
             waitTimer.stop();
             runState = ersRunning;
@@ -780,6 +796,7 @@ void ComData::slot_fileComplite()
 
 void ComData::heatingCancel()
 {
+    //TODO
     cout<<"heatingCancel";
     waitTimer.stop();
     delete  pd;
