@@ -7,6 +7,11 @@
 #include <QFileInfo>
 #include "math.h"
 
+//--------------- defs
+#define TIMERINUSE 1
+
+
+
 ThermoPlot::ThermoPlot(QWidget* parent) : QWidget(parent)
   , ui(new Ui::ThermoPlot)
   ,oldTemperature(0)
@@ -29,7 +34,6 @@ ThermoPlot::ThermoPlot(QCustomPlot* plot)
     createLog();
 }
 
-#define TIMERINUSE 1
 
 void
 ThermoPlot::setupPlot(QCustomPlot* customPlot)

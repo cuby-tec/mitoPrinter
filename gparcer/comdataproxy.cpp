@@ -194,13 +194,20 @@ ComdataProxy::sendG28Tag(sG28_t *data)
 
     if(sum > 0)
     {
+        coordinatus->moveCurrentToWork();
         action->a = eSend;
         //TODO build request.
+        if(data->x == true)
+            coordinatus->setWorkValue(X_AXIS, 0.0);
+        if(data->y == true)
+            coordinatus->setWorkValue(Y_AXIS, 0.0);
+        if(data->z == true)
+            coordinatus->setWorkValue(Z_AXIS, 0.0);
 
-        coordinatus->setWorkValue(X_AXIS, 0.0);
-        coordinatus->setWorkValue(Y_AXIS, 0.0);
-        coordinatus->setWorkValue(Z_AXIS, 0.0);
+        //prepare move
         coordinatus->moveWorkToNext();
+        controller->buildBlock(coordinatus);
+
 
         RequestFactory* factory = new RequestFactory();
         ComDataReq_t* request = factory->build(data->n);
@@ -462,9 +469,9 @@ ComdataProxy::buildComdata(uint linenumber)
         control->decelerate_after = bstate->decelerate_after;
 
         if(bstate->path>0)
-            control->direction = forward;
+            control->direction = edForward;
         else
-            control->direction = backward;
+            control->direction = edBackward;
 
         control->final_rate = bstate->final_rate;
         control->initial_rate = bstate->initial_rate;

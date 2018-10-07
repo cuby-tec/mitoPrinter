@@ -14,7 +14,7 @@
 #define CHAR_BIT    8
 
 enum eDirections{
-    forward = 1, backward,
+    edForward = 1, edBackward,
 };
 
 struct sControl{
@@ -43,7 +43,8 @@ struct sControl{
 #endif
     uint8_t     final_speedLevel;   // 0
     uint8_t     schem[3];           // 1, 2, 3
-    enum eDirections        direction:CHAR_BIT; // uint8_t forward
+//    enum eDirections        direction:CHAR_BIT; // uint8_t forward
+    uint8_t     direction;
     uint8_t     reseved1;
     uint16_t    reseved2;
 };

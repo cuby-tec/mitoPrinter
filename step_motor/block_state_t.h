@@ -4,7 +4,7 @@
 //#include <stdint.h>
 #include "Recalculate_flag.h"
 //#define byte uint8_t
-
+#include <math.h>
 #define word uint32_t
 
 //  Описатель состояний обработки фаз движения по оси Y.

@@ -41,6 +41,11 @@ public:
     	memcpy(next,work,sizeof(work)); //*sizeof(double_t));
     }
 
+    void moveCurrentToWork(){
+    	memcpy(work,current,sizeof(work));
+    }
+
+
     void moveNextToCurrent(){
         memcpy(current,next,sizeof(current)); //*sizeof(double_t));
     }
@@ -71,7 +76,12 @@ public:
 
     sHotendControl_t* getHotend() { return &hotend;  }
 
+    int32_t position[N_AXIS];          // The planner position of the tool in absolute steps. Kept separate
+                                       // from g-code position for movements requiring multiple line motions,
+                                       // i.e. arcs, canned cycles, and backlash compensation.
+
 private:
+
 
     double_t current[N_AXIS];
 

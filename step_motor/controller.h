@@ -59,14 +59,15 @@ private:
 
     CounterTime_t* pcountertime[N_AXIS];
 
-    StepMotor* motor[M_AXIS];
-
+    StepMotor* motor[N_AXIS];
 
     ProfileData_t* profileData;
 
     void setupProfileData();
 
-    Trapeze_t trapeze[M_AXIS];
+
+
+    Trapeze_t trapeze[N_AXIS];
 
     // Расчёт трапеций для каждой оси.
     uint32_t calculateTrapeze();
@@ -78,6 +79,7 @@ private:
     // пересчёт ускорений для одной оси.
     void planner_recalculate(block_state* prev, block_state* curr);
 
+    void calculateExtruder(block_state_t* blocks);
 
     /**
      * Загрузка данных(Угловое ускорение) из профиля.

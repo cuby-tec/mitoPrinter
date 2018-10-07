@@ -59,7 +59,7 @@ typedef double_t (StepMotor::*lines)(uint32_t axis);
 
 
 enum eMotorType{
-	e17HS4401_pulley, e17HS4401_shuft
+    e17HS4401_pulley, e17HS4401_shuft, e17HS4401_tooth_10_43
 };
 
 
@@ -127,8 +127,12 @@ public:
 
     // Угловое ускорение, рад/сек^2
 	double_t getAcceleration() const {
-		return acceleration;
+        return acceleration;
 	}
+
+    double_t getDecceleration() const {
+        return acceleration; // TODO
+    }
 
 	// Угловое ускорение, рад/сек^2
 	void setAcceleration(double_t acceleration) {
@@ -151,6 +155,8 @@ public:
     // длина шага для винта
     double_t pulleyStep(uint32_t axis);
 
+    //длина шага зубчатой передачи
+    double_t gear10_43_Step(uint32_t axis);
 
 
 	/**
@@ -163,6 +169,10 @@ public:
 	 */
 	double_t linespeed_pitch(double_t rpm);
 
+    //для зубчатой передачи
+    double_t linespeed_gear_10_43(double_t rpm);
+    // radian per second
+    double_t getAngular_velocity_rad_value() ;
 
 private:
 
@@ -180,6 +190,11 @@ private:
     // Угловое ускорение, рад/сек^2
     double_t acceleration;
 
+// axis E small:10 tooths; large: 43 tooths. d 8-2*0.5=7mm
+    // 3.14159*7 = 21,9911
+
+    //Максимальная скорость вращения об/мин
+    double_t angular_velocity_rpm_value;
 
 
 };

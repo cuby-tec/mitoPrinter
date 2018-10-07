@@ -17,13 +17,15 @@
 
 #include <algorithm>
 
+#define BUILDBLOCKVERSION   2
+
 
 Controller::Controller()
 {
     frequency = FREQUENCY;
     for(int i=0;i<N_AXIS;i++)
     {
-        pcountertime[i] = NULL;
+        pcountertime[i] = nullptr;
     }
 
 //    setupProfileData();
@@ -36,9 +38,11 @@ Controller::Controller()
 
     motor[Z_AXIS] = new StepMotor(e17HS4401_shuft);
 
+    motor[E_AXIS] = new StepMotor(e17HS4401_tooth_10_43);
+#if BUILDBLOCKVERSION==2
+    uploadMotorData();
+#endif
 }
-
-
 
 
 Controller::~Controller()
@@ -47,28 +51,27 @@ Controller::~Controller()
 }
 
 
-
 void
 Controller::buildCounterValue(uint32_t steps,uint8_t axis)
 {
-    if(pcountertime[axis]!=NULL)
+    if(pcountertime[axis]!=nullptr)
     {
         free(pcountertime[axis]);
-        pcountertime[axis] = NULL;
+        pcountertime[axis] = nullptr;
     }
 
-    pcountertime[axis] = (CounterTime_t*)(malloc(steps * sizeof(CounterTime_t)) );
+//    pcountertime[axis] = (CounterTime_t*)(malloc(steps * sizeof(CounterTime_t)) );
+    pcountertime[axis] = static_cast<CounterTime_t*>(malloc(steps * sizeof(CounterTime_t)) );
 
-    Q_ASSERT(pcountertime!=NULL);
+    Q_ASSERT(pcountertime[axis] !=nullptr);
 
-    Q_ASSERT(motor[X_AXIS]->getAcceleration() != NULL);
+    Q_ASSERT(motor[X_AXIS]->getAcceleration() != 0.0);
 
-    for(int i =0;i<steps;i++)
+    for(uint32_t i=0;i<steps;i++)
     {
         if(i == 0)
         {
             //=SQRT(2*alfa/acceleration)*timer_frequency
-
 
         }
     }
@@ -96,26 +99,129 @@ double_t Controller::getPath_mm(uint8_t axis,int32_t steps) {
 }
 
 void Controller::uploadMotorData() {
-    motor[X_AXIS]->setAcceleration(profileData->acceleration[X_AXIS]);
-    motor[Y_AXIS]->setAcceleration(profileData->acceleration[Y_AXIS]);
-    motor[Z_AXIS]->setAcceleration(profileData->acceleration[Z_AXIS]);
+    motor[X_AXIS]->setAcceleration(static_cast<double_t>(profileData->acceleration[X_AXIS]));
+    motor[Y_AXIS]->setAcceleration(static_cast<double_t>(profileData->acceleration[Y_AXIS]));
+    motor[Z_AXIS]->setAcceleration( static_cast<double_t>(profileData->acceleration[Z_AXIS]));
+    motor[E_AXIS]->setAcceleration( static_cast<double_t>(profileData->acceleration[E_AXIS]));
 
 }
 
+#define TARGETVERSION 1
 
+#define MIN(A,B) A<B?A:B
 /**
  * Заполнение полей разгона, торможения, и т.д.
  */
+#if BUILDBLOCKVERSION == 2
+void Controller::buildBlock(Coordinatus* cord) {
+    double_t path[N_AXIS];						//	B2
+    int32_t target_steps[N_AXIS];
+    double_t k;
+
+    block_state_t* blocks = cord->nextBlocks;
+
+    for(size_t i=0;i<N_AXIS;i++){
+        path[i] = cord->getNextValue(i) - cord->getCurrentValue(i);
+//		qDebug()<<"Controller[74]"<<" path:"<< path[i];
+    }
+
+    //[4] Длина линии в шагах		C23
+    uint32_t maxvector[N_AXIS];
+    for(uint32_t i=0;i<N_AXIS;++i){
+        block_state_t* block = &blocks[i];
+        // if(segment->axis[X_AXIS].direction == forward)
+        //   GPIOPinWrite(DIRECTION_PORT, DIR_X, DIR_X);
+        StepMotor* m = motor[i];
+        lines lm = m->getLineStep;
+        double_t ds = ( m->*lm)(i);
+
+        target_steps[i] = static_cast<int32_t>(lround(cord->getNextValue(i)/ds));
+        int32_t stp = target_steps[i]-cord->position[i];
+        maxvector[i] = static_cast<uint32_t>(abs(stp));
+        cord->nextBlocks[i].steps = maxvector[i];
+        cord->position[i] = target_steps[i];
+        if(stp > 0)
+            block->direction_bits = edForward;
+        else
+            block->direction_bits = edBackward;
+    }
+    // Наибольшая длина линии						C26
+    uint32_t maxLenLine = *std::max_element(maxvector,maxvector+N_AXIS);
+    Q_ASSERT(maxLenLine > 0);
+//    uint32_t accel_steps[N_AXIS];
+    for(uint32_t i=0;i<N_AXIS;i++){
+
+        block_state_t* block = &blocks[i];
+
+        //=radian_speed*(D4)
+        k = static_cast<double_t>( maxvector[i]) / static_cast<double_t>(maxLenLine);
+        uint32_t G4 =  static_cast<uint32_t>( k* motor[i]->getAngular_velocity_rad_value());  //G4
+
+        //radian_accel
+        double_t racc = k * motor[i]->getAcceleration();
+
+        //radian_deccel
+        double_t rdcc = k * motor[i]->getDecceleration();
+
+        //accel steps
+        double_t acs = pow(G4,2.0)/(2.0*motor[i]->getAlfa(i)*racc);
+
+        //accel_lim
+        double_t acl = maxvector[i] * racc/(racc + rdcc);
+
+        //accel_path
+        uint32_t accpath =  static_cast<uint32_t>( MIN(acs,acl) );
+
+        //deccel_path
+        uint32_t dccpath =  static_cast<uint32_t>( MIN(acs,acl) * racc/rdcc );
+
+        //speed_path
+        uint32_t speed_path = maxvector[i] - (accpath + dccpath);
+
+        //C0
+        // double_t cnt = sqrt(2*motor[i]->getAlfa(i)/accel[i])*frequency;
+        uint32_t cnt = static_cast<uint32_t>( frequency * sqrt(2.0 * motor[i]->getAlfa(i)/racc ) );
+
+        // nominal_rate
+        uint32_t nominal_rate = static_cast<uint32_t>(frequency * motor[i]->getAlfa(i)/G4 );
+
+        block->steps = maxvector[i];
+        block->accelerate_until = accpath;
+        block->decelerate_after = block->steps - dccpath;
+        block->initial_rate = cnt;
+        block->nominal_rate = nominal_rate;
+        block->final_rate = cnt;
+
+        block->schem[0] = 1;	// Разгон
+        block->schem[1] = 2;	// равномерно
+        block->schem[2] = 3;	// торможение
+        block->microstep = 0;   //TODO Micro-step
+        block->axis_mask = 0;
+        if(block->steps > 0)
+            block->axis_mask |= (1<<i);
+
+        block->speedLevel = accpath;
+    }
+
+
+
+}// end buildBlock
+
+#endif
+
+#if BUILDBLOCKVERSION == 1
 void Controller::buildBlock(Coordinatus* cord) {
 
 	//  Путь по X
 	//	Путь по Y
 	//	Путь по Z
-	double_t path[M_AXIS];						//	B2
+    double_t path[N_AXIS];						//	B2
+    int32_t target_steps[N_AXIS];
+
 
 	uploadMotorData();
 
-	for(int i=0;i<M_AXIS;i++){
+    for(size_t i=0;i<N_AXIS;i++){
 		path[i] = cord->getNextValue(i) - cord->getCurrentValue(i);
 //		qDebug()<<"Controller[74]"<<" path:"<< path[i];
 	}
@@ -124,15 +230,15 @@ void Controller::buildBlock(Coordinatus* cord) {
 // Длина вектора.
   double_t s = 0;
 
-    for(int i=0; i<M_AXIS;i++){
+    for(size_t i=0; i<M_AXIS;i++){
         s += pow( cord->getCurrentValue(i)-cord->getNextValue(i),2);
 	}
 	s = sqrt(s);
 
 // Максимальная скорость по осям(линейная)
-    double_t v[M_AXIS];
+    double_t v[N_AXIS];
 
-    for(int i=0;i<M_AXIS;++i){
+    for(int i=0;i<N_AXIS;++i){
 //		v[i] = motor->linespeed(profileData.speed_rpm[i]);
 //        v[i] = (motor->*m_struct[i])(profileData.speed_rpm[i]);
 
@@ -140,7 +246,7 @@ void Controller::buildBlock(Coordinatus* cord) {
 //        v[i] = fabs((motor->*pf)(profileData.speed_rpm[i]));
         StepMotor* m = motor[i];
         convert pm = m->getLineSpeed;
-        v[i] = fabs((m->*pm)(profileData->speed_rpm[i]));
+        v[i] = fabs((m->*pm)(static_cast<double_t>(profileData->speed_rpm[i])));
 
 
 //varant 2:     v[i] = (motor->*motor->m_struct[i])(profileData.speed_rpm[i]);
@@ -159,7 +265,7 @@ void Controller::buildBlock(Coordinatus* cord) {
 
     //[4] Длина линии в шагах						C23
 //    uint32_t lenline[M_AXIS];
-    for(int i=0;i<M_AXIS;++i){
+    for(uint32_t i=0;i<N_AXIS;++i){
 
         StepMotor* m = motor[i];
         lines lm = m->getLineStep;
@@ -169,11 +275,18 @@ void Controller::buildBlock(Coordinatus* cord) {
         double_t dstep = fabs(path[i]/ds);
         dstep = round(dstep*pow(10,10))/pow(10,10);
 //        cord->nextBlocks[i].steps = fabs(path[i])/( m->*lm)(i);//TODO в сборку блока
-        cord->nextBlocks[i].steps = dstep;
+#if TARGETVERSION==1
+        // Version2
+        target_steps[i] = static_cast<int32_t>(lround(cord->getNextValue(i)/ds));
+        cord->nextBlocks[i].steps = static_cast<uint32_t>(labs(target_steps[i]-cord->position[i]));
+        cord->position[i] = target_steps[i];
+#else
 
+        cord->nextBlocks[i].steps = dstep;
+#endif
 //    	lenline[i] = cord->nextBlocks[i].steps;
 //    	double_t ps = (motor->*pstep)(i);
-        double_t ps = (m->*lm)(i);
+//        double_t ps = (m->*lm)(i);
 
 //        trapeze[i].length = abs(path[i])/( motor->*pstep)(i);
 //    	double_t pa = path[i];
@@ -188,14 +301,14 @@ void Controller::buildBlock(Coordinatus* cord) {
 //    uint32_t maxLenLine = *std::max_element(lenline,lenline+M_AXIS);
 
     //[5] Максимальное Угловое ускорение			C28
-    for(int i=0;i<M_AXIS;++i){
-        cord->nextBlocks[i].acceleration = profileData->acceleration[i];// TODO в сборку блокаS
+    for(size_t i=0;i<N_AXIS;++i){
+        cord->nextBlocks[i].acceleration = static_cast<double_t>(profileData->acceleration[i]);// TODO в сборку блокаS
     }
 
 
     //[4] velocity for every axis, line		313.16 47.7 	C54
     double_t velocity[M_AXIS];
-    for(int i=0;i<M_AXIS;i++){
+    for(int i=0;i<N_AXIS;i++){
     	velocity[i] = maxs * sins[i];
     }
 
@@ -217,13 +330,13 @@ void Controller::buildBlock(Coordinatus* cord) {
 
     //[7] Число шагов разгона	34.11 0.79			C38
     double_t accelSteps[M_AXIS];
-    for(int i=0;i<M_AXIS;i++){
-        accelSteps[i] = pow(tSpeed[i],2)/( 2 * motor[i]->getAlfa(i) * profileData->acceleration[i] );
-        trapeze[i].accPath = pow(tSpeed[i],2)/( 2 * motor[i]->getAlfa(i) * profileData->acceleration[i] );
+    for(uint32_t i=0;i<M_AXIS;i++){
+        accelSteps[i] = pow(tSpeed[i],2)/( 2 * motor[i]->getAlfa(i) *  static_cast<double_t>(profileData->acceleration[i]) );
+        trapeze[i].accPath = pow(tSpeed[i],2)/( 2 * motor[i]->getAlfa(i) * static_cast<double_t>(profileData->acceleration[i]) );
     }
 
     //Максимальное число шагов разгона				D41
-    double_t maxAccelSteps = *std::max_element(accelSteps,accelSteps+M_AXIS);
+//    double_t maxAccelSteps = *std::max_element(accelSteps,accelSteps+M_AXIS);
 
 /*
     //[8] Прверка трапеции
@@ -240,7 +353,7 @@ void Controller::buildBlock(Coordinatus* cord) {
 
     // motor[X_AXIS]
     double_t maxLineAccel = motor[index]->getLinearAcceleration();
-Q_ASSERT(maxLineAccel != 0);
+Q_ASSERT(maxLineAccel != 0.0);
     // Время разгона для оси X
     double_t minimeAccelerationTime = velocity[index]/maxLineAccel;
 
@@ -249,8 +362,8 @@ Q_ASSERT(maxLineAccel != 0);
 
     //[12] Угловое ускорения для осей					C64
     double_t accel[M_AXIS];
-    for(int i=0;i<M_AXIS;i++){
-        if(trapeze[i].accPath!=0 && trapeze[i].length!=0){
+    for(uint32_t i=0;i<M_AXIS;i++){
+        if(trapeze[i].accPath!=0.0 && trapeze[i].length!=0.0){
 #ifdef ACCELERTION_BY_TIME
             accel[i] = (2 * motor[i]->getAlfa(i)*(trapeze[i].accPath))/pow(minimeAccelerationTime,2); //  trapeze[i].accPath
 #else
@@ -267,8 +380,8 @@ Q_ASSERT(maxLineAccel != 0);
 
     //[13] Начальный счётчик
     uint32_t start_counter[M_AXIS];
-    for(int i=0;i<M_AXIS;i++){
-    	if(accel[i]!=0){
+    for(uint32_t i=0;i<M_AXIS;i++){
+        if(accel[i]!=0.0){
             double_t cnt = sqrt(2*motor[i]->getAlfa(i)/accel[i])*frequency;
 //    	    qDebug() << "buildBlock[180]"<< "  axis:"<< i << " counter:"<<start_counter[i]<< "acc:"<< trapeze[i].accPath;
 
@@ -276,7 +389,7 @@ Q_ASSERT(maxLineAccel != 0);
             if(cnt>= MAX_COUNTER_VALUE)
             	start_counter[i] = MAX_COUNTER_VALUE;
             else
-            	start_counter[i] = cnt;
+                start_counter[i] = static_cast<uint32_t>(cnt);
 
     	}
     	else
@@ -285,18 +398,18 @@ Q_ASSERT(maxLineAccel != 0);
 
     //[14] Счётчик номинальной скорости		C90
     uint32_t norm_counter[M_AXIS];
-    for(int i=0;i<M_AXIS;i++){
-    	if(tSpeed!=0)
-            norm_counter[i] = frequency * motor[i]->getAlfa(i)/fabs(tSpeed[i]);
+    for(uint32_t i=0;i<M_AXIS;i++){
+        if(tSpeed[i] != 0.0)
+            norm_counter[i] = static_cast<uint32_t>(frequency * motor[i]->getAlfa(i)/fabs(tSpeed[i]));
     	else
     		norm_counter[i] = 0;
     }
 
 
     // calculate acceleration Построение таблицы шагов разгона.
-    AccelerationTable* tableX = new AccelerationTable(trapeze[X_AXIS].accPath + 1);
+    AccelerationTable* tableX = new AccelerationTable(static_cast<uint32_t>(trapeze[X_AXIS].accPath) + 1);
     tableX->buildTale(start_counter[X_AXIS]);
-    float_t accTime = tableX->getAccelerationTime(FREQUENCY);
+//    double_t accTime = tableX->getAccelerationTime(FREQUENCY);
 
 /*
     	qDebug()<<" buildBlock[192] =========";
@@ -305,7 +418,7 @@ Q_ASSERT(maxLineAccel != 0);
     	qDebug()<<" step:"<<i <<"\tcount:"<< tableX->getCounter(i);
     }
 */
-    AccelerationTable* accY = new AccelerationTable(trapeze[Y_AXIS].accPath+1);
+    AccelerationTable* accY = new AccelerationTable(static_cast<uint32_t>(trapeze[Y_AXIS].accPath)+1);
     accY->buildTale(start_counter[Y_AXIS]);
 
 /*
@@ -343,10 +456,10 @@ Q_ASSERT(maxLineAccel != 0);
 
     for(int i=0;i<M_AXIS;++i){
     	block_state_t* block = &blocks[i];
-    	block->steps = trapeze[i].length;
-    	block->speedLevel = (word)trapeze[i].accPath;
-    	block->accelerate_until = trapeze[i].accPath;
-    	block->decelerate_after = block->steps-(word)trapeze[i].accPath;
+        block->steps = static_cast<word>(trapeze[i].length);
+        block->speedLevel = static_cast<word>(trapeze[i].accPath);
+        block->accelerate_until = static_cast<word>(trapeze[i].accPath);
+        block->decelerate_after = block->steps - static_cast<word>(trapeze[i].accPath);
     	block->initial_rate = start_counter[i];
     	block->nominal_rate = norm_counter[i];
     	block->final_rate = start_counter[i];
@@ -364,16 +477,19 @@ Q_ASSERT(maxLineAccel != 0);
     }
 
     splinePath(cord->currentBlocks,blocks);
+    if(cord->nextBlocks[E_AXIS].steps > 0)
+        calculateExtruder(cord->nextBlocks);//TODOH
+
 
 } //
-
+#endif
 
 /**
  * Выравнивание скоростей в смежных сегментах.
  * Для одноразовой команды это не требуется.
  */
 void Controller::splinePath(block_state_t* privBlock, block_state_t* currBlock) {
-	double_t dif;
+    double_t dif;
 
 	 Recalculate_flag* flag;
 	 flag = (Recalculate_flag*)&currBlock[X_AXIS].recalculate_flag;
@@ -381,12 +497,8 @@ void Controller::splinePath(block_state_t* privBlock, block_state_t* currBlock) 
 	 if(flag->single == true)
 		 return;
 
-
 	dif = currBlock[X_AXIS].nominal_speed - privBlock[X_AXIS].nominal_speed;
-
-
 	//TODO set scheme
-
 }
 
 /*                             STEPPER RATE DEFINITION
@@ -418,11 +530,11 @@ Controller::planner_recalculate(block_state* prev, block_state* curr)
 
 	if(prev->speedLevel == curr->speedLevel) return;
 
-	meanlevel = ((int64_t)prev->nominal_rate + curr->nominal_rate)/2;
+    meanlevel = static_cast<word>((static_cast<int64_t>(prev->nominal_rate) + curr->nominal_rate)/2);
 
 	if(prev->speedLevel>curr->speedLevel){
 		// Снижение скорости
-		dlevel = prev->speedLevel - curr->speedLevel;
+        dlevel = static_cast<int16_t>(prev->speedLevel - curr->speedLevel);
 		d2 = dlevel/2;
 		dlevel -= d2;
 		prev->decelerate_after = prev->steps - d2;
@@ -473,10 +585,20 @@ Controller::planner_recalculate(block_state* prev, block_state* curr)
 
 }
 
+void Controller::calculateExtruder(block_state_t *blocks)
+{
+    //TODOH
+    block_state_t* eblock = &blocks[E_AXIS];
+    qDebug()<<__FILE__<<__LINE__ <<"Extruder steps:" <<eblock->steps;
+
+    // Исходные данные угловая скорость(рад/сек), угловое ускорение(рад/сек^2), путь в (мм)
+
+}
 
 
 
-#define TRAPEZE_V1
+
+#define TRAPEZE_V   1
 // Длина участка принимается как целое число
 // Расчёт трапеций для каждой оси.
 /**
@@ -491,6 +613,7 @@ Controller::calculateTrapeze() {
 
 	for(int i=0;i<M_AXIS;i++)
 		lenline[i] = trapeze[i].length;
+
     // Наибольшая длина линии						C26
     double_t* pmaxLenLine = std::max_element(lenline,lenline+M_AXIS);
 
@@ -498,7 +621,7 @@ Controller::calculateTrapeze() {
     index = (pmaxLenLine - lenline);
 
     //Построение трапеции
-#ifdef TRAPEZE_V1
+#if TRAPEZE_V==1
     coeffic = trapeze[index].accPath/ floor(trapeze[index].length) ;
 #else
     coeffic = trapeze[index].accPath/trapeze[index].length;
@@ -507,7 +630,7 @@ Controller::calculateTrapeze() {
     for(uint i=0;i<M_AXIS;++i)
     {
         if(i!=index){
-#ifdef TRAPEZE_V1
+#if TRAPEZE_V==1
             trapeze[i].accPath = floor(trapeze[i].length) * coeffic;
 #else
             trapeze[i].accPath = trapeze[i].length * coeffic;
@@ -515,7 +638,7 @@ Controller::calculateTrapeze() {
         }
     	// Pass#2
         if(trapeze[i].accPath*2>trapeze[i].length){
-#ifdef TRAPEZE_V1
+#if TRAPEZE_V==1
             trapeze[i].accPath = floor( trapeze[i].length )/2;
 #else
             trapeze[i].accPath = trapeze[i].length/2;

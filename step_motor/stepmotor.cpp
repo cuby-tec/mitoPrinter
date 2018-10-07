@@ -5,9 +5,12 @@
 #include "math.h"
 
 //--------- defs
+// диаметр вала экструдера с учётом проточки
+#define shaft_diameter   7
 
 
 StepMotor::StepMotor(eMotorType type)
+    : angular_velocity_rpm_value(500.0)
 {
 #ifdef _17HS4401
 
@@ -39,6 +42,10 @@ StepMotor::StepMotor(eMotorType type)
 	   getLineSpeed = &StepMotor::linespeed_pitch;
 	   getLineStep = &StepMotor::pulleyStep;
 	   break;
+   case e17HS4401_tooth_10_43:
+       getLineSpeed = &StepMotor::linespeed_gear_10_43;
+       getLineStep = &StepMotor::gear10_43_Step;//0.0256
+       break;
    }
 
 
@@ -104,30 +111,51 @@ double_t StepMotor::linespeed_pitch(double_t rpm) {
 	double_t v;
 	v = rpm/60;
 	v*= SHAFT_PITCH;
-	return v;
+    return v;
+}
+
+double_t StepMotor::linespeed_gear_10_43(double_t rpm)
+{
+    //Число оборотов (об/мин)		500
+    double_t radianps = MyGlobal::PI/30*rpm;
+    radianps *= shaft_diameter/2.0*(10.0/43.0); // radius
+    return radianps;
+}
+
+double_t StepMotor::getAngular_velocity_rad_value()
+{
+    return angular_velocity_rpm( angular_velocity_rpm_value);
 }
 
 double_t StepMotor::lineStep(uint32_t axis) {
-	double_t alfa = getAlfa(axis);
-	alfa *= pulley_diameter/2;
+    double_t alfa = getAlfa(axis);
+    alfa *= pulley_diameter/2;
 	return alfa;
-}
-
-
-// Линейное ускорение для заданного
-// максимального углового ускорения.
-double_t StepMotor::getLinearAcceleration() {
-	double_t result;
-	result = acceleration*pulley_diameter/2; // 1250
-	return result;
 }
 
 double_t StepMotor::pulleyStep(uint32_t axis) {
 	double_t result;
 	result = SHAFT_PITCH/(microstep[axis] * stepsPerRound);
-	return result;
+    return result;
 }
 
+double_t StepMotor::gear10_43_Step(uint32_t axis)
+{
+    double_t result;
+    //TODO
+    double_t alpha = getAlfa(axis);
+    result = alpha*shaft_diameter/2.0*(10.0/43.0);
+    return result;
+
+}
+
+// Линейное ускорение для заданного
+// максимального углового ускорения.
+double_t StepMotor::getLinearAcceleration() {
+    double_t result;
+    result = acceleration*pulley_diameter/2; // 1250
+    return result;
+}
 
 // EOF
 

@@ -123,7 +123,7 @@ RequestFactory::build(uint linenumber)
         //    ms_finBlock = exitBlock;
         segment->head.reserved &= ~EXIT_CONTINUE;
 
-        for(int i=0;i<M_AXIS;i++)
+        for(int i=0;i<N_AXIS;i++)
         {
             if(bstates[i].steps>0)
                 segment->head.axis_mask |= (1<<i);
@@ -132,24 +132,30 @@ RequestFactory::build(uint linenumber)
         }
         //======== sControl =========
 
-        for(int i =0;i<M_AXIS;i++){
+        for(int i =0;i<N_AXIS;i++){
             control = &segment->axis[i];
             block_state_t* bstate = &bstates[i];
 
             control->accelerate_until = bstate->accelerate_until;
             control->decelerate_after = bstate->decelerate_after;
 
-            if(bstate->path>0)
-                control->direction = forward;
-            else
-                control->direction = backward;
+//            if(bstate->path>0)
+//                control->direction = edForward;
+//            else
+//                control->direction = edBackward;
+            //block->direction_bits = forward;
+//            if(bstate->direction_bits == edForward)
+//                control->direction = edForward;
+//            else
+//                control->direction = edBackward;
+            control->direction = bstate->direction_bits;
 
             control->final_rate = bstate->final_rate;
             control->initial_rate = bstate->initial_rate;
             control->nominal_rate = bstate->nominal_rate;
-            control->final_speedLevel = bstate->final_speedLevel;
+            control->final_speedLevel = static_cast<uint8_t>( bstate->final_speedLevel);
 
-            control->speedLevel = bstate->accelerate_until;// TODO Attention
+            control->speedLevel = static_cast<uint8_t>( bstate->accelerate_until);// TODO Attention
 
             control->microsteps = bstate->microstep;
 

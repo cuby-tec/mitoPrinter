@@ -310,9 +310,9 @@ ComData::buildComdata()
 		control->decelerate_after = bstate->decelerate_after;
 
 		if(bstate->path>0)
-			control->direction = forward;
+			control->direction = edForward;
 		else
-			control->direction = backward;
+			control->direction = edBackward;
 
 		control->final_rate = bstate->final_rate;
 		control->initial_rate = bstate->initial_rate;
@@ -807,7 +807,7 @@ void ComData::updateStatus(const Status_t *status)
 	acknowledge_flag = true;
     emit sg_updateStatus(status);
 //    Messager* message = Messager::instance();
-//    message->putStatus(status);
+    messager->putStatus(status);
     statusParam.f = status->temperature;
 
 //    runState = ersRunning;

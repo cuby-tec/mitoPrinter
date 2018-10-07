@@ -785,7 +785,16 @@ GcodeWorker::tagG21_Do(sGcode *sgCode)
 }
 
 
-
+/**
+ * @brief GcodeWorker::tagG28_Do
+ * @param sgCode
+ * @return
+ *  This command can be used without any additional parameters.
+ * X Flag to go back to the X axis origin
+ * Y Flag to go back to the Y axis origin
+ * Z Flag to go back to the Z axis origin
+ *
+ */
 mito::Action_t*
 GcodeWorker::tagG28_Do(sGcode *sgCode)
 {
@@ -828,6 +837,9 @@ GcodeWorker::tagG28_Do(sGcode *sgCode)
 
     if(valueTag.n == 0)
         valueTag.n = linecounter;
+    if(valueTag.x==false && valueTag.y==false && valueTag.z==false){
+        valueTag.x = true; valueTag.y=true; valueTag.z=true;
+    }
     action = comproxy->sendG28Tag(&valueTag);
 #endif
     return action;

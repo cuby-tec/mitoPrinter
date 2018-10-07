@@ -21,7 +21,7 @@
 static const char* fname = "/dev/cnccontrol";
 
 const struct sControl default_block = {
-   X_AXIS, 2, 0, 3, 10, 3, 7,  50132, 5370, 50132, 0, {1, 2, 3}, forward, 0, 0
+   X_AXIS, 2, 0, 3, 10, 3, 7,  50132, 5370, 50132, 0, {1, 2, 3}, edForward, 0, 0
 };
 
 static const struct sHead default_segment_head = {
