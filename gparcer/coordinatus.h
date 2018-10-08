@@ -80,6 +80,14 @@ public:
                                        // from g-code position for movements requiring multiple line motions,
                                        // i.e. arcs, canned cycles, and backlash compensation.
 
+    uint8_t getUnits() {
+        return units;
+    }
+
+    void setUnits( uint8_t &value){
+         units = value;
+    }
+
 private:
 
 
@@ -93,6 +101,10 @@ private:
 
     bool absrel;
 
+    //Units from now on are in inches.
+    // 1 - millimeters, 2 - inches
+    uint8_t units;	//TODO usage: now not used.
+
 // Hotend state
     bool extruder_mode;// true - absolute, false - relative
 
@@ -104,6 +116,7 @@ private:
     {
         absrel = true; // true - absolute, false - relative
         extruder_mode = true; // true - absolute, false - relative
+        units = 1;
         hotend._switch.cooler = 0;
         hotend._switch.heater = 0;
         hotend.kd = static_cast<int32_t>(12.5*1000); //#define KD  12.5//0.1//0.013

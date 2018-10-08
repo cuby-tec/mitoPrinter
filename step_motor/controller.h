@@ -38,7 +38,7 @@ public:
     /**
      * Заполнение полей разгона, торможения, и т.д.
      */
-    void buildBlock(Coordinatus* cord);
+    bool buildBlock(Coordinatus* cord);
 
     double_t getPath_mm(uint8_t axis,int32_t steps);
 

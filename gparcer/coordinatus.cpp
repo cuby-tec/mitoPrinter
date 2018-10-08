@@ -79,14 +79,13 @@ void Coordinatus::setExtruder_mode(bool value)
 }
 
 
-
 /**
  * Загрузка данных из профиля.
  */
 void
 Coordinatus::setupProfileData() {
-	Profile* profile = Profile::instance();
-	if(!profile->isProfileActive())
+    Profile* profile = Profile::instance();
+    if(!profile->isProfileActive())
 		profile->init_profile();
 
 	//setSpeedLevel(block, psettings->seekSpeed);

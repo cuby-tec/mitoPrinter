@@ -127,6 +127,7 @@ GcodeWorker::buildAction(sGcode *src)
     else if (tag == "M190") etag = eM190;
     else if (tag == "M550") etag = eM550;
     else if (tag == "M82") etag = eM82;
+    else if (tag == "M83") etag = eM83;
     else if (tag == "M84") etag = eM84;
     else if (tag == "F") etag = eF;
     else if (tag == "S") etag = eS;
@@ -155,10 +156,10 @@ GcodeWorker::buildAction(sGcode *src)
         (this->*callTagRef[etag])(src); //tagG10_Do
         break;
     case eG20:
-        (this->*callTagRef[etag])(src); //tagG20_Do
+        action = (this->*callTagRef[etag])(src); //tagG20_Do
         break;
     case eG21:
-        (this->*callTagRef[etag])(src); //tagG21_Do
+        action = (this->*callTagRef[etag])(src); //tagG21_Do
         break;
     case eG28:
         action = (this->*callTagRef[etag])(src); //tagG28_Do
@@ -204,9 +205,11 @@ GcodeWorker::buildAction(sGcode *src)
         break;
     case eM550:
         break;
-    case eM82:  (this->*callTagRef[etag])(src); //tagM82_Do
+    case eM82:
+        action = (this->*callTagRef[etag])(src); //tagM82_Do
         break;
-    case eM83:  (this->*callTagRef[etag])(src); //tagM83_Do
+    case eM83:
+        action = (this->*callTagRef[etag])(src); //tagM83_Do
         break;
     case eM84:  (this->*callTagRef[etag])(src); //tagM84_Do
         break;
@@ -731,7 +734,7 @@ GcodeWorker::tagG20_Do(sGcode *sgCode)
     valueTag.n = 0;
     bool ok = false;
 
-    valueTag.a = false; // G20: Set Units to Inches
+    valueTag.a = 2; // G20: Set Units to Inches
 
     for(int i=0;i<sgCode->param_number;i++){
         sGparam* gparam = &sgCode->param[i];
@@ -747,7 +750,7 @@ GcodeWorker::tagG20_Do(sGcode *sgCode)
     if(valueTag.n == 0)
         valueTag.n = linecounter;
     vTag->set(&valueTag);
-    comproxy->sendG20_21Tag(vTag);
+    action = comproxy->sendG20_21Tag(vTag);
 #endif
     return action;
 }
@@ -764,7 +767,7 @@ GcodeWorker::tagG21_Do(sGcode *sgCode)
     valueTag.n = 0;
     bool ok = false;
 
-    valueTag.a = true; // G21: Set Units to Millimeters
+    valueTag.a = 1; // G21: Set Units to Millimeters
 
     for(int i=0;i<sgCode->param_number;i++){
         sGparam* gparam = &sgCode->param[i];
@@ -780,7 +783,7 @@ GcodeWorker::tagG21_Do(sGcode *sgCode)
     if(valueTag.n == 0)
         valueTag.n = linecounter;
     vTag->set(&valueTag);
-    comproxy->sendG20_21Tag(vTag);
+    action = comproxy->sendG20_21Tag(vTag);
 #endif
     return action;
 }
@@ -1485,7 +1488,7 @@ GcodeWorker::tagM82_Do(sGcode *sgCode)
     }
     if(vTag->n == 0)
         vTag->n = linecounter;
-    comproxy->sendM82_Tag(vTag);
+    action = comproxy->sendM82_Tag(vTag);
     return action;
 }
 
@@ -1512,7 +1515,7 @@ GcodeWorker::tagM83_Do(sGcode *sgCode)
     if(vTag->n == 0)
         vTag->n = linecounter;
 
-    comproxy->sendM82_Tag(vTag);
+    action = comproxy->sendM82_Tag(vTag);
     return action;
 }
 

@@ -113,7 +113,8 @@ void Controller::uploadMotorData() {
  * Заполнение полей разгона, торможения, и т.д.
  */
 #if BUILDBLOCKVERSION == 2
-void Controller::buildBlock(Coordinatus* cord) {
+bool
+Controller::buildBlock(Coordinatus* cord) {
     double_t path[N_AXIS];						//	B2
     int32_t target_steps[N_AXIS];
     double_t k;
@@ -147,6 +148,8 @@ void Controller::buildBlock(Coordinatus* cord) {
     }
     // Наибольшая длина линии						C26
     uint32_t maxLenLine = *std::max_element(maxvector,maxvector+N_AXIS);
+    if(maxLenLine == 0)
+        return (false);
     Q_ASSERT(maxLenLine > 0);
 //    uint32_t accel_steps[N_AXIS];
     for(uint32_t i=0;i<N_AXIS;i++){
@@ -203,8 +206,7 @@ void Controller::buildBlock(Coordinatus* cord) {
         block->speedLevel = accpath;
     }
 
-
-
+    return (true);
 }// end buildBlock
 
 #endif

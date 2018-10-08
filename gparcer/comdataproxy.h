@@ -25,13 +25,13 @@ public:
     void sendG4Tag(sG4_t *data);
     void sendG6Tag(sG6_t *data);
     void sendG10Tag(sG10_t *data);
-    void sendG20_21Tag(sG20_21_t *data);
+    mito::Action_t *sendG20_21Tag(sG20_21_t *data);
     mito::Action_t *sendG28Tag(sG28_t *data);
     void sendG29_1Tag(sG29_1_t *data);
     void sendG29_2Tag(sG29_2_t *data);
     void sendG30Tag(sG30_t * data);
     mito::Action_t *sendG90_Tag(sG90_t *data);
-    void sendM82_Tag(sM82_t * data);
+    mito::Action_t *sendM82_Tag(sM82_t * data);
     void sendM84_Tag(sM84_t * data);
     mito::Action_t* sendM106_Tag(sM106_t * data);
     mito::Action_t* sendM107_Tag(sM106_t * data);

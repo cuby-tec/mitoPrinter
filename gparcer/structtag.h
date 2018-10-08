@@ -210,10 +210,10 @@ struct sG10_t :NumberedTag {
 
 };
 
-//G20: Set Units to Inches
-//G21: Set Units to Millimeters
+//G20: Set Units to Inches - 2
+//G21: Set Units to Millimeters - 1
 struct sG20_21_t :NumberedTag{
-    bool a;
+    uint8_t a;
     sG20_21_t():a(true){}// Millimeters
     void set(sG20_21_t * src){
         a = src->a;
