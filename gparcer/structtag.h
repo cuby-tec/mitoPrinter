@@ -402,6 +402,12 @@ struct sG92_t:NumberedTag {
         dst->e = e;
         dst->n = n;
     }
+    void init(sG92_t* dst){
+        dst->x = std::nan("1");
+        dst->y = std::nan("2");
+        dst->z = std::nan("3");
+        dst->e = std::nan("4");
+    }
 };
 
 struct sG92_1_t:NumberedTag {

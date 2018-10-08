@@ -20,6 +20,7 @@ enum eOrder{
     eoProfile,      // Задание параметров Profile include Hotend
     eoSegment           // Семент движения.
     , eoHotendControl      // управление Экструдером.
+    , bedTemperaure     // Температура стола.
 };
 
 /**

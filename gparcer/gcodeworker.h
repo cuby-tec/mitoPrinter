@@ -87,6 +87,7 @@ private:
     mito::Action_t* tagM106_Do(sGcode * sgCode); //M106: Fan On
     mito::Action_t *tagM107_Do(sGcode * sgCode); //M107: Fan Off
     mito::Action_t* tagM109_Do(sGcode * sgCode); //M109: Set Extruder Temperature and Wait
+    mito::Action_t* tagM190_Do(sGcode* sgCode);//M190: Wait for bed temperature to reach target temp
     mito::Action_t* tagM82_Do(sGcode * sgCode); //M82: Set extruder to absolute mode
     mito::Action_t* tagM83_Do(sGcode * sgCode); //M83: Set extruder to relative mode
     mito::Action_t* tagM84_Do(sGcode * sgCode); //M84: Stop idle hold

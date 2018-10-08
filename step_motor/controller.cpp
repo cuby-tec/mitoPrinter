@@ -660,7 +660,17 @@ double_t Controller::getPrecicion(uint8_t axis, uint8_t microstep) {
     StepMotor* m = motor[axis];
     lines lm = m->getLineStep;
     result = (m->*lm)(axis);	//( m->*lm)(i)
-	return result;
+    return result;
+}
+
+void Controller::uploadPosition(Coordinatus* cord)
+{
+    for(uint32_t i=0;i<N_AXIS;++i){
+        StepMotor* m = motor[i];
+        lines lm = m->getLineStep;
+        double_t ds = ( m->*lm)(i);
+        cord->position[i] =static_cast<int32_t>(lround(cord->getNextValue(i)/ds));
+    }
 }
 
 #ifdef REMOVED

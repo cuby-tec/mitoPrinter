@@ -20,7 +20,7 @@
 #include <QtGlobal>
 //#include "gparcer/comdata.h"
 #include <string.h>
-
+#include <math.h>
 
 /*
  *     eG0=0, eG1, eG2, eG3, eG4, eG6, eG10, eG28, eG29_1, eG29_2, eG30, eG33
@@ -62,7 +62,7 @@ GcodeWorker::GcodeWorker(QObject *parent) : QObject(parent)
     callTagRef[eM107] = &GcodeWorker::tagM107_Do;
     callTagRef[eM109] = &GcodeWorker::tagM109_Do;
     callTagRef[eM140] = nullptr;
-    callTagRef[eM190] = nullptr;
+    callTagRef[eM190] = &GcodeWorker::tagM190_Do;
     callTagRef[eM550] = nullptr;
     callTagRef[eF] = &GcodeWorker::tagF_Do;
     callTagRef[eS] = nullptr;
@@ -175,13 +175,13 @@ GcodeWorker::buildAction(sGcode *src)
     case eG33:
         break;
     case eG90:
-        (this->*callTagRef[etag])(src); //tagG90_Do
+        action = (this->*callTagRef[etag])(src); //tagG90_Do
         break;
     case eG91:
-        (this->*callTagRef[etag])(src); //tagG91_Do
+        action = (this->*callTagRef[etag])(src); //tagG91_Do
         break;
     case eG92:
-        (this->*callTagRef[etag])(src); //tagG92_Do
+        action = (this->*callTagRef[etag])(src); //tagG92_Do
         break;
     case eG92_1:
         break;
@@ -200,6 +200,7 @@ GcodeWorker::buildAction(sGcode *src)
     case eM140:
         break;
     case eM190:
+        action = (this->*callTagRef[etag])(src); // tagM190 TODO
         break;
     case eM550:
         break;
@@ -574,7 +575,7 @@ GcodeWorker::tagG4_Do(sGcode *sgCode)
     if(valueTag.n == 0)
         valueTag.n = linecounter;
     vTag->set(&valueTag);
-    comproxy->sendG3Tag(vTag);
+    comproxy->sendG4Tag(vTag);
 #endif
     return action;
 }
@@ -1147,7 +1148,7 @@ GcodeWorker::tagG90_Do(sGcode *sgCode)
     }
     if(vTag->n == 0)
         vTag->n = linecounter;
-    comproxy->sendG90_Tag(vTag);
+    action = comproxy->sendG90_Tag(vTag);
     return action;
 }
 
@@ -1178,7 +1179,7 @@ GcodeWorker::tagG91_Do(sGcode *sgCode)
     if(vTag->n == 0)
         vTag->n = linecounter;
 
-    comproxy->sendG90_Tag(vTag);
+    action = comproxy->sendG90_Tag(vTag);
     return action;
 }
 
@@ -1188,7 +1189,8 @@ GcodeWorker::tagG92_Do(sGcode *sgCode)
     mito::Action_t * action = nullptr;
     sG92_t * vTag =  reinterpret_cast<sG92_t *>( arraytag->getTagValue(eG92));
     sG92_t valueTag ;
-    vTag->get(&valueTag);
+//    vTag->get(&valueTag);
+    valueTag.init(&valueTag);
     valueTag.n = 0;
     bool ok = false;
     double dvalue;
@@ -1230,9 +1232,19 @@ GcodeWorker::tagG92_Do(sGcode *sgCode)
     }
     if(valueTag.n == 0)
         valueTag.n = linecounter;
+
+    if(std::isnan(valueTag.x)&&std::isnan(valueTag.y)
+            &&std::isnan(valueTag.z)&&std::isnan(valueTag.e))
+    {
+        valueTag.x = 0.0;
+        valueTag.y = 0.0;
+        valueTag.z = 0.0;
+        valueTag.e = 0.0;
+    }
+
     vTag->set(&valueTag);
 
-    comproxy->sendG92Tag(vTag);
+    action = comproxy->sendG92Tag(vTag);
     return action;
 }
 
@@ -1411,6 +1423,43 @@ GcodeWorker::tagM109_Do(sGcode *sgCode)
     vTag->set(&valueTag);
     action = comproxy->sendM109_Tag(vTag);
     return action;
+}
+
+//M190: Wait for bed temperature to reach target temp
+mito::Action_t*
+GcodeWorker::tagM190_Do(sGcode* sgCode){
+    mito::Action_t * action = nullptr;
+    sM190_t *vTag =  reinterpret_cast<sM190_t *>( arraytag->getTagValue(eM190));
+    bool ok;
+    double dvalue;
+
+    for(int i=0;i<sgCode->param_number;i++){
+        sGparam* gparam = &sgCode->param[i];
+        QString value(clearNumValue(gparam->value));
+        switch (gparam->group){
+        case 'S':
+            dvalue = value.toDouble(&ok);
+            Q_ASSERT(ok);
+            vTag->s = dvalue;
+            break;
+#ifdef MARLIN
+        case 'R':
+            dvalue = value.toDouble(&ok);
+            Q_ASSERT(ok);
+            valueTag.r = dvalue;
+            break;
+#endif
+        case 'N':
+            uint number = QString(gparam->value).toUInt(&ok);
+            Q_ASSERT(ok);
+            if(ok) {vTag->n = number; }
+            break;
+        }
+    }
+    if(vTag->n == 0)
+        vTag->n = linecounter;
+    action = comproxy->sendM190_Tag(vTag);
+
 }
 
 //M82: Set extruder to absolute mode

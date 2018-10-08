@@ -54,6 +54,13 @@ public:
     	return ((double_t)counter/(double_t)frequency);
     }
 
+    /**
+     * @brief uploadPosition
+     * Загрузка вектора position
+     * from nextValue. Used by G92
+     */
+    void uploadPosition(Coordinatus *cord);
+
 private:
     size_t frequency;
 
