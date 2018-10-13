@@ -661,6 +661,7 @@ void ComData::_run()
 {
     //    cout<<"run:"<<gworker->isFileOpened();
     mito::Action_t* action;
+    int queueSize;
     // TODO execute by states;
     switch (runState) {
 
@@ -683,13 +684,17 @@ _run1:
                 goto _run1;
                 break;
             case eSend:
+                if(action->queue.isEmpty())
+                    cout<<"Empty.";
                 while (!action->queue.isEmpty()){
                     ComDataReq_t req = action->queue.dequeue();
                     req.requestNumber = ++MyGlobal::requestIndex;
-                    threadarc.putInArray(&req);
+                    queueSize = threadarc.putInArray(&req);
                 }
+                threadarc.setMdelay(500);
+//                threadarc.setMax_tryCounter(200);
                 threadarc.process();
-                cout<<"process==========<<"<<MyGlobal::requestIndex;
+                cout<<"process==========<<"<<MyGlobal::requestIndex<<"\tqueeSize:"<<queueSize;
                 break;
 
             case eSendWait:

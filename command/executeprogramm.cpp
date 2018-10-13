@@ -1,5 +1,6 @@
 #include "executeprogramm.h"
 #include <QDebug>
+#define cout	qDebug()<<__FILE__<<__LINE__
 
 ExecuteProgramm::ExecuteProgramm(QObject *parent) : QObject(parent)
 {
@@ -29,5 +30,6 @@ void ExecuteProgramm::execute(QFile &stream)
 
 void ExecuteProgramm::finished()
 {
+    cout<<"finished";
     emit sg_executionFinished();
 }

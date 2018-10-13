@@ -98,14 +98,14 @@ ComdataProxy::sendG1Line(sG1_t *data)
 
 
 #if DEBUGLEVEL==1
-    qDebug()<<__FILE__<<__LINE__<<"DIFF:"<<"X:"<<diff(X) <<"\tY:"<<diff(Y)<<"\tZ:"<<diff(Z)<<"\tline:"<<line_counter;
+    qDebug()<<__FILE__<<__LINE__<<"DIFF:"<<"X:"<<diff(X) <<"\tY:"<<diff(Y)<<"\tZ:"<<diff(Z)<<"\tE:"<<diff(E)<<"\tline:"<<data->n;
 #endif
     bool build = controller->buildBlock(coordinatus);
     if(build==true){
         //    ComDataReq_t* req = buildComdata(data->n);
         RequestFactory *factory = new RequestFactory();
         ComDataReq_t* req = factory->build(data->n);
-        req->requestNumber = line_counter;
+//        req->requestNumber = line_counter;
         action->queue.enqueue(*req);
         delete req;
 

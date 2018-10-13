@@ -166,7 +166,7 @@ Controller::buildBlock(Coordinatus* cord) {
         //radian_deccel
         double_t rdcc = k * motor[i]->getDecceleration();
 
-        //accel steps
+        //accel steps: max _ s _ lim
         double_t acs = pow(G4,2.0)/(2.0*motor[i]->getAlfa(i)*racc);
 
         //accel_lim
@@ -180,6 +180,28 @@ Controller::buildBlock(Coordinatus* cord) {
 
         //speed_path
         uint32_t speed_path = maxvector[i] - (accpath + dccpath);
+
+        //schem
+        if(accpath == 0){
+            block->schem[0]=2;  // no acceleration
+        }else{
+            block->schem[0]=1;  // acceleration
+        }
+
+        if(speed_path == 0)
+            block->schem[1] = 3;	// decceleration
+        else{
+            block->schem[1] = 2;	// равномерно
+        }
+
+
+        if(dccpath == 0){
+            block->schem[2] = 2; // no decceleration
+        }else{
+            block->schem[2] = 3; // decceleration
+        }
+
+
 
         //C0
         // double_t cnt = sqrt(2*motor[i]->getAlfa(i)/accel[i])*frequency;
@@ -195,9 +217,6 @@ Controller::buildBlock(Coordinatus* cord) {
         block->nominal_rate = nominal_rate;
         block->final_rate = cnt;
 
-        block->schem[0] = 1;	// Разгон
-        block->schem[1] = 2;	// равномерно
-        block->schem[2] = 3;	// торможение
         block->microstep = 0;   //TODO Micro-step
         block->axis_mask = 0;
         if(block->steps > 0)

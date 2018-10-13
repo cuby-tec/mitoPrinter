@@ -1,6 +1,8 @@
 #include "threadarc.h"
 #include <QDebug>
 
+#define cout	qDebug()<<__FILE__<<__LINE__
+
 ThreadArc::ThreadArc()
 {
     abort = false;
@@ -41,7 +43,7 @@ void ThreadArc::run()
             }
 
             ComDataReq_t* request = &buffer;
-
+volatile uint32_t line = request->payload.instrument1_parameter.head.linenumber;
 //            request->requestNumber = ++MyGlobal::requestIndex;
             try_counter = 0;
             //
@@ -68,9 +70,11 @@ void ThreadArc::run()
                 if(!(status.modelState.reserved1&COMMAND_ACKNOWLEDGED))
                 {
                     try_counter++;
+                    cout<<"number:"<<status.currentSegmentNumber <<"\tqueue:"<<status.freeSegments<<"\tstate:"<<status.modelState.modelState;
                     msleep(mdelay);
                 }
                 if(try_counter>=max_tryCounter){
+                    cout<<"number:"<<status.frameNumber <<"\tqueue:"<<status.freeSegments;
                     break;
                 }
 

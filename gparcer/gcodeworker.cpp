@@ -1758,7 +1758,7 @@ GcodeWorker::readCommandLine()
 
     }
 #if LEVEL==0
-    qDebug()<<__FILE__<<__LINE__<<"result:"<<result<<"\tgroup:"<<gcode.group<<gcode.value;
+    qDebug()<<__FILE__<<__LINE__<<"\tgroup:"<<gcode.group<<gcode.value<<"  line"<<line;
 #endif
     //checkBox_immediately
     action = buildAction(dst);
