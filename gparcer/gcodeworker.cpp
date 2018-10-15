@@ -299,7 +299,7 @@ GcodeWorker::tagG0_Do(sGcode *sgCode)
     if(valueTag.n == 0)
         valueTag.n = linecounter;
     vTag->set(&valueTag);
-    syncXYZ(valueTag.x, valueTag.y, valueTag.z);
+    syncXYZ(valueTag.x, valueTag.y, valueTag.z, valueTag.e);
 
     action = comproxy->sendG0Line(vTag);
 #endif
@@ -382,7 +382,7 @@ GcodeWorker::tagG1_Do(sGcode *sgCode)
     if(valueTag.n == 0)
         valueTag.n = linecounter;
     vTag->set(&valueTag);
-    syncXYZ(valueTag.x, valueTag.y, valueTag.z);
+    syncXYZ(valueTag.x, valueTag.y, valueTag.z, valueTag.e);
     action = comproxy->sendG1Line(vTag);
 #endif
 
@@ -1594,27 +1594,31 @@ GcodeWorker::clearNumValue(QString value)
     return value;
 }
 
-void GcodeWorker::syncXYZ(double x, double y, double z)
+void GcodeWorker::syncXYZ(double_t x, double_t y, double_t z, double_t e)
 {
 #if VERSION==1
     sG0_t * vTag0 =  reinterpret_cast<sG0_t *>( arraytag->getTagValue(eG0));
     vTag0->x = x;
     vTag0->y = y;
     vTag0->z = z;
+    vTag0->e = e;
 
     sG1_t * vTag1 =  reinterpret_cast<sG1_t *>( arraytag->getTagValue(eG1));
     vTag1->x = x;
     vTag1->y = y;
     vTag1->z = z;
+    vTag1->e = e;
 
     sG2_t * vTag2 =  reinterpret_cast<sG2_t *>( arraytag->getTagValue(eG2));
     vTag2->x = x;
     vTag2->y = y;
+    vTag2->e = e;
 //    vTag2->z = z;
 
     sG3_t * vTag3 =  reinterpret_cast<sG3_t *>( arraytag->getTagValue(eG2));
     vTag3->x = x;
     vTag3->y = y;
+    vTag3->e = e;
 //    vTag3->z = z;
 #endif
 

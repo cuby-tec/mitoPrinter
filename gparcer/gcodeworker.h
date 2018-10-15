@@ -120,7 +120,7 @@ private:
 
     QString clearNumValue(QString value);
 
-    void syncXYZ(double x, double y, double z);
+    void syncXYZ(double_t x, double_t y, double_t z, double_t e);
     void syncXY(double x, double y);
 
 };

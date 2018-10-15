@@ -19,6 +19,21 @@
 
 #define BUILDBLOCKVERSION   2
 
+#define ACCELERATION    1
+#define FLATMOTION      2
+#define DECCELERATION   3
+#define SCH(A,B,C) A|(B<<2)|(C<<4)
+
+// "/-\"
+#define SCHEMSTATE_1    SCH(ACCELERATION,FLATMOTION,DECCELERATION)
+//"---"
+#define SCHEMSTATE_2    SCH(FLATMOTION,FLATMOTION,FLATMOTION)
+//"\_/"
+#define SCHEMSTATE_3    SCH(DECCELERATION,FLATMOTION,ACCELERATION)
+
+
+
+
 
 Controller::Controller()
 {
@@ -158,7 +173,8 @@ Controller::buildBlock(Coordinatus* cord) {
 
         //=radian_speed*(D4)
         k = static_cast<double_t>( maxvector[i]) / static_cast<double_t>(maxLenLine);
-        uint32_t G4 =  static_cast<uint32_t>( k* motor[i]->getAngular_velocity_rad_value());  //G4
+//        uint32_t G4 =  static_cast<uint32_t>( k* motor[i]->getAngular_velocity_rad_value());  //G4
+        double_t G4 =  ( k* motor[i]->getAngular_velocity_rad_value());  //G4
 
         //radian_accel
         double_t racc = k * motor[i]->getAcceleration();
@@ -183,39 +199,70 @@ Controller::buildBlock(Coordinatus* cord) {
 
         //schem
         if(accpath == 0){
-            block->schem[0]=2;  // no acceleration
+            block->schem[0]=FLATMOTION;  //2 no acceleration
         }else{
-            block->schem[0]=1;  // acceleration
+            block->schem[0]=ACCELERATION;  //1 acceleration
         }
 
         if(speed_path == 0)
-            block->schem[1] = 3;	// decceleration
+            block->schem[1] = DECCELERATION;	//3 decceleration
         else{
-            block->schem[1] = 2;	// равномерно
+            block->schem[1] = FLATMOTION;	//2 равномерно
         }
 
 
         if(dccpath == 0){
-            block->schem[2] = 2; // no decceleration
+            block->schem[2] = FLATMOTION; //2 no decceleration
         }else{
-            block->schem[2] = 3; // decceleration
+            block->schem[2] = DECCELERATION; //3 decceleration
         }
 
-
+        uint32_t schemState = 0;
+        schemState |= block->schem[0];
+        schemState |=  static_cast<uint32_t>(block->schem[1])<<2;
+        schemState |= static_cast<uint32_t>(block->schem[2])<<4;
 
         //C0
         // double_t cnt = sqrt(2*motor[i]->getAlfa(i)/accel[i])*frequency;
         uint32_t cnt = static_cast<uint32_t>( frequency * sqrt(2.0 * motor[i]->getAlfa(i)/racc ) );
-
         // nominal_rate
         uint32_t nominal_rate = static_cast<uint32_t>(frequency * motor[i]->getAlfa(i)/G4 );
 
+        if(nominal_rate > 16777214) // 0xfffffe
+            nominal_rate = 0xfffffe;
+
+        switch (schemState) {
+        case SCHEMSTATE_1:
+            block->initial_rate = cnt;
+            block->final_rate = cnt;
+            block->nominal_rate = nominal_rate;
+
+            block->decelerate_after = block->steps - dccpath;
+
+            break;
+
+        case SCHEMSTATE_2:
+            block->initial_rate = nominal_rate;
+            block->final_rate = nominal_rate;
+            block->nominal_rate = nominal_rate;
+
+            block->decelerate_after = block->steps + 1;
+
+            break;
+
+        case SCHEMSTATE_3:
+//TODO acceleration scheme
+            break;
+
+        }
+
+
+//        block->initial_rate = cnt;
+//        block->final_rate = cnt;
+
         block->steps = maxvector[i];
         block->accelerate_until = accpath;
-        block->decelerate_after = block->steps - dccpath;
-        block->initial_rate = cnt;
-        block->nominal_rate = nominal_rate;
-        block->final_rate = cnt;
+//        block->decelerate_after = block->steps - dccpath;
 
         block->microstep = 0;   //TODO Micro-step
         block->axis_mask = 0;
