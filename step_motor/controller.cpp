@@ -113,6 +113,62 @@ double_t Controller::getPath_mm(uint8_t axis,int32_t steps) {
 	return (result);
 }
 
+void Controller::buildCircleStep( Coordinatus* cord) {
+    int32_t target_steps;
+    block_state_t* blocks = cord->nextBlocks;
+    for(uint32_t i=0;i<N_AXIS;++i){
+        block_state_t* block = &blocks[i];
+        memset(block,0,sizeof (block_state_t));
+        StepMotor* m = motor[i];
+        lines lm = m->getLineStep;
+        double_t ds = ( m->*lm)(i);
+
+        target_steps = static_cast<int32_t>(lround(cord->getNextValue(i)/ds));
+        int32_t stp = target_steps-cord->position[i];
+
+
+//        cord->nextBlocks[i].steps =  static_cast<uint32_t>( target_steps);
+        block->steps = static_cast<uint32_t>( abs(stp));
+
+        cord->position[i] = target_steps;
+        if(stp > 0)
+            block->direction_bits = edForward;
+        else
+            block->direction_bits = edBackward;
+
+        if(block->steps > 0)
+            block->axis_mask |= (1<<i);
+        else
+            continue;
+
+        block->schem[0] = FLATMOTION;
+        block->schem[1] = FLATMOTION;
+        block->schem[2] = FLATMOTION;
+
+
+        //radian_accel
+        double_t racc = m->getAcceleration();
+        //C0
+        uint32_t cnt = static_cast<uint32_t>( frequency * sqrt(2.0 * m->getAlfa(i)/racc ) );
+
+//        double_t G4 =   m->getAngular_velocity_rad_value();  //G4
+//        uint32_t nominal_rate = static_cast<uint32_t>(frequency * m->getAlfa(i)/G4 );
+
+
+
+
+        block->initial_rate =cnt;// nominal_rate;
+        block->final_rate = cnt;//nominal_rate;
+        block->nominal_rate = cnt;//nominal_rate;
+
+        block->decelerate_after = block->steps + 1;
+
+        block->microstep = 0;   //TODO Micro-step
+
+    }
+
+}
+
 void Controller::uploadMotorData() {
     motor[X_AXIS]->setAcceleration(static_cast<double_t>(profileData->acceleration[X_AXIS]));
     motor[Y_AXIS]->setAcceleration(static_cast<double_t>(profileData->acceleration[Y_AXIS]));
@@ -130,16 +186,16 @@ void Controller::uploadMotorData() {
 #if BUILDBLOCKVERSION == 2
 bool
 Controller::buildBlock(Coordinatus* cord) {
-    double_t path[N_AXIS];						//	B2
+//    double_t path[N_AXIS];						//	B2
     int32_t target_steps[N_AXIS];
     double_t k;
 
     block_state_t* blocks = cord->nextBlocks;
 
-    for(size_t i=0;i<N_AXIS;i++){
-        path[i] = cord->getNextValue(i) - cord->getCurrentValue(i);
+//    for(size_t i=0;i<N_AXIS;i++){
+//        path[i] = cord->getNextValue(i) - cord->getCurrentValue(i);
 //		qDebug()<<"Controller[74]"<<" path:"<< path[i];
-    }
+//    }
 
     //[4] Длина линии в шагах		C23
     uint32_t maxvector[N_AXIS];
@@ -154,7 +210,8 @@ Controller::buildBlock(Coordinatus* cord) {
         target_steps[i] = static_cast<int32_t>(lround(cord->getNextValue(i)/ds));
         int32_t stp = target_steps[i]-cord->position[i];
         maxvector[i] = static_cast<uint32_t>(abs(stp));
-        cord->nextBlocks[i].steps = maxvector[i];
+//        cord->nextBlocks[i].steps = maxvector[i];
+        block->steps = maxvector[i];
         cord->position[i] = target_steps[i];
         if(stp > 0)
             block->direction_bits = edForward;
@@ -260,7 +317,7 @@ Controller::buildBlock(Coordinatus* cord) {
 //        block->initial_rate = cnt;
 //        block->final_rate = cnt;
 
-        block->steps = maxvector[i];
+//        block->steps = maxvector[i];
         block->accelerate_until = accpath;
 //        block->decelerate_after = block->steps - dccpath;
 
@@ -730,6 +787,18 @@ double_t Controller::getPrecicion(uint8_t axis, uint8_t microstep) {
     result = (m->*lm)(axis);	//( m->*lm)(i)
     return result;
 }
+
+double_t
+Controller::getPrecicion(uint8_t axis)
+{
+	double_t result;
+//	motor[axis]->setMicrostep(axis,microstep);
+    StepMotor* m = motor[axis];
+    lines lm = m->getLineStep;
+    result = (m->*lm)(axis);	//( m->*lm)(i)
+    return result;
+}
+
 
 void Controller::uploadPosition(Coordinatus* cord)
 {

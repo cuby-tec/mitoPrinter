@@ -1,5 +1,6 @@
 #include "comdataproxy.h"
 #include "links/ComDataReq_t.h"
+#include "geometry/Arc.h"
 
 #include "mitoaction.h"
 
@@ -121,13 +122,88 @@ ComdataProxy::sendG1Line(sG1_t *data)
 }
 
 //Circle motion
-void ComdataProxy::sendG2Line(sG2_t *data)
+mito::Action_t*
+ComdataProxy::sendG2Line(sG2_t *data)
 {
     //TODO
+    mito::Action_t *action = new mito::Action_t;
+    RequestFactory *factory = new RequestFactory();
+
     line_counter++;
 #if DEBUGLEVEL==1
     qDebug()<<__FILE__<<__LINE__<<"G2:"<<"x:"<<data->x <<"\ty:"<<data->y<<"\ti:"<<data->i<<"\tj:"<<data->j;
 #endif
+
+// ARC
+    Arc* arc = new Arc();
+    Point* start = new Point(coordinatus->getNextValue(X_AXIS),coordinatus->getNextValue(Y_AXIS));
+    arc->setStart(*start);
+    Point end(data->x,data->y);
+    arc->setEnd(end);
+    Point center(data->i,data->j);
+    arc->setCenter(center);
+
+    //TODO precicion for X and Y, difference.
+    double_t precicion = controller->getPrecicion(X_AXIS);
+    arc->setPrecicion(precicion);
+
+    arc->calculate();
+
+    coordinatus->moveNextToCurrent();
+
+    Point pStart = arc->getStart();
+    Point pCurrent = *start;
+    int32_t d20[3][2] = {{0,0},{0,0},{0,0}};
+    double_t e_point = coordinatus->getCurrentValue(E_AXIS);
+    double_t delta_e = fabs((data->e - e_point)/arc->getPointsNumber());
+
+    for(uint32_t i=1;i<arc->getPointsNumber();i++){
+        Point p = arc->getPoint(i); // Line 611
+        Point dp = p - *start;
+
+        d20[0][0] = static_cast<int32_t>( trunc(dp.x/precicion));
+        d20[0][1] = static_cast<int32_t>( trunc(dp.y/precicion));
+
+//        bool h20 = d20[0][0] ^ d20[1][0];
+//        bool i20 = d20[0][1] ^ d20[1][1];
+
+        d20[2][0] = d20[0][0] - d20[1][0];
+        d20[2][1] = d20[0][1] - d20[1][1];
+
+        d20[1][0] = d20[0][0];
+        d20[1][1] = d20[0][1];
+
+//        if((!h20)&&(!i20))
+        if((d20[2][0]==0)&&(d20[2][1]==0))
+            continue;
+
+        coordinatus->setWorkValue(X_AXIS,p.x);
+        coordinatus->setWorkValue(Y_AXIS,p.y);
+        coordinatus->setWorkValue(E_AXIS,e_point + delta_e*i);
+        coordinatus->moveWorkToNext();
+//        controller->buildCircleStep(coordinatus);
+        bool build = controller->buildBlock(coordinatus);
+
+        if(build==true){
+            //    buildComdata(data->n);
+            ComDataReq_t* req = factory->build(data->n);
+            req->requestNumber = line_counter;
+            action->queue.enqueue(*req);
+            delete req;
+
+//            ComDataReq_t &r = action->queue.head();//DEBUG
+//            cout<<r.requestNumber;// DEBUG
+
+        }
+
+
+
+    }
+    action->a = eSend;
+
+
+// arc
+    return action;
 }
 
 //Circle motion

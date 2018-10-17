@@ -49,6 +49,11 @@ public:
      */
     double_t getPrecicion(uint8_t axis, uint8_t microstep);
 
+    /**
+     * Величина шага для двигателя оси.
+     */
+    double_t getPrecicion(uint8_t axis);
+
     //  Длительность работы счётчика.
     double_t getTimeOfCounter(uint32_t counter){
     	return ((double_t)counter/(double_t)frequency);
@@ -60,6 +65,8 @@ public:
      * from nextValue. Used by G92
      */
     void uploadPosition(Coordinatus *cord);
+
+    void buildCircleStep(Coordinatus* cord );
 
 private:
     size_t frequency;

@@ -20,7 +20,7 @@ public:
 
     mito::Action_t *sendG0Line(sG0_t *data);
     mito::Action_t* sendG1Line(sG1_t *data);
-    void sendG2Line(sG2_t *data);
+    mito::Action_t *sendG2Line(sG2_t *data);
     void sendG3Line(sG3_t *data);
     void sendG4Tag(sG4_t *data);
     void sendG6Tag(sG6_t *data);
