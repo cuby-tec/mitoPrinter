@@ -167,7 +167,8 @@ RequestFactory::build(uint linenumber)
             control->axis = bstate->axis_mask;
 
         }
+#if LEVEL==1
         cout<<segment->axis[X_AXIS].steps<<"\t"<<segment->axis[Y_AXIS].steps<<"\tline"<<segment->head.linenumber;
-
+#endif
         return req;
 }

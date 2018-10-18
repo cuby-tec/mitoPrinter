@@ -97,8 +97,14 @@ Point Arc::getPoint(size_t number) {
 	double_t alfa1 = beta_start - calcAngleX(alphaP,center);
 	double_t beta1 = beta_start - asin((start.y - center.y+precicion*number)/radious);
 */
-	result.x = center.x + radious*cos(beta_start - number*alfa);
-	result.y = center.y + radious*sin(beta_start - number*alfa);
+	if(clockWise){ //CLOCKWISE
+		result.x = center.x + radious*cos(beta_start - number*alfa);
+		result.y = center.y + radious*sin(beta_start - number*alfa);
+
+	}else{//COUNTERCLOCKWISE
+		result.x = center.x + radious*cos(beta_start + number*alfa);
+		result.y = center.y + radious*sin(beta_start + number*alfa);
+	}
 	return (result);
 }
 

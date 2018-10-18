@@ -14,6 +14,9 @@
 
 #include <QString>
 
+#define CLOCKWISE			true
+#define COUNTERCLOCKWISE	false
+
 
 class Arc {
 public:

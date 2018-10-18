@@ -144,7 +144,7 @@ GcodeWorker::buildAction(sGcode *src)
         action = (this->*callTagRef[etag])(src); //tagG2_Do
         break;
     case eG3:
-        (this->*callTagRef[etag])(src); //tagG3_Do
+        action = (this->*callTagRef[etag])(src); //tagG3_Do
          break;
     case eG4:
         (this->*callTagRef[etag])(src); //tagG4_Do
@@ -532,7 +532,7 @@ GcodeWorker::tagG3_Do(sGcode *sgCode)
         valueTag.n = linecounter;
     vTag->set(&valueTag);
     syncXY(valueTag.x, valueTag.y);
-    comproxy->sendG3Line(vTag);
+    action = comproxy->sendG3Line(vTag);
 #endif
     return action;
 }
