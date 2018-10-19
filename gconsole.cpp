@@ -80,6 +80,10 @@ GConsole::setupGconsole()
 
     connect(ui->checkBox_immediately,SIGNAL(stateChanged(int)),this,SLOT(on_checkBox_immediately_stateChanged(int)) );
     checkBox_immediately = ui->checkBox_immediately->isChecked();
+
+    QPushButton* run = ui->pushButton_linestep;
+    connect(run,SIGNAL(clicked()),this, SLOT(on_pushButton_linestep_clicked()) );
+
 }
 
 

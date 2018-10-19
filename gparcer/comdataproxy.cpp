@@ -455,6 +455,10 @@ ComdataProxy::sendM104Tag(sM104_t *data)
 //    coordinatus->setTemperature(data->s);
     sHotendControl_t *hend = coordinatus->getHotend();
     hend->temperature = static_cast<int32_t>(data->s*10);
+    if(data->s == 0)
+        hend->_switch.heater = 0;
+    else
+        hend->_switch.heater = 1;
 
 #if DEBUGLEVEL==1
     qDebug()<<__FILE__<<__LINE__<<"M104:"<< data->s<<"coordinatus:"<<hend->temperature/10;

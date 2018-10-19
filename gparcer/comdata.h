@@ -67,6 +67,11 @@ enum runStates{
     , ersEOF // Конец файла.
 };
 
+enum goCondition{
+    egcFile // Обработка файла
+    , egcLine // обработка строки.
+};
+
 
 class ComData : public QObject
 {
@@ -117,6 +122,8 @@ private slots:
 
 
 private:
+
+    goCondition condition;
 
     bool acknowledge_flag;
     int a;

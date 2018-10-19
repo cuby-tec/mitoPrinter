@@ -22,6 +22,7 @@
 
 ComData::ComData(QObject *parent) : QObject(parent)
   ,steps(0)
+  ,condition(egcLine)
 {
 
     memset(&request,'\0',sizeof(ComDataReq_t));
@@ -509,7 +510,32 @@ ComData::build(sGcode *sgcode)
 // from GConsole
 void ComData::buildComData(sGcode *sgcode, bool checkBox_immediately)
 {
-	//    ComDataReq_t* req = getRequest();
+    int queueSize;
+    mito::Action_t* action = nullptr;
+    condition = egcLine;
+    gworker = new GcodeWorker;
+    action = gworker->buildAction(sgcode);
+    switch (action->a) {
+    case eSend:
+        if(action->queue.isEmpty()){
+            cout<<"Empty.";
+        }else{
+            while (!action->queue.isEmpty()){
+                ComDataReq_t req = action->queue.dequeue();
+                req.requestNumber = ++MyGlobal::requestIndex;
+                queueSize = threadarc.putInArray(&req);
+            }
+            threadarc.setMdelay(500);
+            //                threadarc.setMax_tryCounter(200);
+            threadarc.process();
+            cout<<"process==========<<"<<MyGlobal::requestIndex<<"\tqueeSize:"<<queueSize;
+        }
+        break;
+    }
+    delete gworker;
+
+#if VERSION == 11
+    //    ComDataReq_t* req = getRequest();
 	ComDataReq_t* req = build(sgcode);
 
     switch(state){
@@ -622,16 +648,16 @@ void ComData::buildComData(sGcode *sgcode, bool checkBox_immediately)
 		    // sending
 		    threadarc.process();
 		//================
-
 		break;
 	}
+#endif
 
 
 }
 
 void ComData::run(GcodeWorker* gworker)
 {
-    //TODO
+    condition = egcFile;
     this->gworker = gworker;
 //    connect(&testT, SIGNAL(timeout()),this ,SLOT(testTimer()) );
 //    testT.start(200);
@@ -818,9 +844,19 @@ void ComData::updateStatus(const Status_t *status)
 
 //    runState = ersRunning;
     cout<<"updateStatus" <<"\t" <<status->modelState.modelState;
-    _run();
+
+    switch(condition)
+    {
+    case egcFile:
+        _run();
+        break;
+    case egcLine:
+        break;
+    }
 
 }
+
+
 
 
 #define DEBUG_no

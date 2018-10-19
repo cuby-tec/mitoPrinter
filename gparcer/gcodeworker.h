@@ -46,6 +46,8 @@ public:
 
     mito::Action_t *readCommandLine();
 
+    mito::Action_t *buildAction(sGcode * src);
+
 public slots:
     void queueReady();
 
@@ -62,7 +64,6 @@ private:
     ArrayTag *arraytag; // Data storege
 #endif
 
-    mito::Action_t *buildAction(sGcode * src);
 
     mito::Action_t* tagG0_Do(sGcode * sgCode);
     mito::Action_t* tagG1_Do(sGcode * sgCode);
