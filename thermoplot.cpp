@@ -9,7 +9,7 @@
 
 //--------------- defs
 #define TIMERINUSE 1
-
+#define cout qDebug()<<__FILE__<<__LINE__
 
 
 ThermoPlot::ThermoPlot(QWidget* parent) : QWidget(parent)
@@ -295,11 +295,11 @@ ThermoPlot::writeLog()
 
 }
 
+#define TEMPERATURESCALE   12
 // SLOT
 void
 ThermoPlot::updateStatus(const Status_t *status)
 {
-
     this->status = status;
     writeLog();
 //TODOH ERROR memory
@@ -320,9 +320,9 @@ ThermoPlot::updateStatus(const Status_t *status)
 //      plot->graph(1)->addData(key, qCos(key)+qrand()/(double)RAND_MAX*0.5*qSin(key/0.4364));
       if(std::isnan(status->temperature))
       {
-          plot->graph(0)->addData(key, oldTemperature);
+          plot->graph(0)->addData(key, static_cast<double_t>( oldTemperature));
       }else{
-          plot->graph(0)->addData(key, status->temperature);
+          plot->graph(0)->addData(key, static_cast<double_t>(status->temperature)); //status->temperature
           oldTemperature = status->temperature;
       }
 
@@ -333,6 +333,12 @@ ThermoPlot::updateStatus(const Status_t *status)
     }
     // make key axis range scroll with the data (at a constant range size of 8):
     plot->xAxis->setRange(key, 8, Qt::AlignRight);
+    //Range customPlot->yAxis->setRange(-1.2, 40);
+    double_t meanTemp = floor( static_cast<double_t>( status->temperature/TEMPERATURESCALE))*TEMPERATURESCALE;
+    cout<<"mean:"<<meanTemp;
+    plot->yAxis->setRange(meanTemp-20.0,meanTemp+20.0);
+
+
     plot->replot();
 /*
     // calculate frames per second:
