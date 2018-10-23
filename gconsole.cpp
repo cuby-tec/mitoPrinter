@@ -15,6 +15,8 @@
 
 #include <QTextBlock>
 
+#define cout qDebug()<<__FILE__<<__LINE__
+
 GConsole::GConsole(QWidget *parent) : QWidget(parent)
   , ui(new Ui::GConsole)
 {
@@ -167,7 +169,8 @@ GConsole::updateStatus(const Status_t* status)
 //	uint32_t rnumber = thread.getRequestNumber();
 //    qDebug()<<"GConsole[125]:"<<status->frameNumber<<"\tsended:"<<rnumber<<"\tquee:"<<status->freeSegments;
 //    coordinatuswindow->update(status,req_builder);
-    if(status->modelState.modelState == ehIdle)
+    cout<<"status:"<<status->modelState.modelState;
+//    if(status->modelState.modelState == ehIdle)
         setEnabledCursor();
 }
 
@@ -232,6 +235,7 @@ GConsole::on_pushButton_linestep_clicked()
 
 //    qDebug()<<"GConsole[60] Clicked line:"<<bnumber ;
 
+
     char cmdbuffer[80];
     char* pbuffer;
     size_t size = sizeof(cmdbuffer);
@@ -263,8 +267,10 @@ GConsole::on_pushButton_linestep_clicked()
 //        uia->label_commandLine->setText(QString(error2)+QString("%1").arg(parce_error) );
         ui->label_commandLine->setText(msg1+ QString(sgcode.group)+QString(sgcode.value) );
 //        buildComData(sgcode); // sGcode* sgcode
-        if( sgcode.group & 0x50)
+        if( sgcode.group & 0x50){
             req_builder->buildComData(&sgcode,checkBox_immediately);
+            setEnabledCursor(); //TODO Wait a signal of execution.
+        }
 
     }else{
         ui->label_commandLine->setText(QString(error1)+QString("%1").arg(parce_error) );

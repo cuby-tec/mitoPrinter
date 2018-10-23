@@ -41,6 +41,9 @@
 
 #define SHAFT_PITCH	1.25 // Шаг винта[mm]
 
+// диаметр вала экструдера с учётом проточки
+#define shaft_diameter   6.6//7
+
 #endif
 
 #ifdef _17HS4401

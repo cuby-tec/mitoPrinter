@@ -26,7 +26,7 @@ void ThermoPIDDialog::setuButtomBox()
     buttonBox = ui->buttonBox;
 
     uploadButton = new QPushButton(tr("Upload"));
-    uploadButton->setToolTip("Load data to controllerr.");
+    uploadButton->setToolTip("Load data to controller.");
     buttonBox->addButton(uploadButton,QDialogButtonBox::ActionRole);
     connect(uploadButton,SIGNAL(clicked(bool)),this,SLOT(upload()));
 }
@@ -72,8 +72,8 @@ ThermoPIDDialog::upload()
 {
     int result_exch;
 
-    qDebug()<< "Upload" << "ThermoPIDDialog::upload[65]";
-
+    qDebug()<<__FILE__<<__LINE__<< "Upload: do nothing";
+/*
     exch->buildComData(&request,eoProfile);
 
     request.payload.instrument_hotend.temperature = (int32_t)(p_temperaature*1000);
@@ -96,7 +96,7 @@ ThermoPIDDialog::upload()
     }
 
      thermo_gmutex.unlock();
-
+*/
 }
 
 void ThermoPIDDialog::on_temprature_lineEdit_textEdited(const QString &arg1)
@@ -105,6 +105,7 @@ void ThermoPIDDialog::on_temprature_lineEdit_textEdited(const QString &arg1)
     p_temperaature = arg1.toFloat(&ok);
     if(!ok)
         qDebug()<<"Error convertion to a float" << "ThermoPIDDialog[55]";
+    profile->set_TEMPERATURE(arg1);
 }
 
 void ThermoPIDDialog::on_tpropotional_lineEdit_textEdited(const QString &arg1)
@@ -113,6 +114,7 @@ void ThermoPIDDialog::on_tpropotional_lineEdit_textEdited(const QString &arg1)
     p_propotional = arg1.toFloat(&ok);
     if(!ok)
         qDebug()<<"Error convertion to a float" << "ThermoPIDDialog[63]";
+    profile->set_PROPTIONAL(arg1);
 }
 
 
@@ -122,6 +124,7 @@ void ThermoPIDDialog::on_tintegral_lineEdit_textEdited(const QString &arg1)
     p_integral = arg1.toFloat(&ok);
     if(!ok)
         qDebug()<<"Error convertion to a float" << "ThermoPIDDialog[72]";
+    profile->set_INTEGRAL(arg1);
 }
 
 void ThermoPIDDialog::on_tderivative_lineEdit_textEdited(const QString &arg1)
@@ -130,4 +133,5 @@ void ThermoPIDDialog::on_tderivative_lineEdit_textEdited(const QString &arg1)
     p_derived = arg1.toFloat(&ok);
     if(!ok)
         qDebug()<<"Error convertion to a float" << "ThermoPIDDialog[80]";
+    profile->set_DERIVATIVE(arg1);
 }

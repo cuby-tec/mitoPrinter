@@ -112,16 +112,22 @@ private:
 
     void sendSignalCoord();
 
+#define KD  0.12
+#define KP  0.8//0.75
+#define KI  1.0 - (KP + KD)
+
+
     Coordinatus()
     {
+        double_t ki = KI;
         absrel = true; // true - absolute, false - relative
         extruder_mode = true; // true - absolute, false - relative
         units = 1;
         hotend._switch.cooler = 0;
         hotend._switch.heater = 0;
-        hotend.kd = static_cast<int32_t>(12.5*1000); //#define KD  12.5//0.1//0.013
-        hotend.kp = static_cast<int32_t>(0.6*1000); //#define KP  0.6//0.75
-        hotend.ki = static_cast<int32_t>(0.1*1000) ;//#define KI  0.1
+        hotend.kd = static_cast<int32_t>(KD*1000); //#define KD 0.12  12.5//0.1//0.013
+        hotend.kp = static_cast<int32_t>(KP*1000); //#define KP  0.6//0.75
+        hotend.ki = static_cast<int32_t>(ki*1000) ;//#define KI  0.1
         hotend.temperature = static_cast<int32_t>(40*10) ;//#define SETPOINT    40
     }
 

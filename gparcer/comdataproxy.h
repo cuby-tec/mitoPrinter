@@ -60,6 +60,9 @@ private:
 
     RequestFactory* factory;
 
+    void loadHotendFromProfile(sHotendControl_t* shc);
+
+
 };
 
 #endif // COMDATAPROXY_H

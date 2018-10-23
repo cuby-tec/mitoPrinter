@@ -335,7 +335,7 @@ ThermoPlot::updateStatus(const Status_t *status)
     plot->xAxis->setRange(key, 8, Qt::AlignRight);
     //Range customPlot->yAxis->setRange(-1.2, 40);
     double_t meanTemp = floor( static_cast<double_t>( status->temperature/TEMPERATURESCALE))*TEMPERATURESCALE;
-    cout<<"mean:"<<meanTemp;
+//    cout<<"mean:"<<meanTemp;
     plot->yAxis->setRange(meanTemp-20.0,meanTemp+20.0);
 
 

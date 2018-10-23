@@ -514,6 +514,8 @@ void ComData::buildComData(sGcode *sgcode, bool checkBox_immediately)
     mito::Action_t* action = nullptr;
     condition = egcLine;
     gworker = new GcodeWorker;
+    QMessageBox* msgBox;
+
     action = gworker->buildAction(sgcode);
     switch (action->a) {
     case eSend:
@@ -530,6 +532,16 @@ void ComData::buildComData(sGcode *sgcode, bool checkBox_immediately)
             threadarc.process();
             cout<<"process==========<<"<<MyGlobal::requestIndex<<"\tqueeSize:"<<queueSize;
         }
+        break;
+
+    case eNext:
+//        emit sg_updateStatus(nullptr);
+        msgBox = new QMessageBox;
+        msgBox->setText("No motion requered.");
+        msgBox->exec();
+        break;
+
+    case eEOF:
         break;
     }
     delete gworker;

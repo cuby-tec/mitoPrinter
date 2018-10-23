@@ -5,8 +5,6 @@
 #include "math.h"
 
 //--------- defs
-// диаметр вала экструдера с учётом проточки
-#define shaft_diameter   7
 
 
 StepMotor::StepMotor(eMotorType type)

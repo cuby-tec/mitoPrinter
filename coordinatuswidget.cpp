@@ -54,8 +54,13 @@ void CoordinatusWidget::updateStatus(const Status_t *status)
     ui->c_label_modelState->setText(QString(t_state));
 
     ui->c_label_temperature->setText(QString("%1 C").arg(status->temperature,0,'g',4) );//&deg;
+    int32_t derrior = static_cast<int32_t>(status->instrument2_parameter);
+    int32_t out = static_cast<int32_t>(status->instrument3_parameter);
+    int32_t dinteg = static_cast<int32_t>(status->instrument4_parameter);
 
-    ui->label_contiCnt->setText(QString("%1").arg(status->currentSegmentNumber) );
+//    ui->label_contiCnt->setText(QString("%1").arg(status->currentSegmentNumber) );
+    ui->label_contiCnt->setText(QString("d: %1 integ: %2 out:%3").arg( static_cast<double_t>(derrior) /100.0).arg(static_cast<double_t>(dinteg)).arg(static_cast<double_t>(out)/10.0));
+
 
 //    double_t d = comdata->getPath_mm();
     ui->c_label_posX_value->setText(QString("%1 (%2)").arg(controller->getPath_mm(X_AXIS,status->coordinatus[X_AXIS])).arg(status->coordinatus[X_AXIS]));

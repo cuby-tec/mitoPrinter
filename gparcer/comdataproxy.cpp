@@ -3,6 +3,7 @@
 #include "geometry/Arc.h"
 
 #include "mitoaction.h"
+#include "profiles/profile.h"
 
 #include <QDebug>
 #include <cmath>
@@ -445,7 +446,9 @@ ComdataProxy::sendG92Tag(sG92_t *data)
     action->a = eNext;
     return action;
 }
-
+#define KD  0.12
+#define KP  0.8//0.75
+#define KI  1.0 - (KP + KD)
 mito::Action_t*
 ComdataProxy::sendM104Tag(sM104_t *data)
 {
@@ -459,6 +462,14 @@ ComdataProxy::sendM104Tag(sM104_t *data)
         hend->_switch.heater = 0;
     else
         hend->_switch.heater = 1;
+
+//    double_t hdata = KD;
+//    hend->kd = static_cast<int32_t>(hdata*1000);
+//    hdata = KP;
+//    hend->kp = static_cast<int32_t>(hdata*1000);
+//    hdata = KI;
+//    hend->ki = static_cast<int32_t>(hdata*1000);
+    loadHotendFromProfile(hend);
 
 #if DEBUGLEVEL==1
     qDebug()<<__FILE__<<__LINE__<<"M104:"<< data->s<<"coordinatus:"<<hend->temperature/10;
@@ -686,6 +697,25 @@ ComdataProxy::buildComdata(uint linenumber)
     }
     cout<<segment->axis[X_AXIS].steps<<"\t"<<segment->axis[Y_AXIS].steps<<"\tline"<<segment->head.linenumber;
     return req;
+}
+
+void ComdataProxy::loadHotendFromProfile(sHotendControl_t *shc)
+{
+    bool ok;
+    double_t datap;
+    Profile* profile = Profile::instance();
+    QString strp = profile->get_PROPTIONAL();
+    datap = strp.toDouble(&ok);
+    shc->kp = static_cast<int32_t>(datap*1000);
+
+    strp = profile->get_INTEGRAL();
+    datap = strp.toDouble(&ok);
+    shc->ki = static_cast<int32_t>(datap*1000);
+
+    strp = profile->get_DERIVATIVE();
+    datap = strp.toDouble(&ok);
+    shc->kd = static_cast<int32_t>(datap*1000);
+
 }
 
 
