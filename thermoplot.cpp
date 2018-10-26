@@ -8,7 +8,7 @@
 #include "math.h"
 
 //--------------- defs
-#define TIMERINUSE 1
+#define TIMERINUSE 0
 #define cout qDebug()<<__FILE__<<__LINE__
 
 

@@ -462,7 +462,7 @@ ComdataProxy::sendM104Tag(sM104_t *data)
 //    coordinatus->setTemperature(data->s);
     sHotendControl_t *hend = coordinatus->getHotend();
     hend->temperature = static_cast<int32_t>(data->s*10);
-    if(data->s == 0)
+    if(data->s == 0.0)
         hend->_switch.heater = 0;
     else
         hend->_switch.heater = 1;
@@ -478,7 +478,7 @@ ComdataProxy::sendM104Tag(sM104_t *data)
 #if DEBUGLEVEL==1
     qDebug()<<__FILE__<<__LINE__<<"M104:"<< data->s<<"coordinatus:"<<hend->temperature/10;
 #endif
-    line_counter++;
+//    line_counter++;
     ComDataReq_t* request = new ComDataReq_t;
     RequestFactory* factory = new RequestFactory();
     factory->build(request, eoHotendControl, hend);
@@ -548,7 +548,11 @@ ComdataProxy::sendM109_Tag(sM109_t *data)
 //    Coordinatus *crd = Coordinatus::instance();
 //    crd->setTemperature(data->s);
     sHotendControl_t *hend = coordinatus->getHotend();
-    hend->temperature = static_cast<int32_t>(data->s);
+    hend->temperature = static_cast<int32_t>(data->s*10);
+    if(data->s == 0.0)
+        hend->_switch.heater = 0;
+    else
+        hend->_switch.heater = 1;
 #if DEBUGLEVEL==1
     qDebug()<<__FILE__<<__LINE__<<"M109:"<< data->s<<"crd:"<<hend->temperature;
 #endif
