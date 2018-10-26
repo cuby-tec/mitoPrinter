@@ -34,15 +34,18 @@ StepMotor::StepMotor(eMotorType type)
    case e17HS4401_pulley:
 	   getLineSpeed = &StepMotor::linespeed;
 	   getLineStep = &StepMotor::lineStep;
+	   getAngularSpeedrate = &StepMotor::angularSpeedrate_pulley;
 	   break;
 
    case e17HS4401_shuft:
 	   getLineSpeed = &StepMotor::linespeed_pitch;
 	   getLineStep = &StepMotor::pulleyStep;
+	   getAngularSpeedrate = &StepMotor::angularSpeedrate_pitch;
 	   break;
    case e17HS4401_tooth_10_43:
        getLineSpeed = &StepMotor::linespeed_gear_10_43;
        getLineStep = &StepMotor::gear10_43_Step;//0.0256
+       getAngularSpeedrate = &StepMotor::angularSpeedrate_gear_10_43;
        break;
    }
 
@@ -142,7 +145,7 @@ double_t StepMotor::gear10_43_Step(uint32_t axis)
     double_t result;
     //TODO
     double_t alpha = getAlfa(axis);
-    result = alpha*shaft_diameter/2.0*(10.0/43.0);
+    result = alpha*shaft_diameter/2.0*(GEAR_LITTLE/GEAR_LARGE);
     return result;
 
 }
@@ -153,6 +156,30 @@ double_t StepMotor::getLinearAcceleration() {
     double_t result;
     result = acceleration*pulley_diameter/2; // 1250
     return result;
+}
+
+double_t StepMotor::angularSpeedrate_pulley(double_t speedrate) {
+	//TODO
+	double_t result = speedrate/60;
+	result /= pulley_diameter/2;
+	return result;
+}
+
+double_t StepMotor::angularSpeedrate_pitch(double_t speedrate) {
+	//TODO
+	double_t result = speedrate/60;
+	result *= 2*MyGlobal::PI;
+	result /= SHAFT_PITCH;
+	return result;
+}
+
+double_t StepMotor::angularSpeedrate_gear_10_43(double_t speedrate) {
+	//TODO
+	double_t result = speedrate/60;
+	double_t extruder_gear = GEAR_LITTLE/GEAR_LARGE;
+	extruder_gear *= shaft_diameter/2;
+	result /= extruder_gear;
+	return result;
 }
 
 // EOF

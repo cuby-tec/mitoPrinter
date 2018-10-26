@@ -709,7 +709,9 @@ void ComData::_run()
         break;
 
     case ersRunning:
+#if LEVEL==1
         cout<<"Running,=======\n";
+#endif
         // Build request
 _run1:
         action = gworker->readCommandLine();
@@ -732,7 +734,9 @@ _run1:
                 threadarc.setMdelay(500);
 //                threadarc.setMax_tryCounter(200);
                 threadarc.process();
+#if LEVEL == 1
                 cout<<"process==========<<"<<MyGlobal::requestIndex<<"\tqueeSize:"<<queueSize;
+#endif
                 break;
 
             case eSendWait:
@@ -831,8 +835,9 @@ void ComData::testTimer()
 
 void ComData::slot_fileComplite()
 {
-    //TODO slot_fileComplite
+#if LEVEL==1
     cout<<"slot_fileComplite";
+#endif
     emit sg_executeComplite();
     Messager* message = Messager::instance();
     message->setProgramExecutionComplite();
@@ -855,8 +860,9 @@ void ComData::updateStatus(const Status_t *status)
     statusParam.f = status->temperature;
 
 //    runState = ersRunning;
+#if LEVEL==1
     cout<<"updateStatus" <<"\t" <<status->modelState.modelState;
-
+#endif
     switch(condition)
     {
     case egcFile:

@@ -74,7 +74,9 @@ volatile uint32_t line = request->payload.instrument1_parameter.head.linenumber;
                     msleep(mdelay);
                 }
                 if(try_counter>=max_tryCounter){
+#if LEVEL==1
                     cout<<"number:"<<status.frameNumber <<"\tqueue:"<<status.freeSegments;
+#endif
                     break;
                 }
 

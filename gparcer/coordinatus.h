@@ -88,6 +88,9 @@ public:
          units = value;
     }
 
+    double_t getSpeedrate() const;
+    void setSpeedrate(const double_t &value);
+
 private:
 
 
@@ -95,7 +98,7 @@ private:
 
     double_t next[N_AXIS];
 
-   double_t work[N_AXIS];
+    double_t work[N_AXIS];
 
     ProfileData_t profileData;
 
@@ -107,7 +110,7 @@ private:
 
 // Hotend state
     bool extruder_mode;// true - absolute, false - relative
-
+    double_t speedrate;
     sHotendControl_t hotend;
 
     void sendSignalCoord();
@@ -129,6 +132,7 @@ private:
         hotend.kp = static_cast<int32_t>(KP*1000); //#define KP  0.6//0.75
         hotend.ki = static_cast<int32_t>(ki*1000) ;//#define KI  0.1
         hotend.temperature = static_cast<int32_t>(40*10) ;//#define SETPOINT    40
+        speedrate = 0.0;
     }
 
     ~Coordinatus() {}

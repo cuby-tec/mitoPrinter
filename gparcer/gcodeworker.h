@@ -48,6 +48,8 @@ public:
 
     mito::Action_t *buildAction(sGcode * src);
 
+    uint getLinecounter() const;
+
 public slots:
     void queueReady();
 

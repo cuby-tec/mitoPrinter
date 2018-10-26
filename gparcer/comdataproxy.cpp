@@ -40,6 +40,7 @@ ComdataProxy::sendG0Line(sG0_t *data)
     coordinatus->setWorkValue(Y_AXIS, data->y);
     coordinatus->setWorkValue(Z_AXIS, data->z);
     coordinatus->setWorkValue(E_AXIS, data->e);
+    coordinatus->setSpeedrate(data->f);
 
     if(!isPlaneHasSteps())
     {
@@ -88,6 +89,7 @@ ComdataProxy::sendG1Line(sG1_t *data)
     coordinatus->setWorkValue(Y_AXIS, data->y);
     coordinatus->setWorkValue(Z_AXIS, data->z);
     coordinatus->setWorkValue(E_AXIS, data->e);
+    coordinatus->setSpeedrate(data->f);
     // line number
     //buildG0command
     if(!isPlaneHasSteps())
@@ -99,7 +101,7 @@ ComdataProxy::sendG1Line(sG1_t *data)
     coordinatus->moveWorkToNext();
 
 
-#if DEBUGLEVEL==1
+#if LEVEL==1
     qDebug()<<__FILE__<<__LINE__<<"DIFF:"<<"X:"<<diff(X) <<"\tY:"<<diff(Y)<<"\tZ:"<<diff(Z)<<"\tE:"<<diff(E)<<"\tline:"<<data->n;
 #endif
     bool build = controller->buildBlock(coordinatus);
@@ -113,8 +115,9 @@ ComdataProxy::sendG1Line(sG1_t *data)
 
 
         ComDataReq_t &r = action->queue.head();//DEBUG
+#if LEVEL==1
         cout<<r.requestNumber;// DEBUG
-
+#endif
         action->a = eSend;
     }else{
         action->a = eNext;
@@ -126,7 +129,7 @@ ComdataProxy::sendG1Line(sG1_t *data)
 mito::Action_t*
 ComdataProxy::sendG2Line(sG2_t *data)
 {
-    //TODO
+    //TODO feedrate
     mito::Action_t *action = new mito::Action_t;
     RequestFactory *factory = new RequestFactory();
 
@@ -338,7 +341,7 @@ ComdataProxy::sendG28Tag(sG28_t *data)
     // Если Coordinatus не в нуле, то сформировать запрос для перемещения инструмента в начало.
     // Предполагается, что калибровка выполнена.
     line_counter++;
-#if DEBUGLEVEL==1
+#if LEVEL==1
     qDebug()<<__FILE__<<__LINE__<<"G28:" <<"x:"<<data->x <<"\ty:"<<data->y <<"\tz:"<<data->z ;
 #endif
     double_t sum = 0;
@@ -430,6 +433,7 @@ ComdataProxy::sendG92Tag(sG92_t *data)
     mito::Action_t* action = new mito::Action_t;
     line_counter++;
 //    qDebug()<<__FILE__<<__LINE__<<"G92:" <<"x:"<<data->x <<"\ty:"<<data->y <<"\tz:"<<data->z <<"\te:"<<data->e ;
+    coordinatus->moveNextToCurrent();
     coordinatus->moveCurrentToWork();
     if( !std::isnan(data->x) )
         coordinatus->setWorkValue(X_AXIS,data->x);

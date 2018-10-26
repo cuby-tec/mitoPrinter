@@ -78,6 +78,16 @@ void Coordinatus::setExtruder_mode(bool value)
     extruder_mode = value;
 }
 
+double_t Coordinatus::getSpeedrate() const
+{
+    return speedrate;
+}
+
+void Coordinatus::setSpeedrate(const double_t &value)
+{
+    speedrate = value;
+}
+
 
 /**
  * Загрузка данных из профиля.

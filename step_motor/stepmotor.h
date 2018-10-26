@@ -11,6 +11,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
+//#include <qmath.h>
 #include <math.h>
 #include "links/msmotor/msport.h"
 #include "myglobal.h"
@@ -27,8 +28,12 @@
 //"Двигатель Вес (G)"       280
 
 
-
-
+/**
+ * Максимальная feedrate
+ * 	Винт	 625.00     // =motor.B13*C19
+ * 	Шкив     19,006.64  // =motor.B13*pulley_diam/2*60/60*2*PI()
+ * 	Шестерня 2,410.99   //=motor.B13/30*PI()*extruder_gear*60
+ */
 
 
 #define _17HS4401
@@ -41,6 +46,10 @@
 
 #define SHAFT_PITCH	1.25 // Шаг винта[mm]
 
+#define GEAR_LITTLE	10.0
+#define GEAR_LARGE	43.0
+
+
 // диаметр вала экструдера с учётом проточки
 #define shaft_diameter   6.6//7
 
@@ -48,6 +57,12 @@
 
 #ifdef _17HS4401
 #define ANGLE	1.8
+//Максимальное число оборотов об/мин
+#define ANGLE_VELOCITY_MAX	500
+#define FEEDRATE_SHAFT_MAX		ANGLE_VELOCITY_MAX*SHAFT_PITCH
+#define FEEDRATE_PULLEY_MAX	(ANGLE_VELOCITY_MAX*PULLEY_DIAMETER)*M_PI
+#define FEEDRATE_GEAR_MAX	(ANGLE_VELOCITY_MAX/30)*M_PI*(GEAR_LITTLE/GEAR_LARGE)*shaft_diameter/2*60
+
 #endif
 
 
@@ -60,6 +75,8 @@ typedef double_t (StepMotor::*convert)(double_t param);
 // Длина шага для оси.
 typedef double_t (StepMotor::*lines)(uint32_t axis);
 
+// Круговое ускорение для feedrate[mm/min]
+typedef double_t (StepMotor::*angularSpeedrate)(double_t speedrate);
 
 enum eMotorType{
     e17HS4401_pulley, e17HS4401_shuft, e17HS4401_tooth_10_43
@@ -150,6 +167,8 @@ public:
 
     lines getLineStep;
 
+    angularSpeedrate getAngularSpeedrate;
+
 //protected:
 
     //Длина шага для шкива
@@ -176,6 +195,18 @@ public:
     double_t linespeed_gear_10_43(double_t rpm);
     // radian per second
     double_t getAngular_velocity_rad_value() ;
+
+    /**
+     * Feed rate
+     * Угловая скорость для заданного значения feedrate[mm/min].
+     */
+    double_t angularSpeedrate_pulley(double_t speedrate);
+
+    double_t angularSpeedrate_pitch(double_t speedrate);
+
+    double_t angularSpeedrate_gear_10_43(double_t speedrate);
+
+
 
 private:
 

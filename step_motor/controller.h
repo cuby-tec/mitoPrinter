@@ -99,6 +99,12 @@ private:
      * Загрузка данных(Угловое ускорение) из профиля.
      */
     void uploadMotorData();
+
+    uint32_t maxvector[N_AXIS];
+    /**
+     * Выбор допустимого значсения feedrate.
+     */
+    double_t selectFeedrate(double_t cord_feedrate );
 };
 
 #endif // CONTROLLER_H

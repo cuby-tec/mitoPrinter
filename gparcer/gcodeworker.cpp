@@ -1190,10 +1190,13 @@ mito::Action_t*
 GcodeWorker::tagG92_Do(sGcode *sgCode)
 {
     mito::Action_t * action = nullptr;
-    sG92_t * vTag =  reinterpret_cast<sG92_t *>( arraytag->getTagValue(eG92));
-    sG92_t valueTag ;
-//    vTag->get(&valueTag);
-    valueTag.init(&valueTag);
+//    sG92_t * vTag =  reinterpret_cast<sG92_t *>( arraytag->getTagValue(eG92));
+    sG92_t tag92 ;
+    sG1_t * vTag =  reinterpret_cast<sG1_t *>( arraytag->getTagValue(eG1));
+    sG1_t valueTag ;
+
+    vTag->get(&valueTag);
+    tag92.init(&tag92);
     valueTag.n = 0;
     bool ok = false;
     double dvalue;
@@ -1206,48 +1209,57 @@ GcodeWorker::tagG92_Do(sGcode *sgCode)
             dvalue = value.toDouble(&ok);
             Q_ASSERT(ok);
             valueTag.x = dvalue;
+            tag92.x = dvalue;
             break;
 
         case 'Y':
             dvalue = value.toDouble(&ok);
             Q_ASSERT(ok);
             valueTag.y = dvalue;
+            tag92.y = dvalue;
             break;
 
         case 'Z':
             dvalue = value.toDouble(&ok);
             Q_ASSERT(ok);
             valueTag.z = dvalue;
+            tag92.z = dvalue;
             break;
         case 'E':
             dvalue = value.toDouble(&ok);
             Q_ASSERT(ok);
             valueTag.e = dvalue;
+            tag92.e = dvalue;
             break;
 
         case 'N':
             uint number = QString(gparam->value).toUInt(&ok);
             Q_ASSERT(ok);
-            if(ok) {valueTag.n = number; }
+            valueTag.n = number;
+            tag92.n = number;
             break;
         }
 
     }
-    if(valueTag.n == 0)
+    if(valueTag.n == 0){
         valueTag.n = linecounter;
+        tag92.n = linecounter;
+    }
 
-    if(std::isnan(valueTag.x)&&std::isnan(valueTag.y)
-            &&std::isnan(valueTag.z)&&std::isnan(valueTag.e))
+
+    if(std::isnan(tag92.x)&&std::isnan(tag92.y)
+            &&std::isnan(tag92.z)&&std::isnan(tag92.e))
     {
-        valueTag.x = 0.0;
-        valueTag.y = 0.0;
-        valueTag.z = 0.0;
-        valueTag.e = 0.0;
+        tag92.x = 0.0;
+        tag92.y = 0.0;
+        tag92.z = 0.0;
+        tag92.e = 0.0;
     }
 
     vTag->set(&valueTag);
 
-    action = comproxy->sendG92Tag(vTag);
+    syncXYZ(vTag->x,vTag->y,vTag->z,vTag->e);
+    action = comproxy->sendG92Tag(&tag92);
     return action;
 }
 
@@ -1560,11 +1572,16 @@ GcodeWorker::tagF_Do(sGcode *sgCode)
     return action;
 }
 
+uint GcodeWorker::getLinecounter() const
+{
+    return linecounter;
+}
+
 
 QString
 GcodeWorker::clearNumValue(QString value)
 {
-//    QString value(gparam->value);
+    //    QString value(gparam->value);
 
 //    qDebug()<<__FILE__<<__LINE__<<value;
 
@@ -1762,7 +1779,7 @@ GcodeWorker::readCommandLine()
 
     }
 #if LEVEL==0
-    qDebug()<<__FILE__<<__LINE__<<"\tgroup:"<<gcode.group<<gcode.value<<"  line"<<line;
+    qDebug()<<__FILE__<<__LINE__<<"\tgroup:"<<gcode.group<<gcode.value<<"  line"<<line<<"num:"<<linecounter;
 #endif
     //checkBox_immediately
     action = buildAction(dst);

@@ -15,6 +15,8 @@
 
 #include "profiles/profile.h"
 
+#define cout qDebug()<<__FILE__<<__LINE__
+
 #include <algorithm>
 
 #define BUILDBLOCKVERSION   2
@@ -198,7 +200,7 @@ Controller::buildBlock(Coordinatus* cord) {
 //    }
 
     //[4] Длина линии в шагах		C23
-    uint32_t maxvector[N_AXIS];
+//    uint32_t maxvector[N_AXIS];
     for(uint32_t i=0;i<N_AXIS;++i){
         block_state_t* block = &blocks[i];
         // if(segment->axis[X_AXIS].direction == forward)
@@ -218,11 +220,15 @@ Controller::buildBlock(Coordinatus* cord) {
         else
             block->direction_bits = edBackward;
     }
+
     // Наибольшая длина линии						C26
     uint32_t maxLenLine = *std::max_element(maxvector,maxvector+N_AXIS);
     if(maxLenLine == 0)
         return (false);
     Q_ASSERT(maxLenLine > 0);
+
+    double_t angular_velocity = selectFeedrate(cord->getSpeedrate());
+
 //    uint32_t accel_steps[N_AXIS];
     for(uint32_t i=0;i<N_AXIS;i++){
 
@@ -230,9 +236,14 @@ Controller::buildBlock(Coordinatus* cord) {
 
         //=radian_speed*(D4)
         k = static_cast<double_t>( maxvector[i]) / static_cast<double_t>(maxLenLine);
-//        uint32_t G4 =  static_cast<uint32_t>( k* motor[i]->getAngular_velocity_rad_value());  //G4
-        double_t G4 =  ( k* motor[i]->getAngular_velocity_rad_value());  //G4
-
+//        double_t G4 =  ( k* motor[i]->getAngular_velocity_rad_value());  //G4 alternative
+//        StepMotor* m = motor[i];
+//        angularSpeedrate as = m->getAngularSpeedrate;
+//        double_t G4 = k* (m->*as)(cord->getSpeedrate());
+        double_t G4 =  ( k* angular_velocity);//TODO
+#if LEVEL==1
+        cout<<"G4:"<<G4;
+#endif
         //radian_accel
         double_t racc = k * motor[i]->getAcceleration();
 
@@ -285,8 +296,11 @@ Controller::buildBlock(Coordinatus* cord) {
         // nominal_rate
         uint32_t nominal_rate = static_cast<uint32_t>(frequency * motor[i]->getAlfa(i)/G4 );
 
-        if(nominal_rate > 16777214) // 0xfffffe
+        if(nominal_rate > 16777214){ // 0xfffffe
             nominal_rate = 0xfffffe;
+            cout<<"NOMINAL RATE OUT OF RANGE, ASYNCRONOUS:"<<nominal_rate;
+            qWarning("NOMINAL RATE OUT OF RANGE:%d",nominal_rate);
+        }
 
         switch (schemState) {
         case SCHEMSTATE_1:
@@ -809,6 +823,41 @@ void Controller::uploadPosition(Coordinatus* cord)
         cord->position[i] =static_cast<int32_t>(lround(cord->getNextValue(i)/ds));
     }
 }
+
+double_t Controller::selectFeedrate( double_t cord_feedrate ) {
+	//TODOH
+//	bool path[N_AXIS];
+
+	double_t maxfeedVector[N_AXIS];
+    double_t maxfeedrate = 10000000.0;
+	size_t index;
+
+	maxfeedVector[X_AXIS] = FEEDRATE_PULLEY_MAX;
+	maxfeedVector[Y_AXIS] = FEEDRATE_PULLEY_MAX;
+	maxfeedVector[Z_AXIS] = FEEDRATE_SHAFT_MAX;
+	maxfeedVector[E_AXIS] = FEEDRATE_GEAR_MAX;
+
+	for(size_t i=0;i<N_AXIS;i++){
+        if(maxvector[i]==0){
+			maxfeedVector[i] = 0.0;
+        }else
+            if(maxfeedrate > maxfeedVector[i]){
+                maxfeedrate = maxfeedVector[i];
+                index = i;
+            }
+    }
+
+
+	if(maxfeedrate>cord_feedrate)
+		maxfeedrate = cord_feedrate;
+
+
+	StepMotor* m = motor[index];
+	angularSpeedrate as = m->getAngularSpeedrate;
+	double_t G4 = (m->*as)(maxfeedrate);
+
+	return G4;
+}//==
 
 #ifdef REMOVED
 /**
