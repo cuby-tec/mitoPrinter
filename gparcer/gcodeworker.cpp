@@ -840,6 +840,7 @@ GcodeWorker::tagG28_Do(sGcode *sgCode)
 //    vTag->get(&valueTag);
     valueTag.n = 0;
     bool ok = false;
+    bool all = true;
 //    double dvalue;
 
 //    if(sgCode->param_number>0){
@@ -854,14 +855,17 @@ GcodeWorker::tagG28_Do(sGcode *sgCode)
         switch (gparam->group){
         case 'X':
             valueTag.x = 0.0;
+            all = false;
             break;
 
         case 'Y':
             valueTag.y = 0.0;
+            all = false;
             break;
 
         case 'Z':
             valueTag.z = 0.0;
+            all = false;
             break;
 
         case 'N':
@@ -874,9 +878,11 @@ GcodeWorker::tagG28_Do(sGcode *sgCode)
 
     if(valueTag.n == 0)
         valueTag.n = linecounter;
-//    if(valueTag.x==false && valueTag.y==false && valueTag.z==false){
-//        valueTag.x = true; valueTag.y=true; valueTag.z=true;
-//    }
+    if(all){
+        valueTag.x = 0.0;
+        valueTag.y = 0.0;
+        valueTag.z = 0.0;
+    }
     action = comproxy->sendG28Tag(&valueTag);
 #endif
     return action;
