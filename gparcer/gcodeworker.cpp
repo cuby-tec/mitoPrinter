@@ -29,13 +29,14 @@
  */
 
 GcodeWorker::GcodeWorker(QObject *parent) : QObject(parent)
-  , arraytag (new ArrayTag)
+//  , arraytag (new ArrayTag)
   , errorCounter(0)
   , comproxy(new ComdataProxy)
   , linecounter(0)
   , lexer( new Lexer(dst))
 
 {
+    arraytag = ArrayTag::instance();
     callTagRef[eG0] = &GcodeWorker::tagG0_Do;
     callTagRef[eG1] = &GcodeWorker::tagG1_Do;
     callTagRef[eG2] = &GcodeWorker::tagG2_Do;
@@ -231,6 +232,18 @@ GcodeWorker::buildAction(sGcode *src)
     return (action);
 }
 
+
+void
+GcodeWorker::loadMovervalue(sMover* data)
+{
+    Coordinatus* cord = Coordinatus::instance();
+    data->x = cord->getNextValue(X_AXIS);
+    data->y = cord->getNextValue(Y_AXIS);
+    data->z = cord->getNextValue(Z_AXIS);
+    data->e = cord->getNextValue(E_AXIS);
+    data->f = cord->getSpeedrate();
+}
+
 /*
  struct sG0_t{
     double x;     double y;     double z;     double e;    double f;    double s; };
@@ -243,7 +256,10 @@ GcodeWorker::tagG0_Do(sGcode *sgCode)
 #if VERSION==1
     sG0_t * vTag =  reinterpret_cast<sG0_t *>( arraytag->getTagValue(eG0));
     sG0_t valueTag ;
-    vTag->get(&valueTag);
+//    vTag->get(&valueTag);
+    loadMovervalue(&valueTag);
+    valueTag.f = 0;
+    valueTag.s = 0;
     valueTag.n = 0;
 
     bool ok = false;
@@ -280,7 +296,11 @@ GcodeWorker::tagG0_Do(sGcode *sgCode)
 
         case 'F':
             Q_ASSERT(ok);
-            if(ok) { valueTag.f = dvalue; }
+            if(ok) {
+                valueTag.f = dvalue;
+                Coordinatus* cord = Coordinatus::instance();
+                cord->setSpeedrate(dvalue);
+            }
             break;
 
         case 'S':
@@ -315,10 +335,15 @@ GcodeWorker::tagG1_Do(sGcode *sgCode)
 #if VERSION==1
     sG1_t * vTag =  reinterpret_cast<sG1_t *>( arraytag->getTagValue(eG1));
     sG1_t valueTag ;
-    vTag->get(&valueTag);
-//    double v;
+//    vTag->get(&valueTag);
+    loadMovervalue(&valueTag);
+//    valueTag.f = 0;
+    valueTag.s = 0;
     valueTag.n = 0;
     bool ok = false;
+
+    //TODO
+    double_t move = 0.0;//50.0;
 
 //    char buf[20];
 //    memset(buf,0,sizeof (buf));
@@ -335,11 +360,13 @@ GcodeWorker::tagG1_Do(sGcode *sgCode)
         {
         case 'X':
             Q_ASSERT(ok);
+            dvalue -= move;
             if(ok) { valueTag.x = dvalue; }
             break;
 
         case 'Y':
             Q_ASSERT(ok);
+            dvalue -= move;
             if(ok) { valueTag.y = dvalue; }
             break;
 
@@ -361,7 +388,11 @@ GcodeWorker::tagG1_Do(sGcode *sgCode)
 
         case 'F':
             Q_ASSERT(ok);
-            if(ok) { valueTag.f = dvalue; }
+            if(ok) {
+                valueTag.f = dvalue;
+                Coordinatus* cord = Coordinatus::instance();
+                cord->setSpeedrate(dvalue);
+            }
             break;
 
         case 'S':
@@ -812,23 +843,25 @@ GcodeWorker::tagG28_Do(sGcode *sgCode)
 //    double dvalue;
 
 //    if(sgCode->param_number>0){
-        valueTag.reset();
+//        valueTag.reset();
 //    }
+    loadMovervalue(&valueTag);
+    valueTag.f = 1200;//TODO Feedrate from profile
 
     for(int i=0;i<sgCode->param_number;i++){
         sGparam* gparam = &sgCode->param[i];
         QString value(clearNumValue(gparam->value));
         switch (gparam->group){
         case 'X':
-            valueTag.x = true;
+            valueTag.x = 0.0;
             break;
 
         case 'Y':
-            valueTag.y = true;
+            valueTag.y = 0.0;
             break;
 
         case 'Z':
-            valueTag.z = true;
+            valueTag.z = 0.0;
             break;
 
         case 'N':
@@ -841,9 +874,9 @@ GcodeWorker::tagG28_Do(sGcode *sgCode)
 
     if(valueTag.n == 0)
         valueTag.n = linecounter;
-    if(valueTag.x==false && valueTag.y==false && valueTag.z==false){
-        valueTag.x = true; valueTag.y=true; valueTag.z=true;
-    }
+//    if(valueTag.x==false && valueTag.y==false && valueTag.z==false){
+//        valueTag.x = true; valueTag.y=true; valueTag.z=true;
+//    }
     action = comproxy->sendG28Tag(&valueTag);
 #endif
     return action;
@@ -1256,6 +1289,17 @@ GcodeWorker::tagG92_Do(sGcode *sgCode)
         tag92.e = 0.0;
     }
 
+    if( !std::isnan(tag92.x))
+        valueTag.x = tag92.x;
+    if(!std::isnan(tag92.y))
+    valueTag.y = tag92.y;
+    if(!std::isnan(tag92.z))
+    valueTag.z = tag92.z;
+    if(!std::isnan(tag92.e))
+    valueTag.e = tag92.e;
+
+//    valueTag.n = tag92.n;
+
     vTag->set(&valueTag);
 
     syncXYZ(vTag->x,vTag->y,vTag->z,vTag->e);
@@ -1356,6 +1400,8 @@ GcodeWorker::tagM106_Do(sGcode *sgCode)
 
     if(valueTag.n == 0)
         valueTag.n = linecounter;
+    if(valueTag.s==0.0)
+        valueTag.s = 1.0;
     vTag->set(&valueTag);
     action = comproxy->sendM106_Tag(vTag);
     return action;

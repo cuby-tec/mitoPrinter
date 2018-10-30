@@ -125,6 +125,12 @@ private:
 
     void syncXYZ(double_t x, double_t y, double_t z, double_t e);
     void syncXY(double x, double y);
+    /**
+     * @brief loadMovervalue
+     * @param data
+     * Load data from Coordinatus.
+     */
+    void loadMovervalue(sMover* data);
 
 };
 #undef EXAMPLE

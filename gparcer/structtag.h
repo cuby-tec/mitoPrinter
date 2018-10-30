@@ -13,15 +13,22 @@ struct NumberedTag{
     uint n;
 };
 
+struct sMover{
+    double_t x;
+    double_t y;
+    double_t z;
+    double_t e;
+    double_t f;
+};
 
 
 //Rapid linear Move
-struct sG0_t : NumberedTag {
-    double x;
-    double y;
-    double z;
-    double e;
-    double f;
+struct sG0_t : NumberedTag, sMover {
+//    double x;
+//    double y;
+//    double z;
+//    double e;
+//    double f;
     double s;
     void set(sG0_t* src){
         x = src->x;
@@ -44,12 +51,12 @@ struct sG0_t : NumberedTag {
 };
 
 //Linear Move
-struct sG1_t :NumberedTag {
-    double x;
-    double y;
-    double z;
-    double e;
-    double f;
+struct sG1_t :NumberedTag , sMover{
+//    double x;
+//    double y;
+//    double z;
+//    double e;
+//    double f;
     double s;
     void set(sG1_t* src){
         x = src->x;
@@ -229,16 +236,16 @@ struct sG20_21_t :NumberedTag{
 
 
 //Move to Origin (Home)
-struct sG28_t :NumberedTag {
-    bool x;
-    bool y;
-    bool z;
-    sG28_t():x(true),y(true),z(true){}
+struct sG28_t :NumberedTag, sMover {
+//    bool x;
+//    bool y;
+//    bool z;
+/*    sG28_t():x(true),y(true),z(true){}
     void reset(){
         x = false;
         y = false;
         z = false;
-    }
+    }*/
     void set(sG28_t* src){
         x = src->x;
         y = src->y;

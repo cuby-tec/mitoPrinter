@@ -63,10 +63,14 @@ void CoordinatusWidget::updateStatus(const Status_t *status)
 
 
 //    double_t d = comdata->getPath_mm();
-    ui->c_label_posX_value->setText(QString("%1 (%2)").arg(controller->getPath_mm(X_AXIS,status->coordinatus[X_AXIS])).arg(status->coordinatus[X_AXIS]));
-    ui->c_label_posY_value->setText(QString("%1 (%2)").arg(controller->getPath_mm(Y_AXIS,status->coordinatus[Y_AXIS])).arg(status->coordinatus[Y_AXIS]));
-    ui->c_label_posZ_value->setText(QString("%1 (%2)").arg(controller->getPath_mm(Z_AXIS,status->coordinatus[Z_AXIS])).arg(status->coordinatus[Z_AXIS]));
-    ui->c_label_posE_value->setText(QString("%1 (%2)").arg(controller->getPath_mm(E_AXIS,status->coordinatus[E_AXIS])).arg(status->coordinatus[E_AXIS]));
+    ui->c_label_posX_value->setText(QString("%1 (%2)[%3]").arg(controller->getPath_mm(X_AXIS,status->coordinatus[X_AXIS]))
+                                    .arg(status->coordinatus[X_AXIS]).arg(coordinatus->getNextValue(X_AXIS)) );
+    ui->c_label_posY_value->setText(QString("%1 (%2)[%3]").arg(controller->getPath_mm(Y_AXIS,status->coordinatus[Y_AXIS]))
+                                    .arg(status->coordinatus[Y_AXIS]).arg(coordinatus->getNextValue(Y_AXIS)));
+    ui->c_label_posZ_value->setText(QString("%1 (%2)[%3]").arg(controller->getPath_mm(Z_AXIS,status->coordinatus[Z_AXIS]))
+                                    .arg(status->coordinatus[Z_AXIS]).arg(coordinatus->getNextValue(Z_AXIS)));
+    ui->c_label_posE_value->setText(QString("%1 (%2)[%3]").arg(controller->getPath_mm(E_AXIS,status->coordinatus[E_AXIS]))
+                                    .arg(status->coordinatus[E_AXIS]).arg(coordinatus->getNextValue(E_AXIS)));
 
     ui->label_ender_xmin_value->setText(enderValue(ENDER_X_MIN));
     ui->label_ender_xmax_value->setText(enderValue(ENDER_X_MAX));

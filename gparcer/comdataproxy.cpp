@@ -89,7 +89,8 @@ ComdataProxy::sendG1Line(sG1_t *data)
     coordinatus->setWorkValue(Y_AXIS, data->y);
     coordinatus->setWorkValue(Z_AXIS, data->z);
     coordinatus->setWorkValue(E_AXIS, data->e);
-    coordinatus->setSpeedrate(data->f);
+    if(data->f != 0.0)
+        coordinatus->setSpeedrate(data->f);
     // line number
     //buildG0command
     if(!isPlaneHasSteps())
@@ -349,17 +350,19 @@ ComdataProxy::sendG28Tag(sG28_t *data)
         sum += coordinatus->getCurrentValue(i);
     }
 
+    coordinatus->moveNextToCurrent();
+
     if(sum > 0)
     {
         coordinatus->moveCurrentToWork();
         action->a = eSend;
         //TODO build request.
-        if(data->x == true)
-            coordinatus->setWorkValue(X_AXIS, 0.0);
-        if(data->y == true)
-            coordinatus->setWorkValue(Y_AXIS, 0.0);
-        if(data->z == true)
-            coordinatus->setWorkValue(Z_AXIS, 0.0);
+//        if(data->x == true)
+        coordinatus->setWorkValue(X_AXIS, data->x);
+//        if(data->y == true)
+        coordinatus->setWorkValue(Y_AXIS, data->y);
+//        if(data->z == true)
+        coordinatus->setWorkValue(Z_AXIS, data->z);
 
         //prepare move
         coordinatus->moveWorkToNext();

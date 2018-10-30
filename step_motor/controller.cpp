@@ -848,7 +848,7 @@ double_t Controller::selectFeedrate( double_t cord_feedrate ) {
     }
 
 
-	if(maxfeedrate>cord_feedrate)
+    if(maxfeedrate>cord_feedrate && cord_feedrate!=0.0)
 		maxfeedrate = cord_feedrate;
 
 

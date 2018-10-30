@@ -4,7 +4,7 @@
 #include "structtag.h"
 //#include "mitoaction.h"
 
-#define EXAMPLE 0
+#define EXAMPLE 1
 
 class ArrayTag
 {
