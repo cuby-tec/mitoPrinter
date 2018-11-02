@@ -10,6 +10,7 @@
 #include "ui_mainwindow.h"
 #include "command/executeprogramm.h"
 #include "messager.h"
+#include "command/zeropointcommand.h"
 
 namespace Ui {
 class MainWindow;
@@ -34,6 +35,9 @@ public slots:
     void on_commandOpenFile();
     void on_gprogrammFinish();
     void on_message(QString msg);
+    //actionZeroPoint_Z
+    void on_actionZeroPoint_Z();
+
 
 protected:
     void resizeEvent(QResizeEvent *event);

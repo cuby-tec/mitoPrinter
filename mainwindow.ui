@@ -103,6 +103,7 @@
     <property name="title">
      <string>Tools</string>
     </property>
+    <addaction name="actionZeroPoint_Z"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -145,6 +146,11 @@
    </property>
    <property name="toolTip">
     <string>Run Gcode program</string>
+   </property>
+  </action>
+  <action name="actionZeroPoint_Z">
+   <property name="text">
+    <string>ZeroPoint Z</string>
    </property>
   </action>
  </widget>

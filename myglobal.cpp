@@ -1,7 +1,8 @@
 #include "myglobal.h"
 
 #include "qcustomplot.h"
-
+//#include <gcode-lexer.h>
+#include <gparcer/lexer.h>
 
 ///----------------- vars
 
@@ -86,4 +87,13 @@ MyGlobal::DEGREES(double_t angle)
 	return (angle*180/PI);
 }
 
+int
+MyGlobal::parceString(char* src,sGcode* dst )
+{
+    int result = 0;
+    size_t len = strlen(src);
+    Lexer* le = new Lexer(dst);
+    result = le->parcer(src, static_cast<int>(len));
+    return result;
+}
 

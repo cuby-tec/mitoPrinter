@@ -1,6 +1,8 @@
 #ifndef MYGLOBAL_H
 #define MYGLOBAL_H
 
+#include <sgcode.h>
+
 #include <QThread>
 #include <QMutex>
 #include <QString>
@@ -53,6 +55,8 @@ public:
     static QString formatFloat(QString fl);
 
     static double_t DEGREES(double_t angle);
+
+    static int parceString(char* src,sGcode* dst );
 
 };
 

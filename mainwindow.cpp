@@ -11,6 +11,7 @@
 #include <QMenu>
 #include <QAction>
 
+#define cout    qDebug()<<__FILE__<<__LINE__
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -191,6 +192,12 @@ void MainWindow::setupMenu()
         menuTools->addAction(pidParams);
         connect(pidParams,&QAction::triggered,this,&MainWindow::pidParamsDo);
 
+        QAction* zeroPoint_Z = ui->actionZeroPoint_Z;
+        zeroPoint_Z->setToolTip("Move Extruder to zero point.");
+        connect(zeroPoint_Z,SIGNAL(triggered()),this, SLOT(on_actionZeroPoint_Z()));
+
+
+
         //------------------- HelpMenu
         menuHelp = ui->menuHelp;
         QAction* aboutAction = new QAction(actionName5,this);
@@ -279,6 +286,20 @@ void MainWindow::on_commandOpenFile()
 
 }
 
+/**
+ * @brief MainWindow::on_actionZeroPoint_Z
+ * Command on_actionZeroPoint_Z
+ */
+void MainWindow::on_actionZeroPoint_Z()
+{
+    //TODO on_actionZeroPoint_Z
+    QString msg("on_actionZeroPoint_Z");
+    statusBar()->showMessage(msg);
+    ZeroPointCommand* command = new ZeroPointCommand;
+    command->execute();
+}
+
+
 void MainWindow::on_gprogrammFinish()
 {
     statusBar()->showMessage("Programm finished.");
@@ -304,6 +325,10 @@ void MainWindow::on_message(QString msg)
     QAction *actionRun = ui->actionRun;
     actionRun->setEnabled(true);
     int ret = box.exec();
-} //
+}
+
+
+
+//
 
 
