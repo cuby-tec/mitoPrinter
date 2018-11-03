@@ -31,25 +31,35 @@ void CoordinatusWidget::updateStatus(const Status_t *status)
 
     ui->c_label_queueState->setText(QString("%1").arg(status->modelState.queueState)) ;
 
-    const QString state1("ehIdle");
-    const QString state2("ehIwork");
-
+    /*
+     *     ehIdle = 1, ehIwork
+     *     ,ehEnderXmax, ehEnderXmin, ehEnderYmax, ehEnderYmin, ehEnderZmax, ehEnderZmin
+     *     ,ehException, ehWait_instrument1, ehWait_instrument2
+     */
+//    const QString state1("ehIdle");
+//    const QString state2("ehIwork");
+    const QString state3("ehEnderXmax");
+    const QString state[12] = {"unnown","ehIdle","ehIwork"
+                               ,"ehEnderXmax","ehEnderXmin","ehEnderYmax","ehEnderYmin"
+                               ,"ehEnderZmax","ehEnderZmin"
+                               ,"ehException","ehWait_instrument1","ehWait_instrument2"};
     QString t_state;
 
     ms_state = status->modelState.modelState;
 
-    switch (ms_state) {
-    case ehIdle:
-        t_state = state1;
-        break;
+    t_state = state[ms_state];
+//    switch (ms_state) {
+//    case ehIdle:
+//        t_state = state1;
+//        break;
 
-    case ehIwork:
-        t_state = state2;
-        break;
+//    case ehIwork:
+//        t_state = state2;
+//        break;
 
-    default:
-        break;
-    }
+//    default:
+//        break;
+//    }
 //     ui->c_label_modelState->setText(QString("%1").arg(status->modelState.modelState));
     ui->c_label_modelState->setText(QString(t_state));
 

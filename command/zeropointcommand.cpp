@@ -177,7 +177,7 @@ void ZeroPointCommand::statusLoaded()
 #if Zero_VERTION==2
     Status_t* st = statusLoader.result();
     cout<<"statusLoaded"<<st->modelState.modelState;
-    if(st->modelState.modelState == ehIdle){
+    if(st->modelState.modelState == ehEnderZmin){
         timer->stop();
         emit sg_commandDone();
         cout<<"Stoped";

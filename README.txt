@@ -18,3 +18,6 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/mito
 
 11. [threadarc.process();]
 12. [updateStatus(const Status_t *status)]    
+
+Z 36.5938
+X 119.94

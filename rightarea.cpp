@@ -67,14 +67,16 @@ RightArea::RightArea(QWidget *parent) : QWidget(parent)
     modelStatistic = new ModelStatistic(wd4);
     check4->setText("Model statistic");
     check4->setChecked(false);
-
+#if LEVEL==1
     qDebug()<<__FILE__<<__LINE__<<layout->count();
-
+#endif
 }
 
 void RightArea::resizeEvent(QResizeEvent *event)
 {
+#if LEVEL==1
     qDebug()<<__FILE__<<__LINE__<<"resize.";
+#endif
 }
 
 void RightArea::hide1(int state)
