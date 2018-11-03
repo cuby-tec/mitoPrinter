@@ -28,6 +28,9 @@ public:
 
 
 signals:
+#if Zero_VERTION==2
+    void sg_commandDone();
+#endif
 
 public slots:
     void updateStatus(const Status_t* status);

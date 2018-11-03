@@ -10,8 +10,32 @@
 
 #define cout qDebug()<<__FILE__<<__LINE__
 
+static Status_t*
+_checkStatus()
+{
+    Status_t* status = new Status_t;
+    RequestFactory* factory = new RequestFactory;
+    ComDataReq_t* req = new ComDataReq_t;
+    factory->build(req,eoState);
+    req->requestNumber = ++MyGlobal::requestIndex;
 
-static Status_t* moveExtruderZeroPoint()
+    //2. Send request.
+    UsbExchange* exch = new UsbExchange;
+    int result_exch;
+    thermo_gmutex.lock();
+    result_exch = exch->sendRequest(req);
+    if(result_exch == EXIT_SUCCESS){
+        memcpy(status,exch->getStatus(),sizeof(Status_t));
+    }
+
+    thermo_gmutex.unlock();
+
+    cout<<"checkStatus";
+    return status;
+}
+
+static Status_t*
+moveExtruderZeroPoint()
 {
     char cmdbuffer[80];
     char* pbuffer;
@@ -135,9 +159,6 @@ void ZeroPointCommand::execute()
 
 }
 
-
-
-
 void ZeroPointCommand::updateStatus(const Status_t *status)
 {
     // TODO
@@ -155,15 +176,19 @@ void ZeroPointCommand::statusLoaded()
     //TODO
 #if Zero_VERTION==2
     Status_t* st = statusLoader.result();
-    cout<<"statusLoaded"<<st->frameNumber;
+    cout<<"statusLoaded"<<st->modelState.modelState;
+    if(st->modelState.modelState == ehIdle){
+        timer->stop();
+        emit sg_commandDone();
+        cout<<"Stoped";
+    }
 #endif
 }
 #if Zero_VERTION==2
 void ZeroPointCommand::checkStatus()
 {
     //TODO
-    statusLoader.setFuture(QtConcurrent::run(::moveExtruderZeroPoint));
-    timer->stop();
+    statusLoader.setFuture(QtConcurrent::run(::_checkStatus));
 }
 #endif
 

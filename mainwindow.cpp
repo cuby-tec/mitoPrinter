@@ -296,7 +296,14 @@ void MainWindow::on_actionZeroPoint_Z()
     QString msg("on_actionZeroPoint_Z");
     statusBar()->showMessage(msg);
     ZeroPointCommand* command = new ZeroPointCommand;
+    connect(command,SIGNAL(sg_commandDone()),this,SLOT(commandZeroPointDone()));
     command->execute();
+}
+
+void MainWindow::commandZeroPointDone()
+{
+    //TODO
+    cout<<"commandZeroPointDone";
 }
 
 

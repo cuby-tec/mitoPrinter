@@ -37,6 +37,7 @@ public slots:
     void on_message(QString msg);
     //actionZeroPoint_Z
     void on_actionZeroPoint_Z();
+    void commandZeroPointDone();
 
 
 protected:
