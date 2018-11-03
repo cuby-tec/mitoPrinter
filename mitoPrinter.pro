@@ -67,7 +67,8 @@ SOURCES += \
     gparcer/araytag.cpp \
     exchange/requestfactory.cpp \
     messager.cpp \
-    command/zeropointcommand.cpp
+    command/zeropointcommand.cpp \
+    command/zeropoint_runnable.cpp
 
 
 HEADERS += \
@@ -138,7 +139,8 @@ HEADERS += \
     gparcer/mitoaction.h \
     exchange/requestfactory.h \
     messager.h \
-    command/zeropointcommand.h
+    command/zeropointcommand.h \
+    command/zeropoint_runnable.h
 
 
 FORMS += \

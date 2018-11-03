@@ -6,12 +6,16 @@
 #include "links/Status_t.h"
 #include <QObject>
 #include <QFutureWatcher>
+#include <QTimer>
+
+#include "zeropoint_runnable.h"
 
 /**
  * @brief The ZeroPointCommand class
  * Move Extruder to Zero position.
  */
 
+#define Zero_VERTION    2
 
 class ZeroPointCommand : public QObject, ICommand
 {
@@ -29,15 +33,23 @@ public slots:
     void updateStatus(const Status_t* status);
     void failedStatus();
     void statusLoaded();
+#if Zero_VERTION==2
+    void checkStatus();
+#endif
 
 private:
 
     Status_t status;
-
+#if Zero_VERTION==2
     QFutureWatcher<Status_t*> statusLoader;
-
-//    ThreadArc threadarc;// = new ThreadArc;
-
+    QTimer* timer;
+#endif
+#if Zero_VERTION==1
+    ThreadArc threadarc;// = new ThreadArc;
+#endif
+#if Zero_VERTION==3
+    ZeroPoint_runnable* zrun;
+#endif
 
 };
 

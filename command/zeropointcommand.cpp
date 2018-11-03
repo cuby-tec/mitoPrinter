@@ -3,6 +3,7 @@
 #include "myglobal.h"
 #include "gparcer/gcodeworker.h"
 
+
 #include <string.h>
 #include <QtConcurrent/QtConcurrent>
 
@@ -30,33 +31,44 @@ static Status_t* moveExtruderZeroPoint()
     GcodeWorker* gworker = new GcodeWorker;
     mito::Action_t* action = nullptr;
     action = gworker->buildAction(&sgcode);
-    ComDataReq_t req = action->queue.dequeue();
-    req.requestNumber = ++MyGlobal::requestIndex;
+    if(!action->queue.isEmpty()){
+        ComDataReq_t req = action->queue.dequeue();
+        req.requestNumber = ++MyGlobal::requestIndex;
 
-    //2. Send request.
-    UsbExchange* exch = new UsbExchange;
-    int result_exch;
-    thermo_gmutex.lock();
-    result_exch = exch->sendRequest(&req);
-    if(result_exch == EXIT_SUCCESS){
-        memcpy(status,exch->getStatus(),sizeof(Status_t));
+        //2. Send request.
+        UsbExchange* exch = new UsbExchange;
+        int result_exch;
+        thermo_gmutex.lock();
+        result_exch = exch->sendRequest(&req);
+        if(result_exch == EXIT_SUCCESS){
+            memcpy(status,exch->getStatus(),sizeof(Status_t));
+        }
+
+        thermo_gmutex.unlock();
+
     }
-
-    thermo_gmutex.unlock();
-
-
     cout<<"moveExtruderZeroPoint";
     return status;
 }
 
 ZeroPointCommand::ZeroPointCommand(QObject *parent) : QObject(parent)
 {
+#if Zero_VERTION==3
+    zrun = new ZeroPoint_runnable();
+    zrun->setAutoDelete(false);
 
+#endif
+#if Zero_VERTION==2
+    timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(checkStatus()));
+
+#endif
 }
 
 ZeroPointCommand::~ZeroPointCommand()
 {
 //    threadarc.exit();
+
 }
 
 void ZeroPointCommand::execute()
@@ -69,7 +81,8 @@ void ZeroPointCommand::execute()
     //    ThreadArc* threadarc = new ThreadArc;
     //    threadarc->exit();
     //    delete threadarc;
-/*
+#if Zero_VERTION==1
+    /*
 
     QString gcommand("G1 Z-100");   // TODO legth from profile
     std::string cmdstd = gcommand.toStdString();
@@ -102,15 +115,23 @@ void ZeroPointCommand::execute()
 
     cout<<"msg:"<<req.payload.instrument1_parameter.axis[Z_AXIS].initial_rate;
 */
+#endif
     //3. Wait response.
-
+#if Zero_VERTION==2
 //    QFutureWatcher<Status_t*> statusLoader;
 
     //connect(&m_modelLoader, SIGNAL(finished()), this, SLOT(modelLoaded()));
     connect(&statusLoader, SIGNAL(finished()), this, SLOT(statusLoaded()));
     statusLoader.setFuture(QtConcurrent::run(::moveExtruderZeroPoint));
+    timer->start(1000);
+#endif
 
-
+#if Zero_VERTION==3
+//    ZeroPoint_runnable* zrun = new ZeroPoint_runnable();
+//    zrun->setAutoDelete(false);
+    QThreadPool::globalInstance()->start(zrun);
+    cout<<zrun->a;
+#endif
 
 }
 
@@ -132,8 +153,17 @@ void ZeroPointCommand::failedStatus()
 void ZeroPointCommand::statusLoaded()
 {
     //TODO
+#if Zero_VERTION==2
     Status_t* st = statusLoader.result();
     cout<<"statusLoaded"<<st->frameNumber;
+#endif
 }
-
+#if Zero_VERTION==2
+void ZeroPointCommand::checkStatus()
+{
+    //TODO
+    statusLoader.setFuture(QtConcurrent::run(::moveExtruderZeroPoint));
+    timer->stop();
+}
+#endif
 
