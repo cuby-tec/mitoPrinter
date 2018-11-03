@@ -46,6 +46,10 @@ private:
 #if Zero_VERTION==2
     QFutureWatcher<Status_t*> statusLoader;
     QTimer* timer;
+
+    static Status_t*  _checkStatus();
+    static Status_t*  moveExtruderZeroPoint();
+
 #endif
 #if Zero_VERTION==1
     ThreadArc threadarc;// = new ThreadArc;

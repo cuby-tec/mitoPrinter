@@ -10,8 +10,8 @@
 
 #define cout qDebug()<<__FILE__<<__LINE__
 
-static Status_t*
-_checkStatus()
+Status_t*
+ZeroPointCommand::_checkStatus()
 {
     Status_t* status = new Status_t;
     RequestFactory* factory = new RequestFactory;
@@ -34,8 +34,8 @@ _checkStatus()
     return status;
 }
 
-static Status_t*
-moveExtruderZeroPoint()
+Status_t*
+ZeroPointCommand::moveExtruderZeroPoint()
 {
     char cmdbuffer[80];
     char* pbuffer;
@@ -146,7 +146,7 @@ void ZeroPointCommand::execute()
 
     //connect(&m_modelLoader, SIGNAL(finished()), this, SLOT(modelLoaded()));
     connect(&statusLoader, SIGNAL(finished()), this, SLOT(statusLoaded()));
-    statusLoader.setFuture(QtConcurrent::run(::moveExtruderZeroPoint));
+    statusLoader.setFuture(QtConcurrent::run(ZeroPointCommand::moveExtruderZeroPoint));
     timer->start(1000);
 #endif
 
@@ -188,7 +188,7 @@ void ZeroPointCommand::statusLoaded()
 void ZeroPointCommand::checkStatus()
 {
     //TODO
-    statusLoader.setFuture(QtConcurrent::run(::_checkStatus));
+    statusLoader.setFuture(QtConcurrent::run(ZeroPointCommand::_checkStatus));
 }
 #endif
 

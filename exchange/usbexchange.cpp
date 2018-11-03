@@ -205,6 +205,7 @@ UsbExchange::UsbExchange(QObject *parent) : QObject(parent)
 }
 #endif
 
+#if VERSIONUSB==1
 /**
  * @brief UsbExchange::print_status
  * @param c_status
@@ -244,8 +245,8 @@ UsbExchange::print_status(Status_t * c_status)
     line = QString(" ======================= \n");print <<line; print.flush();
 
 }
-
-
+#endif
+#if VERSIONUSB==1
 /**
  * @brief UsbExchange::load_defaults
  * @param pctl
@@ -268,7 +269,6 @@ UsbExchange::load_defaults(struct sControl* pctl)
     pctl->schem[2] = default_block.schem[2];
     pctl->direction = default_block.direction;
 }
-
 /**
  * @brief UsbExchange::build_segment_default
  * @param psc
@@ -307,6 +307,7 @@ UsbExchange::build_segment_default(struct sSegment* psc, uint32_t i)
         }
     }
 }
+#endif
 
 /**
  * @brief UsbExchange::sendBuffer
@@ -473,6 +474,7 @@ UsbExchange::sendBuffer(uint8_t* buffer, uint32_t size, QFile* fp)
 //    return result;
 }
 
+#if VERSIONUSB==1
 /**
  * @brief UsbExchange::buildComData
  * @param comdata
@@ -493,6 +495,7 @@ UsbExchange::buildComData(ComDataReq_t* comdata)
     comdata->command.order = eoSegment;
 
 }
+#endif
 
 /**
  * @brief UsbExchange::buildProfile
@@ -515,6 +518,7 @@ UsbExchange::buildProfile(sProfile* sprofile_dst)
 
 }
 
+#if VERSIONUSB==1
 /**
   Формирование запроса для определённой команды
  * @brief Exchange::buildComData
@@ -555,7 +559,7 @@ UsbExchange::buildComData(ComDataReq_t *comdata, eOrder order)
     }
 
 }
-
+#endif
 
 void
 UsbExchange::NoOperation()

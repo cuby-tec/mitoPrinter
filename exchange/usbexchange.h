@@ -23,6 +23,8 @@
 
 #include <myglobal.h>
 
+#define VERSIONUSB 2
+
 extern uint rIndex;
 
 class UsbExchange : public QObject
@@ -35,24 +37,25 @@ public:
 
     ~UsbExchange(){}
 
+#if VERSIONUSB==1
     void buildComData(struct ComDataReq_t* comdata);
-
      void buildComData(ComDataReq_t *comdata, eOrder order);
-
      /**
       * params:
       * 	psc - data to be filled.
       * 	i - offset for line number.
       */
      void build_segment_default(struct sSegment* psc, uint32_t i);
+#endif
 
      int sendRequest(ComDataReq_t* request);
 
      void NoOperation();
 
      Status_t* getStatus() { return c_status; }
-
+#if  VERSIONUSB==1
      void print_status(Status_t* c_status);
+#endif
 
 signals:
      void sg_statusReceived(struct Status_t* status);
@@ -75,9 +78,9 @@ private:
 
       char buffer2[64];
 
-
+#if VERSIONUSB==1
       void load_defaults(struct sControl* pctl);
-
+#endif
 
 };
 

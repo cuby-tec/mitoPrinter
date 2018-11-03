@@ -11,6 +11,7 @@
 #include "links/Status_t.h"
 #include "usbexchange.h"
 #include "myglobal.h"
+#include "requestfactory.h"
 
 extern QMutex thermo_gmutex;
 
@@ -50,6 +51,7 @@ private:
     QMutex mutex;
     QWaitCondition condition;
 
+    RequestFactory* factory;
     UsbExchange* exch;
 
 };

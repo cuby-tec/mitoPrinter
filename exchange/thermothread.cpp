@@ -10,6 +10,7 @@ ThermoThread::ThermoThread(QObject *parent)
 //    slp = 1;
 //    start();
     exch = new UsbExchange();
+    factory = new RequestFactory;
 
 }
 
@@ -53,13 +54,14 @@ ThermoThread::process()
          // TODO frameIndex
          index++;
 
-         exch->buildComData(&request,eoState);
+         factory->build(&request,eoState);
+//         exch->buildComData(&request,eoState);
 
          result_exch = exch->sendRequest(&request);
 
-         if(!result_exch == EXIT_SUCCESS)
+         if(!(result_exch == EXIT_SUCCESS))
          {
-             status = 0;
+             status = nullptr;
              if (!restart)
                  emit sg_failed_status();
          }else{
