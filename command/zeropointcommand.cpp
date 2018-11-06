@@ -44,7 +44,7 @@ ZeroPointCommand::moveExtruderZeroPoint()
     sGcode sgcode;
     Status_t* status = new Status_t;
 
-    QString gcommand("G1 Z-100");   // TODO legth from profile
+    QString gcommand("G1 Z-100");   // TODO length from profile
     std::string cmdstd = gcommand.toStdString();
     pbuffer = strncpy( cmdbuffer,cmdstd.data(),sizeof(cmdbuffer) );
     len = strlen(pbuffer);

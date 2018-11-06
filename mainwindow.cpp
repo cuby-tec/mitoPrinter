@@ -213,6 +213,18 @@ void MainWindow::setupMenu()
         QAction *openAction = ui->actionOpen_GCode;
         connect(openAction, SIGNAL(triggered()),this, SLOT(on_commandOpenFile()));
 
+        // mainToolBar
+//        pushdown = nullptr;
+        pushdown = new PushFilamentDown;    //TODO
+        QToolBar* toolbar = ui->mainToolBar;
+        QToolButton* tbutton = new QToolButton;
+//        tbutton->setArrowType(Qt::DownArrow);
+        tbutton->setIcon(QIcon(":images/arrowdown.xpm"));
+        tbutton->setToolTip(QString("Push filament down."));
+        toolbar->addWidget(tbutton);
+        connect(tbutton,SIGNAL(pressed()),this, SLOT(filamentDownPressed()));
+        connect(tbutton,SIGNAL(released()),this, SLOT(filamentDownReleased()));
+
 }
 
 void
@@ -304,6 +316,23 @@ void MainWindow::commandZeroPointDone()
 {
     //TODO
     cout<<"commandZeroPointDone";
+}
+
+void MainWindow::filamentDownPressed()
+{
+    //TODO
+//    cout<<"filamentDownPressed";
+//    if(pushdown == nullptr)
+//        pushdown = new PushFilamentDown;
+    pushdown->execute();
+}
+
+void MainWindow::filamentDownReleased()
+{
+    //TODO
+    pushdown->stop();
+//    deletel pushdown;
+//    cout<<"filamentDownReleased";
 }
 
 

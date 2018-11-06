@@ -11,6 +11,8 @@
 #include "command/executeprogramm.h"
 #include "messager.h"
 #include "command/zeropointcommand.h"
+#include "command/pushfilamentdown.h"
+
 
 namespace Ui {
 class MainWindow;
@@ -38,7 +40,8 @@ public slots:
     //actionZeroPoint_Z
     void on_actionZeroPoint_Z();
     void commandZeroPointDone();
-
+    void filamentDownPressed();
+    void filamentDownReleased();
 
 protected:
     void resizeEvent(QResizeEvent *event);
@@ -85,6 +88,7 @@ private:
 
     void setupMenu();
 
+    PushFilamentDown* pushdown;
 
 };
 

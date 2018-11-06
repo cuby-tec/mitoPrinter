@@ -19,5 +19,27 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/mito
 11. [threadarc.process();]
 12. [updateStatus(const Status_t *status)]    
 
-Z 36.5938
-X 119.94
+/// Template
+//.h
+#include <QFutureWatcher>
+#include <QTimer>
+
+QFutureWatcher<Status_t*> statusLoader;
+
+//.cpp
+#include <QtConcurrent/QtConcurrent>
+connect(timer, SIGNAL(timeout()), this, SLOT(checkStatus()));
+
+connect(&statusLoader, SIGNAL(finished()), this, SLOT(statusLoaded()));
+
+timer->start(1000);
+
+
+
+::checkStatus(){
+statusLoader.setFuture(QtConcurrent::run(ZeroPointCommand::_checkStatus));
+}
+
+::statusLoaded(){
+Status_t* st = statusLoader.result();
+}

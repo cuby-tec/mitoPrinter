@@ -68,7 +68,8 @@ SOURCES += \
     exchange/requestfactory.cpp \
     messager.cpp \
     command/zeropointcommand.cpp \
-    command/zeropoint_runnable.cpp
+    command/zeropoint_runnable.cpp \
+    command/pushfilamentdown.cpp
 
 
 HEADERS += \
@@ -140,7 +141,8 @@ HEADERS += \
     exchange/requestfactory.h \
     messager.h \
     command/zeropointcommand.h \
-    command/zeropoint_runnable.h
+    command/zeropoint_runnable.h \
+    command/pushfilamentdown.h
 
 
 FORMS += \
