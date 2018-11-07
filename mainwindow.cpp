@@ -13,6 +13,8 @@
 
 #define cout    qDebug()<<__FILE__<<__LINE__
 
+#define PUSHDOWN    2
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
@@ -214,8 +216,12 @@ void MainWindow::setupMenu()
         connect(openAction, SIGNAL(triggered()),this, SLOT(on_commandOpenFile()));
 
         // mainToolBar
-//        pushdown = nullptr;
+#if PUSHDOWN==1
         pushdown = new PushFilamentDown;    //TODO
+#endif
+#if PUSHDOWN==2
+        pushdown = nullptr;
+#endif
         QToolBar* toolbar = ui->mainToolBar;
         QToolButton* tbutton = new QToolButton;
 //        tbutton->setArrowType(Qt::DownArrow);
@@ -224,6 +230,13 @@ void MainWindow::setupMenu()
         toolbar->addWidget(tbutton);
         connect(tbutton,SIGNAL(pressed()),this, SLOT(filamentDownPressed()));
         connect(tbutton,SIGNAL(released()),this, SLOT(filamentDownReleased()));
+
+        QToolButton* tbuttonup = new QToolButton;
+        tbuttonup->setIcon(QIcon(":images/arrowup.xpm"));
+        tbuttonup->setToolTip(QString("Push filament backward."));
+        toolbar->addWidget(tbuttonup);
+        connect(tbuttonup,SIGNAL(pressed()),this, SLOT(filamentUpPressed()));
+        connect(tbuttonup,SIGNAL(released()),this,SLOT(filamentUpReleased()));
 
 }
 
@@ -320,19 +333,44 @@ void MainWindow::commandZeroPointDone()
 
 void MainWindow::filamentDownPressed()
 {
-    //TODO
 //    cout<<"filamentDownPressed";
-//    if(pushdown == nullptr)
-//        pushdown = new PushFilamentDown;
+#if PUSHDOWN==2
+    if(pushdown == nullptr)
+        pushdown = new PushFilamentDown;
+    pushdown->setDirection(true);
+#endif
     pushdown->execute();
 }
 
 void MainWindow::filamentDownReleased()
 {
+    pushdown->stop();
+#if PUSHDOWN==2
+    delete pushdown;
+    pushdown = nullptr;
+#endif
+    //    cout<<"filamentDownReleased";
+}
+
+void MainWindow::filamentUpPressed()
+{
+    //TODO
+#if PUSHDOWN==2
+    if(pushdown == nullptr)
+        pushdown = new PushFilamentDown;
+    pushdown->setDirection(false);// Move filament backward.
+#endif
+    pushdown->execute();
+}
+
+void MainWindow::filamentUpReleased()
+{
     //TODO
     pushdown->stop();
-//    deletel pushdown;
-//    cout<<"filamentDownReleased";
+#if PUSHDOWN==2
+    delete pushdown;
+    pushdown = nullptr;
+#endif
 }
 
 

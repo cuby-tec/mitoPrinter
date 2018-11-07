@@ -114,12 +114,12 @@ void ThreadArc::setMdelay(const size_t &value)
     mdelay = value;
 }
 
-size_t ThreadArc::getMax_tryCounter() const
+uint ThreadArc::get_tryCounter() const
 {
     return max_tryCounter;
 }
 
-void ThreadArc::setMax_tryCounter(const size_t &value)
+void ThreadArc::set_tryCounter(const uint &value)
 {
     max_tryCounter = value;
 }

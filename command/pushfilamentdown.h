@@ -25,6 +25,10 @@ public:
      */
     void stop();
 
+    void setDirection(bool value){
+        direction = value;
+    }
+
 signals:
 
 public slots:
@@ -34,8 +38,10 @@ public slots:
 private:
     QTimer* timer;
 
-    size_t counter;
+    int32_t counter;
     size_t step;
+
+    bool direction;
 
     QFutureWatcher<Status_t*> statusLoader;
 

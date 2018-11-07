@@ -22,7 +22,6 @@ static void assignHotendParam(sHotendControl_t* dst, sHotendControl_t* src)
 
 void RequestFactory::build(ComDataReq_t *comdata, eOrder order, sHotendControl_t *hend_src)
 {
-    //TODO
     //eoFunControl
 //    sM106_t* mtag = static_cast<sM106_t*>(tag);
 //    cout<<mtag->s<<":"<<mtag->n;

@@ -42,6 +42,8 @@ public slots:
     void commandZeroPointDone();
     void filamentDownPressed();
     void filamentDownReleased();
+    void filamentUpPressed();
+    void filamentUpReleased();
 
 protected:
     void resizeEvent(QResizeEvent *event);

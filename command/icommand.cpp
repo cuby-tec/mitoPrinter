@@ -51,6 +51,7 @@ ICommand::executeGCommand(QString command)
         }
 
         thermo_gmutex.unlock();
+        delete exch;
 
     }
     cout<<"moveExtruderZeroPoint";

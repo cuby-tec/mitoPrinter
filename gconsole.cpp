@@ -169,7 +169,7 @@ GConsole::updateStatus(const Status_t* status)
 //	uint32_t rnumber = thread.getRequestNumber();
 //    qDebug()<<"GConsole[125]:"<<status->frameNumber<<"\tsended:"<<rnumber<<"\tquee:"<<status->freeSegments;
 //    coordinatuswindow->update(status,req_builder);
-    cout<<"status:"<<status->modelState.modelState;
+    cout<<"status:"<<ModelState::state(status->modelState.modelState);
 //    if(status->modelState.modelState == ehIdle)
         setEnabledCursor();
 }

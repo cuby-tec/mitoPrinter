@@ -3,7 +3,7 @@
 #include "myglobal.h"
 #include "gparcer/gcodeworker.h"
 
-
+#include "links/eModelstate.h"
 #include <string.h>
 #include <QtConcurrent/QtConcurrent>
 
@@ -147,7 +147,9 @@ void ZeroPointCommand::execute()
     //connect(&m_modelLoader, SIGNAL(finished()), this, SLOT(modelLoaded()));
     connect(&statusLoader, SIGNAL(finished()), this, SLOT(statusLoaded()));
     statusLoader.setFuture(QtConcurrent::run(ZeroPointCommand::moveExtruderZeroPoint));
+
     timer->start(1000);
+
 #endif
 
 #if Zero_VERTION==3
@@ -174,12 +176,21 @@ void ZeroPointCommand::failedStatus()
 void ZeroPointCommand::statusLoaded()
 {
     //TODO
+    /**
+ * @brief The eModelstate enum
+ * enum eModelstate{
+ *     ehIdle = 1, ehIwork
+ *     ,ehEnderXmax, ehEnderXmin, ehEnderYmax, ehEnderYmin, ehEnderZmax, ehEnderZmin
+ *     ,ehException, ehWait_instrument1, ehWait_instrument2
+ * };
+*/
 #if Zero_VERTION==2
     Status_t* st = statusLoader.result();
-    cout<<"statusLoaded"<<st->modelState.modelState;
+    cout<<"statusLoaded"<< ModelState::state( st->modelState.modelState)<<st->coordinatus[Z_AXIS];
     if(st->modelState.modelState == ehEnderZmin){
         timer->stop();
         emit sg_commandDone();
+        executeGCommand("G92 Z0");
         cout<<"Stoped";
     }
 #endif

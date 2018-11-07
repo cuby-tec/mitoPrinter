@@ -31,8 +31,8 @@ public:
 
     void clear() { array.clear();}
 
-    size_t getMax_tryCounter() const;
-    void setMax_tryCounter(const size_t &value);
+    uint get_tryCounter() const;
+    void set_tryCounter(const uint &value);
 
     size_t getMdelay() const;
     void setMdelay(const size_t &value);

@@ -85,7 +85,6 @@ HEADERS += \
     exchange/usbexchange.h \
     aboutwindow.h \
     gparcer/coordinatus.h \
-    links/exchange/eModelstate.h \
     links/msmotor/msport.h \
     links/msmotor/sControl.h \
     links/msmotor/sSegment.h \
@@ -196,7 +195,8 @@ DISTFILES += \
     profile/Profile9.json \
     profile/profiles.json \
     profile/aboutcomment.txt \
-    README.txt
+    README.txt \
+    images/arrowup.xpm
 
 RESOURCES += \
     resource.qrc

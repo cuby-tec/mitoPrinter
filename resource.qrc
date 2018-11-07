@@ -11,5 +11,6 @@
         <file>images/logo-16.png</file>
         <file>images/write.png</file>
         <file>images/arrowdown.xpm</file>
+        <file>images/arrowup.xpm</file>
     </qresource>
 </RCC>
