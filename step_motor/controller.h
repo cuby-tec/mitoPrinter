@@ -68,6 +68,10 @@ public:
 
     void buildCircleStep(Coordinatus* cord );
 
+    StepMotor** getMotors(){
+        return motor;
+    }
+
 private:
     size_t frequency;
 

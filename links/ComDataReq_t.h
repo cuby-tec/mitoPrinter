@@ -21,6 +21,7 @@ enum eOrder{
     eoSegment           // Семент движения.
     , eoHotendControl      // управление Экструдером.
     , bedTemperaure     // Температура стола.
+    , eoG92
 };
 
 /**

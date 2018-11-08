@@ -1,3 +1,6 @@
+
+
+#include "step_motor/controller.h"
 #include "requestfactory.h"
 
 #include <QDebug>
@@ -48,13 +51,50 @@ void RequestFactory::build(ComDataReq_t *comdata, eOrder order, sHotendControl_t
 }
 
 void
-RequestFactory::build(ComDataReq_t *comdata, eOrder order )
+RequestFactory::buildTag92(struct ComDataReq_t* request, sG92_t* data)
+{
+//    StepMotor* motor[N_AXIS];
+    int32_t target_steps;
+    Controller* controller = new Controller();
+
+    StepMotor** motors = controller->getMotors();
+    for(uint32_t i=0;i<N_AXIS;++i){
+        StepMotor* m = motors[i];
+        lines lm = m->getLineStep;
+        double_t ds = ( m->*lm)(i);
+        switch (i) {
+        case X_AXIS:
+            target_steps = static_cast<int32_t>(lround(data->x/ds));
+            break;
+        case Y_AXIS:
+            target_steps = static_cast<int32_t>(lround(data->y/ds));
+            break;
+        case Z_AXIS:
+            target_steps = static_cast<int32_t>(lround(data->z/ds));
+            break;
+        case E_AXIS:
+            target_steps = static_cast<int32_t>(lround(data->e/ds));
+            break;
+        }
+        request->payload.instrument1_parameter.axis[i].steps = static_cast<uint32_t>(target_steps);
+    }
+
+
+//            StepMotor* m = motor[i];
+//            lines lm = m->getLineStep;
+//            double_t ds = ( m->*lm)(i);
+
+}
+void
+RequestFactory::build(ComDataReq_t *comdata, eOrder order, void* data )
 {
     /* UsbExchange::buildComData(ComDataReq_t *comdata, eOrder order)
      * eoState,            // Запрос состояния устройства.
      * eoHotendParams,    // Задание параметров Hotend
      *  eoSegment
      * */
+    sG92_t* tagG92;
+
     switch (order) {
     case eoState:
         //TODO request Status only
@@ -67,10 +107,6 @@ RequestFactory::build(ComDataReq_t *comdata, eOrder order )
     case eoHotendControl: //управление Вентилятором
 //        Pnnn Fan number (optional, defaults to 0)2
 //        Snnn Fan speed (0 to 255; RepRapFirmware also accepts 0.0 to 1.0))
-
-
-
-
         break;
 
     case eoProfile:
@@ -78,14 +114,18 @@ RequestFactory::build(ComDataReq_t *comdata, eOrder order )
         comdata->size = sizeof(struct ComDataReq_t);
 //        comdata->requestNumber = ++MyGlobal::requestIndex;
         comdata->instruments = N_AXIS;
-
         comdata->command.order = eoProfile;
-
         sendRequest(comdata); // Get request in Controller. */
         break;
 
     case eoSegment:
 //        buildComData(comdata);
+        break;
+    case eoG92:
+        tagG92 = static_cast<sG92_t*>(data);
+        comdata->size = sizeof(struct ComDataReq_t);
+        comdata->command.order = eoG92;
+        buildTag92(comdata,static_cast<sG92_t*>(data));
         break;
     }
 

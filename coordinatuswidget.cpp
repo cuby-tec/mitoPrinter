@@ -1,6 +1,6 @@
 #include "coordinatuswidget.h"
 #include "myglobal.h"
-#include "links/exchange/eModelstate.h"
+#include "links/eModelstate.h"
 
 CoordinatusWidget::CoordinatusWidget(QWidget *parent) : QWidget(parent)
   , ui(new Ui::CoordinatusWidget)

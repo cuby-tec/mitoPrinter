@@ -10,14 +10,14 @@ class RequestFactory
 public:
     RequestFactory();
 
-    void build(ComDataReq_t *comdata, eOrder order);
+    void build(ComDataReq_t *comdata, eOrder order, void *data=nullptr);
     void build(ComDataReq_t *comdata, eOrder order, sHotendControl_t *hend_src);
 
     ComDataReq_t *build(uint linenumber);
 
 private:
     ComDataReq_t *request;
-
+    void buildTag92(struct ComDataReq_t* request, sG92_t *data);
 
 
 

@@ -9,7 +9,7 @@
 //#include "links/Status_t.h"
 //#include "usbexchange.h"
 
-#include "links/exchange/eModelstate.h"
+#include "links/eModelstate.h"
 #include <gcode-lexer.h>
 #include "gparcer/lexer.h"
 
@@ -86,6 +86,8 @@ GConsole::setupGconsole()
     QPushButton* run = ui->pushButton_linestep;
     connect(run,SIGNAL(clicked()),this, SLOT(on_pushButton_linestep_clicked()) );
 
+    QTextEdit* editor = ui->textEdit_command;
+    connect(editor,SIGNAL(cursorPositionChanged()),this,SLOT(on_textEdit_command_cursorPositionChanged()));
 }
 
 
@@ -280,7 +282,6 @@ GConsole::on_pushButton_linestep_clicked()
 //--------- parcer end
 
 }
-
 
 void
 GConsole::on_checkBox_immediately_stateChanged(int arg1)

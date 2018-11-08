@@ -84,7 +84,7 @@
       <property name="frameShadow">
        <enum>QFrame::Raised</enum>
       </property>
-      <widget class="QWidget" name="">
+      <widget class="QWidget" name="layoutWidget">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -124,7 +124,7 @@
            <string/>
           </property>
           <property name="icon">
-           <iconset resource="../../../Документы/qt_example/examples/thermo/resources.qrc">
+           <iconset resource="resource.qrc">
             <normaloff>:/images/linestep.png</normaloff>:/images/linestep.png</iconset>
           </property>
           <property name="shortcut">
@@ -144,7 +144,7 @@
            <string/>
           </property>
           <property name="icon">
-           <iconset resource="../../../Документы/qt_example/examples/thermo/resources.qrc">
+           <iconset resource="resource.qrc">
             <normaloff>:/images/goo_top.png</normaloff>:/images/goo_top.png</iconset>
           </property>
          </widget>
@@ -234,7 +234,7 @@ padding-left:0px;
   </widget>
  </widget>
  <resources>
-  <include location="../../../Документы/qt_example/examples/thermo/resources.qrc"/>
+  <include location="resource.qrc"/>
  </resources>
  <connections/>
 </ui>
