@@ -14,6 +14,7 @@ public:
     virtual void execute(){}
 
     static Status_t* executeGCommand(QString command);
+    static Status_t* _checkStatus();
 };
 
 #endif // ICOMMAND_H

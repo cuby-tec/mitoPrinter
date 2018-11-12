@@ -394,11 +394,11 @@ void MainWindow::on_message(QString msg)
                 "Use: $sudo insmod ./eclipse-workspace/usbtest/test1.ko");
 
     statusBar()->showMessage(msg);
-    QMessageBox box;
-    box.setText(err);
+//    QMessageBox box;
+//    box.setText(err);
+    //    int ret = box.exec();
     QAction *actionRun = ui->actionRun;
     actionRun->setEnabled(true);
-    int ret = box.exec();
 }
 
 

@@ -1,4 +1,4 @@
-#include "comdata.h"
+﻿#include "comdata.h"
 #include <string.h>
 #include <QString>
 #include <QDebug>
@@ -8,8 +8,8 @@
 #include <QVarLengthArray>
 
 #include "myglobal.h"
-
 #include "geometry/Arc.h"
+
 
 #include <cmath>
 
@@ -21,8 +21,8 @@
 //const char* msg4 = "Profile should be selected.";
 
 ComData::ComData(QObject *parent) : QObject(parent)
-  ,steps(0)
   ,condition(egcLine)
+  ,steps(0)
 {
 
     memset(&request,'\0',sizeof(ComDataReq_t));
@@ -48,7 +48,7 @@ ComData::ComData(QObject *parent) : QObject(parent)
 void
 ComData::setupThread()
 {
-	acknowledge_flag = false;
+    acknowledge_flag = false;
 
     connect(&threadarc,SIGNAL(sg_status_updated(const Status_t*)),this,SLOT(updateStatus(const Status_t*)));
     connect(&threadarc,SIGNAL(sg_failed_status()),this,SLOT(failedStatus()) );
@@ -60,7 +60,7 @@ ComData::setWorkValue(QString value, size_t axis_num)
 {
     int i;
     bool ok;
-	QString str_val = QString( value );
+    QString str_val = QString( value );
 
     i = str_val.indexOf(',');
     if(i>0)
@@ -214,6 +214,7 @@ ComData::planner_recalculate()
 /**
  * @brief ComData::buildG0command
  */
+/*
 void
 ComData::buildG0command()
 {
@@ -239,7 +240,7 @@ ComData::buildG0command()
             uint32_t number = QString(gparam->value).toInt(&ok);
             Q_ASSERT(ok);
             segment->head.linenumber = number;
-        	break;
+            break;
         }
 
     }
@@ -254,84 +255,84 @@ ComData::buildG0command()
     Recalculate_flag* flag;
 
     for(int i=0;i<M_AXIS;i++){
-    	byte* fl = &cord->nextBlocks[i].recalculate_flag;
-    	*fl |= true; // Одиночная команда.
+        byte* fl = &cord->nextBlocks[i].recalculate_flag;
+        *fl |= true; // Одиночная команда.
     }
 
     controller->buildBlock(cord);
 
     buildComdata();
 }
-
+*/
 
 
 void
 ComData::buildComdata()
 {
-	ComDataReq_t* req = &request;
-	sSegment* segment;
-	sControl* control;
+    ComDataReq_t* req = &request;
+    sSegment* segment;
+    sControl* control;
     block_state_t* bstates = cord->nextBlocks;
 
     memset(req,0,sizeof(ComDataReq_t));
 
 //	req->requestNumber = 0;//++MyGlobal::requestIndex;// TODO get request number
-	req->instruments = 1;
+    req->instruments = 1;
 
-	req->command.order = eoSegment;
-	req->command.instrument = 1;
-	req->command.reserved = 0;
+    req->command.order = eoSegment;
+    req->command.instrument = 1;
+    req->command.reserved = 0;
 
-	segment = &req->payload.instrument1_parameter;
+    segment = &req->payload.instrument1_parameter;
 
-	//------------ payload =============================
-	segment->head.linenumber = sgCode->line ;
-	segment->head.axis_number = M_AXIS;//0;
+    //------------ payload =============================
+    segment->head.linenumber = sgCode->line ;
+    segment->head.axis_number = M_AXIS;//0;
 
-	//if(segment->head.reserved == EXIT_CONTINUE)
-	//    ms_finBlock = continueBlock;
-	//else
-	//    ms_finBlock = exitBlock;
-	segment->head.reserved &= ~EXIT_CONTINUE;
+    //if(segment->head.reserved == EXIT_CONTINUE)
+    //    ms_finBlock = continueBlock;
+    //else
+    //    ms_finBlock = exitBlock;
+    segment->head.reserved &= ~EXIT_CONTINUE;
 
-	for(int i=0;i<M_AXIS;i++)
-	{
-		if(bstates[i].steps>0)
-			segment->head.axis_mask |= (1<<i);
-		else
-			segment->head.axis_mask &= ~(1<<i);
-	}
-	//======== sControl =========
+    for(int i=0;i<M_AXIS;i++)
+    {
+        if(bstates[i].steps>0)
+            segment->head.axis_mask |= (1<<i);
+        else
+            segment->head.axis_mask &= ~(1<<i);
+    }
+    //======== sControl =========
 
-	for(int i =0;i<M_AXIS;i++){
-		control = &segment->axis[i];
-		block_state_t* bstate = &bstates[i];
+    for(int i =0;i<M_AXIS;i++){
+        control = &segment->axis[i];
+        block_state_t* bstate = &bstates[i];
 
-		control->accelerate_until = bstate->accelerate_until;
-		control->decelerate_after = bstate->decelerate_after;
+        control->accelerate_until = bstate->accelerate_until;
+        control->decelerate_after = bstate->decelerate_after;
 
-		if(bstate->path>0)
-			control->direction = edForward;
-		else
-			control->direction = edBackward;
+        if(bstate->path>0)
+            control->direction = edForward;
+        else
+            control->direction = edBackward;
 
-		control->final_rate = bstate->final_rate;
-		control->initial_rate = bstate->initial_rate;
-		control->nominal_rate = bstate->nominal_rate;
-		control->final_speedLevel = bstate->final_speedLevel;
+        control->final_rate = bstate->final_rate;
+        control->initial_rate = bstate->initial_rate;
+        control->nominal_rate = bstate->nominal_rate;
+        control->final_speedLevel = bstate->final_speedLevel;
 
-		control->speedLevel = bstate->accelerate_until;// TODO Attention
+        control->speedLevel = bstate->accelerate_until;// TODO Attention
 
-		control->microsteps = bstate->microstep;
+        control->microsteps = bstate->microstep;
 
-		for(int j=0;j<3;j++){
-			control->schem[j] = bstate->schem[j];
-		}
+        for(int j=0;j<3;j++){
+            control->schem[j] = bstate->schem[j];
+        }
 
-		control->steps = bstate->steps;
+        control->steps = bstate->steps;
 
-		control->axis = bstate->axis_mask;
-	}
+        control->axis = bstate->axis_mask;
+    }
 }
 
 //TODOH Circle G2 G3 (Clockwise Arc)
@@ -355,33 +356,33 @@ ComData::buildG2Command()
         switch (gparam->group)
         {
         case 'X':
-        	xstr = gparam->value;
-        	break;
+            xstr = gparam->value;
+            break;
         case 'Y':
-        	ystr = gparam->value;
+            ystr = gparam->value;
             break;
 
         case 'I':
-        	istr = gparam->value;
-        	break;
+            istr = gparam->value;
+            break;
 
         case 'J':
-        	jstr = gparam->value;
-        	break;
+            jstr = gparam->value;
+            break;
 
         case 'R':
-        	rstr = gparam->value;
-        	break;
+            rstr = gparam->value;
+            break;
 
         case 'E':
-        	// TODOH Extruder
-        	break;
+            // TODOH Extruder
+            break;
 
         case 'N': // Номер строки
             uint32_t number = QString(gparam->value).toInt(&ok);
             Q_ASSERT(ok);
             segment->head.linenumber = number;
-        	break;
+            break;
         }
     }
 
@@ -427,7 +428,7 @@ ComData::buildG2Command()
 
 }
 
-
+/*
 void
 ComData::buildGgroup()
 {
@@ -440,14 +441,14 @@ ComData::buildGgroup()
 
     case 0:
     case 1:
-    	state = ecdOne;
+        state = ecdOne;
         buildG0command();
         break;
 
     case 2:
     case 3:
-    	state = ecdCircle;
-    	buildG2Command();
+        state = ecdCircle;
+        buildG2Command();
         break;
 
     case 4:
@@ -460,7 +461,7 @@ ComData::buildGgroup()
     }
 
 }
-
+*/
 
 void
 ComData::buildMgroup()
@@ -548,120 +549,120 @@ void ComData::buildComData(sGcode *sgcode, bool checkBox_immediately)
 
 #if VERSION == 11
     //    ComDataReq_t* req = getRequest();
-	ComDataReq_t* req = build(sgcode);
+    ComDataReq_t* req = build(sgcode);
 
     switch(state){
 
-	case ecdOne:
+    case ecdOne:
         if(!isPlaneHasSteps())
-		{
+        {
             qDebug()<<__FILE__<<":"<<__LINE__<<": group:"<<sgcode->group;
             break;
-		}
-		// immediately execute
-		if(checkBox_immediately)
-			req->command.reserved |= EXECUTE_IMMEDIATELY;
-		else
-			req->command.reserved &= ~EXECUTE_IMMEDIATELY;
+        }
+        // immediately execute
+        if(checkBox_immediately)
+            req->command.reserved |= EXECUTE_IMMEDIATELY;
+        else
+            req->command.reserved &= ~EXECUTE_IMMEDIATELY;
 
-		req->payload.instrument1_parameter.head.reserved &= ~EXIT_CONTINUE;
+        req->payload.instrument1_parameter.head.reserved &= ~EXIT_CONTINUE;
 //		qDebug()<<"ComData[584] from GConsole";
-		setRequestNumber(++MyGlobal::requestIndex);//MyGlobal::requestIndex MyGlobal::commandIndex
-		threadarc.putInArray(&request);
-		threadarc.process();
-		break;
+        setRequestNumber(++MyGlobal::requestIndex);//MyGlobal::requestIndex MyGlobal::commandIndex
+        threadarc.putInArray(&request);
+        threadarc.process();
+        break;
 
-	case ecdCircle:
-		//================
-		//    QVarLengthArray<ComDataReq_t,1024> array(num);
-		    ThreadArc *pthreadarc = &threadarc;
-		//    QVarLengthArray<ComDataReq_t> array = threadarc->getArray();
-		    double_t delay = 1000*controller->getTimeOfCounter(2500420);
-		    threadarc.setMdelay(delay);//50 100 900
+    case ecdCircle:
+        //================
+        //    QVarLengthArray<ComDataReq_t,1024> array(num);
+            ThreadArc *pthreadarc = &threadarc;
+        //    QVarLengthArray<ComDataReq_t> array = threadarc->getArray();
+            double_t delay = 1000*controller->getTimeOfCounter(2500420);
+            threadarc.setMdelay(delay);//50 100 900
 
-		    uint send_counter = 0;
+            uint send_counter = 0;
 
-		    double_t precicion = arc->getPrecicion();
+            double_t precicion = arc->getPrecicion();
 
-		    double_t precicionY = arc->getPrecicion();
+            double_t precicionY = arc->getPrecicion();
 
-			int32_t d20[2][2] = {{0,0},{0,0}};
+            int32_t d20[2][2] = {{0,0},{0,0}};
 
-			Point pStart = arc->getStart();
+            Point pStart = arc->getStart();
 
-		    cout<<"Start X:"<<pStart.x<<"\tY:"<<pStart.y <<endl;
+            cout<<"Start X:"<<pStart.x<<"\tY:"<<pStart.y <<endl;
 
-			Point pCurrent = pStart;
+            Point pCurrent = pStart;
 
-			uint32_t i_points = 0;
+            uint32_t i_points = 0;
 
-			for(uint32_t i=1;i<arc->getPointsNumber();i++){
+            for(uint32_t i=1;i<arc->getPointsNumber();i++){
 
-				Point p = arc->getPoint(i); // Line 611
-				Point dp = p-pStart;
+                Point p = arc->getPoint(i); // Line 611
+                Point dp = p-pStart;
 
-				d20[1][0] = trunc(dp.x/precicion);
-				d20[1][1] = trunc(dp.y/precicionY);
+                d20[1][0] = trunc(dp.x/precicion);
+                d20[1][1] = trunc(dp.y/precicionY);
 
-				bool h20 = d20[0][0] ^ d20[1][0];
-				bool i20 = d20[0][1] ^ d20[1][1];
+                bool h20 = d20[0][0] ^ d20[1][0];
+                bool i20 = d20[0][1] ^ d20[1][1];
 
-				d20[0][0] = d20[1][0];
-				d20[0][1] = d20[1][1];
+                d20[0][0] = d20[1][0];
+                d20[0][1] = d20[1][1];
 
-				if((!h20)&&(!i20))
-					continue;
-				if(h20){
-					pCurrent.x = pStart.x + d20[1][0]*precicion;
-				}
-				if(i20){
-					pCurrent.y = pStart.y + d20[1][1]*precicionY;
-				}
+                if((!h20)&&(!i20))
+                    continue;
+                if(h20){
+                    pCurrent.x = pStart.x + d20[1][0]*precicion;
+                }
+                if(i20){
+                    pCurrent.y = pStart.y + d20[1][1]*precicionY;
+                }
 
-				cord->setWorkValue(X_AXIS,pCurrent.x);//pCurrent.x
-				cord->setWorkValue(Y_AXIS,pCurrent.y);//pCurrent.y
-				cord->moveWorkToNext();
-				i_points++;
-				controller->buildBlock(cord);
+                cord->setWorkValue(X_AXIS,pCurrent.x);//pCurrent.x
+                cord->setWorkValue(Y_AXIS,pCurrent.y);//pCurrent.y
+                cord->moveWorkToNext();
+                i_points++;
+                controller->buildBlock(cord);
 /*
-		        cout
-					<<"ComData[664] i:"<<i_points
-		//			<<"\tstepX:"<<h20<<"\tstepY:"<<i20
-					<<"\tstepx:"<<cord->nextBlocks[X_AXIS].steps
-					<<"\tstepsy:"<<cord->nextBlocks[Y_AXIS].steps
-		    		<<"\tX:"<<cord->getNextValue(X_AXIS)
-		    		<<"\tY:"<<cord->getNextValue(Y_AXIS);
+                cout
+                    <<"ComData[664] i:"<<i_points
+        //			<<"\tstepX:"<<h20<<"\tstepY:"<<i20
+                    <<"\tstepx:"<<cord->nextBlocks[X_AXIS].steps
+                    <<"\tstepsy:"<<cord->nextBlocks[Y_AXIS].steps
+                    <<"\tX:"<<cord->getNextValue(X_AXIS)
+                    <<"\tY:"<<cord->getNextValue(Y_AXIS);
 //		        	<<endl;
 */
-		        buildComdata();
-				request.requestNumber = ++MyGlobal::requestIndex;
+                buildComdata();
+                request.requestNumber = ++MyGlobal::requestIndex;
 //		        request.command.reserved &= ~EXECUTE_IMMEDIATELY;
-		        if(++send_counter==1)
-		        {
-		        	if(checkBox_immediately)
-		        		request.command.reserved |= EXECUTE_IMMEDIATELY;
-		        	else
-		        		request.command.reserved &= ~EXECUTE_IMMEDIATELY;
-		        }
+                if(++send_counter==1)
+                {
+                    if(checkBox_immediately)
+                        request.command.reserved |= EXECUTE_IMMEDIATELY;
+                    else
+                        request.command.reserved &= ~EXECUTE_IMMEDIATELY;
+                }
 
-				request.payload.instrument1_parameter.head.reserved |= EXIT_CONTINUE;
+                request.payload.instrument1_parameter.head.reserved |= EXIT_CONTINUE;
 
-		        int s = pthreadarc->putInArray(&request);
+                int s = pthreadarc->putInArray(&request);
                 qDebug()<<"ComData[690] s:"<<s;
-		        cord->moveNextToCurrent();
+                cord->moveNextToCurrent();
 
-			}
+            }
 /*
-			cout<<"ComData[692]  X:"<<cord->getNextValue(X_AXIS)<<"\tY:"<<cord->getNextValue(Y_AXIS)
-					<<"\tX:"<<cord->getNextValue(X_AXIS)
-					<<"\tY:"<<cord->getNextValue(Y_AXIS)
-					<< endl;
+            cout<<"ComData[692]  X:"<<cord->getNextValue(X_AXIS)<<"\tY:"<<cord->getNextValue(Y_AXIS)
+                    <<"\tX:"<<cord->getNextValue(X_AXIS)
+                    <<"\tY:"<<cord->getNextValue(Y_AXIS)
+                    << endl;
 */
-		    // sending
-		    threadarc.process();
-		//================
-		break;
-	}
+            // sending
+            threadarc.process();
+        //================
+        break;
+    }
 #endif
 
 
@@ -689,7 +690,7 @@ void ComData::run(GcodeWorker* gworker)
     //wait answer ...
 
 //    gworker->readCommandLine();
-    connect(gworker, SIGNAL(sg_executeComplite()),this, SLOT(slot_fileComplite()));
+//    connect(gworker, SIGNAL(sg_executeComplite()),this, SLOT(slot_fileComplite()));
 
 }
 #define FSMDEBUG  1
@@ -699,7 +700,7 @@ void ComData::_run()
 {
     //    cout<<"run:"<<gworker->isFileOpened();
     mito::Action_t* action;
-//    int queueSize;
+    int queueSize;
     // TODO execute by states;
     switch (runState) {
 
@@ -729,7 +730,7 @@ _run1:
                 while (!action->queue.isEmpty()){
                     ComDataReq_t req = action->queue.dequeue();
                     req.requestNumber = ++MyGlobal::requestIndex;
-//                    queueSize = threadarc.putInArray(&req);
+                    queueSize = threadarc.putInArray(&req);
                 }
                 threadarc.setMdelay(500);
 //                threadarc.setMax_tryCounter(200);
@@ -740,6 +741,7 @@ _run1:
                 break;
 
             case eSendWait:
+#ifndef WAITTEMPERATURE_H
                 while (!action->queue.isEmpty()){
                     ComDataReq_t req = action->queue.dequeue();
                     req.requestNumber = ++MyGlobal::requestIndex;
@@ -760,7 +762,10 @@ _run1:
 #endif
                 pd->setMinimumDuration(0);
                 connect(pd,SIGNAL(canceled()), this, SLOT(heatingCancel()) );
-
+#else
+                runState = ersWaitParamTemperature;
+                waitTemp(action);
+#endif
 
                 break;
 
@@ -814,10 +819,9 @@ _run1:
     }
 }
 
-
 void ComData::waitParam()
 {
-    cout<<"waitParam";
+//    cout<<"waitParam";
     RequestFactory* factory = new RequestFactory();
     ComDataReq_t *request = new ComDataReq_t;
     factory->build(request,eoState);
@@ -828,11 +832,27 @@ void ComData::waitParam()
      delete factory;
 }
 
+
+void ComData::waitTemp(mito::Action_t *action)
+{
+    waitTemperature = new WaitTemperature(this, action->param.d);
+    connect(waitTemperature,SIGNAL(sg_commandDone()),this, SLOT(temperatureDone()) );
+    connect(waitTemperature, SIGNAL(sg_canceled()), this, SLOT(sl_caceled()));
+    waitTemperature->execute();
+
+}
+
+
+void ComData::temperatureDone()
+{
+    cout<<"temperatureDone";
+}
+/*
 void ComData::testTimer()
 {
     cout<<"testTimer";
 }
-
+*/
 void ComData::slot_fileComplite()
 {
 #if LEVEL==1
@@ -842,7 +862,7 @@ void ComData::slot_fileComplite()
     Messager* message = Messager::instance();
     message->setProgramExecutionComplite();
 }
-
+/*
 void ComData::heatingCancel()
 {
     //TODO
@@ -850,28 +870,33 @@ void ComData::heatingCancel()
     waitTimer.stop();
     delete  pd;
 }
-
+*/
 void ComData::updateStatus(const Status_t *status)
 {
-	acknowledge_flag = true;
-    emit sg_updateStatus(status);
-//    Messager* message = Messager::instance();
-    messager->putStatus(status);
-    statusParam.f = status->temperature;
+    acknowledge_flag = true;
+    if(status->freeSegments<=SEGMENT_QUEE_SIZE){
 
-//    runState = ersRunning;
+        emit sg_updateStatus(status);
+        //    Messager* message = Messager::instance();
+        messager->putStatus(status);
+        statusParam.f = status->temperature;
+
+        //    runState = ersRunning;
 #if LEVEL==1
-    cout<<"updateStatus" <<"\t" <<status->modelState.modelState;
+        cout<<"updateStatus" <<"\t" <<status->modelState.modelState;
 #endif
-    switch(condition)
-    {
-    case egcFile:
-        _run();
-        break;
-    case egcLine:
-        break;
+        switch(condition)
+        {
+        case egcFile:
+            _run();
+            break;
+        case egcLine:
+            break;
+        }
+    }else{
+        //Error
+        cout<<"Error.";
     }
-
 }
 
 
@@ -881,7 +906,6 @@ void ComData::updateStatus(const Status_t *status)
 void ComData::failedStatus()
 {
  //TODO failed Status
-//	qDebug()<<"ComData[722]::failedStatus[700].";
     cout<<"failedStatus";
 #ifdef DEBUG
     runState = ersRunning;
@@ -889,6 +913,17 @@ void ComData::failedStatus()
     runState = ersError;
 #endif
     _run();
+}
+
+void ComData::sl_caceled()
+{
+    //Heating canceled by user.
+//    message->setProgramExecutionComplite();
+    messager->putMessage("Canceled.");
+    threadarc.quit();
+    emit sg_executeComplite();
+    delete  waitTemperature;
+    waitTemperature = nullptr;
 }
 
 

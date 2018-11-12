@@ -81,7 +81,7 @@ Exchange::sendRequest(ComDataReq_t* request)
 //        qDebug() << "Can't open device. maybe module not loaded. \n \t Use: $sudo insmod ./eclipse-workspace/usbtest/test1.ko \n \t or device dosn't connected.";
 
         QMessageBox msgbox;
-        msgbox.setText("Can't open device. maybe module not loaded. Use: $sudo insmod ./eclipse-workspace/usbtest/test1.ko \n \t or device dosn't connected.");
+        msgbox.setText("Exchange:Can't open device. maybe module not loaded. Use: $sudo insmod ./eclipse-workspace/usbtest/test1.ko \n \t or device dosn't connected.");
         msgbox.exec();
 
     }

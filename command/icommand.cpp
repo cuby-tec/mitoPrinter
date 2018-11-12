@@ -17,6 +17,31 @@ ICommand::~ICommand()
 }
 
 Status_t*
+ICommand::_checkStatus()
+{
+    Status_t* status = new Status_t;
+    RequestFactory* factory = new RequestFactory;
+    ComDataReq_t* req = new ComDataReq_t;
+    factory->build(req,eoState);
+    req->requestNumber = ++MyGlobal::requestIndex;
+
+    //2. Send request.
+    UsbExchange* exch = new UsbExchange;
+    int result_exch;
+    thermo_gmutex.lock();
+    result_exch = exch->sendRequest(req);
+    if(result_exch == EXIT_SUCCESS){
+        memcpy(status,exch->getStatus(),sizeof(Status_t));
+    }
+
+    thermo_gmutex.unlock();
+
+    cout<<"checkStatus";
+    return status;
+}
+
+
+Status_t*
 ICommand::executeGCommand(QString command)
 {
     char cmdbuffer[80];
@@ -54,6 +79,6 @@ ICommand::executeGCommand(QString command)
         delete exch;
 
     }
-    cout<<"moveExtruderZeroPoint";
+    cout<<"executeGCommand";
     return status;
 }

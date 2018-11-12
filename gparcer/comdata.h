@@ -21,6 +21,7 @@
 
 #include "gparcer/gcodeworker.h"
 #include "messager.h"
+#include "command/waittemperature.h"
 
 #include <QObject>
 #include <QChar>
@@ -112,13 +113,17 @@ signals:
 
 public slots:
     void slot_fileComplite();   // file reach EOF.
-    void heatingCancel();
+//    void heatingCancel();
 
 private slots:
     void updateStatus(const Status_t* status);
     void failedStatus();
+    void sl_caceled();
     void waitParam();
-    void testTimer();
+    void waitTemp(mito::Action_t* action);
+
+//    void testTimer();
+    void temperatureDone();
 
 
 private:
@@ -167,7 +172,10 @@ private:
 
     QTimer testT;
 
+    WaitTemperature* waitTemperature;
+
     int steps;
+
     QProgressDialog* pd;
 
 //    block_state blocks[N_AXIS];
@@ -179,11 +187,11 @@ private:
 
     void calculateAccel();
 
-    void buildGgroup();
+//    void buildGgroup();
 
     void buildMgroup();
 
-    void buildG0command();
+//    void buildG0command();
 
     void setParam_coord(sGparam* param);
 

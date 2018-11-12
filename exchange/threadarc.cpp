@@ -32,8 +32,8 @@ int ThreadArc::putInArray(ComDataReq_t *src)
 
 void ThreadArc::run()
 {
-    int result_exch;
-    size_t try_counter;
+    int result_exch = 0;
+    size_t try_counter = 0;
     forever{
 
         while(!queue.isEmpty())

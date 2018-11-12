@@ -69,7 +69,8 @@ SOURCES += \
     messager.cpp \
     command/zeropointcommand.cpp \
     command/zeropoint_runnable.cpp \
-    command/pushfilamentdown.cpp
+    command/pushfilamentdown.cpp \
+    command/waittemperature.cpp
 
 
 HEADERS += \
@@ -141,7 +142,8 @@ HEADERS += \
     messager.h \
     command/zeropointcommand.h \
     command/zeropoint_runnable.h \
-    command/pushfilamentdown.h
+    command/pushfilamentdown.h \
+    command/waittemperature.h
 
 
 FORMS += \
