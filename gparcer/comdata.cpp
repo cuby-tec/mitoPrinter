@@ -482,7 +482,7 @@ ComData::buildMgroup()
 
 }
 
-
+/*
 ComDataReq_t*
 ComData::build(sGcode *sgcode)
 {
@@ -505,12 +505,12 @@ ComData::build(sGcode *sgcode)
     }
     return(&request);
 }
-
+*/
 #define cout	qDebug()<<__FILE__<<__LINE__
 // from GConsole
 void ComData::buildComData(sGcode *sgcode, bool checkBox_immediately)
 {
-    int queueSize;
+    int queueSize = 0;
     mito::Action_t* action = nullptr;
     condition = egcLine;
     gworker = new GcodeWorker;
@@ -699,7 +699,7 @@ void ComData::_run()
 {
     //    cout<<"run:"<<gworker->isFileOpened();
     mito::Action_t* action;
-    int queueSize;
+//    int queueSize;
     // TODO execute by states;
     switch (runState) {
 
@@ -729,7 +729,7 @@ _run1:
                 while (!action->queue.isEmpty()){
                     ComDataReq_t req = action->queue.dequeue();
                     req.requestNumber = ++MyGlobal::requestIndex;
-                    queueSize = threadarc.putInArray(&req);
+//                    queueSize = threadarc.putInArray(&req);
                 }
                 threadarc.setMdelay(500);
 //                threadarc.setMax_tryCounter(200);

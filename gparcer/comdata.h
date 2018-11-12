@@ -93,7 +93,7 @@ public:
     }
 
 
-    ComDataReq_t* build(sGcode* sgcode);
+//    ComDataReq_t* build(sGcode* sgcode);
 
     double_t getPath_mm(uint8_t axis, int32_t steps) { return (controller->getPath_mm(axis, steps)); }
 

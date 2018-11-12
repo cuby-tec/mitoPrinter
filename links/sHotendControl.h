@@ -28,6 +28,10 @@ struct sHotendSwitch {
     }
 };
 
+struct sHotendHead{
+    uint32_t    linenumber;
+};
+
 /**
  * Передача параметров управления инструментом Hotend.
  */
@@ -49,6 +53,7 @@ struct sHotendControl_t {
 };
 #else
 struct sHotendControl_t {
+    sHotendHead head;
     int32_t temperature;
     int32_t kp;     // Коэффициент пропорциональной составляющей.
     int32_t ki;     // Коэффициент интегральной составляющей.

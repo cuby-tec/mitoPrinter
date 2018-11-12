@@ -458,6 +458,8 @@ ComdataProxy::sendG92Tag(sG92_t *data)
 //    action->a = eNext;
     return action;
 }
+
+//M104 tag
 #define KD  0.12
 #define KP  0.8//0.75
 #define KI  1.0 - (KP + KD)
@@ -490,6 +492,7 @@ ComdataProxy::sendM104Tag(sM104_t *data)
     ComDataReq_t* request = new ComDataReq_t;
     RequestFactory* factory = new RequestFactory();
     factory->build(request, eoHotendControl, hend);
+    request->payload.instrument_hotend.head.linenumber = data->n;
     action->queue.enqueue(*request);
     action->a = eSend;//TODO
 
@@ -568,6 +571,7 @@ ComdataProxy::sendM109_Tag(sM109_t *data)
     ComDataReq_t* request = new ComDataReq_t;
     RequestFactory* factory = new RequestFactory();
     factory->build(request, eoHotendControl, hend);
+    request->payload.instrument_hotend.head.linenumber = data->n;
     action->queue.enqueue(*request);
     action->a = eSendWait;
     action->param.d = data->s;

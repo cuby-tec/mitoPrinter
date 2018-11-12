@@ -107,6 +107,7 @@ GConsole::setupThread()
  * @param cmdd
  * @return result
  */
+ /*
 bool
 GConsole::buildComData(sGcode* sgcode)
 {
@@ -142,7 +143,7 @@ GConsole::buildComData(sGcode* sgcode)
 //    thread.process();
 //    return result;
 }
-
+*/
 
 void GConsole::setDisabledCursor() {
     ui->pushButton_linestep->setDisabled(true);

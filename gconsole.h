@@ -75,7 +75,7 @@ private:
     int parceString(char *src, sGcode *dst);
 
 //bool    GConsole::buildComData(sGcode* sgcode)
-    bool buildComData(sGcode* sgcode);
+//    bool buildComData(sGcode* sgcode);
 
     void setupGconsole();
 
