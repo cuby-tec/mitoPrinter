@@ -41,6 +41,10 @@ ComData::ComData(QObject *parent) : QObject(parent)
 
     messager = Messager::instance();
 
+    waitTemperature = nullptr;
+
+    waitsendAction = nullptr;
+
     setupThread();
 
 }
@@ -113,7 +117,7 @@ ComData::setParam_coord(sGparam *param)
 
 
 }
-
+/*
 bool
 ComData::isPlaneHasSteps()
 {
@@ -127,7 +131,7 @@ ComData::isPlaneHasSteps()
 
     return (sum != 0);
 }
-
+*/
 
 void
 ComData::setProfileValue()
@@ -519,6 +523,8 @@ void ComData::buildComData(sGcode *sgcode, bool checkBox_immediately)
 
     action = gworker->buildAction(sgcode);
     switch (action->a) {
+    case eWaitSend:
+    case eSendWait:
     case eSend:
         if(action->queue.isEmpty()){
             cout<<"Empty.";
@@ -740,6 +746,13 @@ _run1:
 #endif
                 break;
 
+            case eWaitSend:
+            	//TODO eWaitSend
+                waitsendAction = new WaitSendAction(this,action);
+                connect(waitsendAction,SIGNAL(sg_commandDone()),this, SLOT(waitsendDone()));
+                waitsendAction->execute();
+            	break;
+
             case eSendWait:
 #ifndef WAITTEMPERATURE_H
                 while (!action->queue.isEmpty()){
@@ -782,6 +795,7 @@ _run1:
         break;
 
     case ersWaitParamTemperature:
+#ifndef WAITTEMPERATURE_H
         // Compare status and target param.
 //        float status_temperature = statusParam.f;
 //        double_t target = param.d;
@@ -808,6 +822,9 @@ _run1:
             goto _run1;
         }
         cout<<"\ttemperature:"<<statusParam.f<<"\t"<<param.d;
+#else
+        cout<<"Failed. Never come in ersWaitParamTemperature.";
+#endif
         break;
 
     case ersError:
@@ -819,15 +836,14 @@ _run1:
     }
 }
 
+//Start reading  G-file.
 void ComData::waitParam()
 {
-//    cout<<"waitParam";
     RequestFactory* factory = new RequestFactory();
     ComDataReq_t *request = new ComDataReq_t;
     factory->build(request,eoState);
     threadarc.putInArray(request);
      threadarc.process();
-
     delete request;
      delete factory;
 }
@@ -846,6 +862,19 @@ void ComData::waitTemp(mito::Action_t *action)
 void ComData::temperatureDone()
 {
     cout<<"temperatureDone";
+	runState = ersRunning;
+	delete waitTemperature;
+	waitTemperature = nullptr;
+    _run();
+}
+
+void ComData::waitsendDone()
+{
+    cout<<"waitsendDone";
+    runState = ersRunning;
+    delete waitsendAction;
+    waitsendAction = nullptr;
+    _run();
 }
 /*
 void ComData::testTimer()

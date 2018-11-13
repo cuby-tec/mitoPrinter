@@ -148,13 +148,13 @@ GcodeWorker::buildAction(sGcode *src)
         action = (this->*callTagRef[etag])(src); //tagG3_Do
          break;
     case eG4:
-        (this->*callTagRef[etag])(src); //tagG4_Do
+        action = (this->*callTagRef[etag])(src); //tagG4_Do
         break;
     case eG6:
-        (this->*callTagRef[etag])(src); //tagG6_Do
+        action = (this->*callTagRef[etag])(src); //tagG6_Do
         break;
     case eG10:
-        (this->*callTagRef[etag])(src); //tagG10_Do
+        action = (this->*callTagRef[etag])(src); //tagG10_Do
         break;
     case eG20:
         action = (this->*callTagRef[etag])(src); //tagG20_Do
@@ -166,13 +166,13 @@ GcodeWorker::buildAction(sGcode *src)
         action = (this->*callTagRef[etag])(src); //tagG28_Do
         break;
     case eG29_1:
-        (this->*callTagRef[etag])(src); //tagG29.1_Do
+        action = (this->*callTagRef[etag])(src); //tagG29.1_Do
         break;
     case eG29_2:
-        (this->*callTagRef[etag])(src); //tagG29.2_Do
+        action = (this->*callTagRef[etag])(src); //tagG29.2_Do
         break;
     case eG30:
-        (this->*callTagRef[etag])(src); //tagG30_Do
+        action = (this->*callTagRef[etag])(src); //tagG30_Do
         break;
     case eG33:
         break;
@@ -212,9 +212,11 @@ GcodeWorker::buildAction(sGcode *src)
     case eM83:
         action = (this->*callTagRef[etag])(src); //tagM83_Do
         break;
-    case eM84:  (this->*callTagRef[etag])(src); //tagM84_Do
+    case eM84:
+    	action = (this->*callTagRef[etag])(src); //tagM84_Do
         break;
-    case eF:    (this->*callTagRef[etag])(src); //tagGF_Do
+    case eF:
+    	action = (this->*callTagRef[etag])(src); //tagGF_Do
         break;
     case eS:
         break;
@@ -610,6 +612,7 @@ GcodeWorker::tagG4_Do(sGcode *sgCode)
         valueTag.n = linecounter;
     vTag->set(&valueTag);
     comproxy->sendG4Tag(vTag);
+    action->a = eNext;
 #endif
     return action;
 }
@@ -664,6 +667,7 @@ GcodeWorker::tagG6_Do(sGcode *sgCode)
          valueTag.n = linecounter;
      vTag->set(&valueTag);
      comproxy->sendG6Tag(vTag);
+     action->a = eNext;
 #endif
      return action;
 }
@@ -749,6 +753,7 @@ GcodeWorker::tagG10_Do(sGcode *sgCode)
         valueTag.n = linecounter;
     vTag->set(&valueTag);
     comproxy->sendG10Tag(vTag);
+    action->a = eNext;
 #endif
     return action;
 }
@@ -936,6 +941,7 @@ GcodeWorker::tagG29_1_Do(sGcode *sgCode)
         vTag->set(&valueTag);
 
         comproxy->sendG29_1Tag(vTag);
+        action->a = eNext;
 #endif
         return action;
 }
@@ -986,6 +992,7 @@ GcodeWorker::tagG29_2_Do(sGcode *sgCode)
         vTag->set(&valueTag);
 
         comproxy->sendG29_2Tag(vTag);
+        action->a = eNext;
 #endif
 
         return action;
@@ -1086,6 +1093,7 @@ GcodeWorker::tagG30_Do(sGcode *sgCode)
         vTag->set(&valueTag);
 
         comproxy->sendG30Tag(vTag);
+        action->a = eNext;
 #endif
         return action;
 }
@@ -1161,6 +1169,7 @@ GcodeWorker::tagG33_Do(sGcode *sgCode)
     vTag->set(&valueTag);
 
 //    comproxy->sendG30Tag(vTag);
+    action->a = eNext;
 #endif
     return action;
 }
@@ -1310,6 +1319,7 @@ GcodeWorker::tagG92_Do(sGcode *sgCode)
 
     syncXYZ(vTag->x,vTag->y,vTag->z,vTag->e);
     action = comproxy->sendG92Tag(&tag92);
+    action->a = eWaitSend;
     return action;
 }
 
@@ -1323,6 +1333,7 @@ GcodeWorker::tagG92_1_Do(sGcode *sgCode)
      bool ok = false;
      double dvalue;
       //TODO
+     action->a = eNext;
      return action;
 }
 

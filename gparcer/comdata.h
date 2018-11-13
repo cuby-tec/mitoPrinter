@@ -22,6 +22,7 @@
 #include "gparcer/gcodeworker.h"
 #include "messager.h"
 #include "command/waittemperature.h"
+#include "command/waitsendaction.h"
 
 #include <QObject>
 #include <QChar>
@@ -119,11 +120,11 @@ private slots:
     void updateStatus(const Status_t* status);
     void failedStatus();
     void sl_caceled();
-    void waitParam();
+    void waitParam();// Start circle of reading file.
     void waitTemp(mito::Action_t* action);
-
 //    void testTimer();
     void temperatureDone();
+    void waitsendDone();
 
 
 private:
@@ -178,6 +179,10 @@ private:
 
     QProgressDialog* pd;
 
+    WaitSendAction* waitsendAction;
+
+
+
 //    block_state blocks[N_AXIS];
 
 //    StepMotor* motor;
@@ -199,7 +204,7 @@ private:
 
     void initWorkAray();
 
-    bool isPlaneHasSteps();
+//    bool isPlaneHasSteps();
 
     void setProfileValue();
 

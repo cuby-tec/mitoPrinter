@@ -24,9 +24,8 @@ WaitTemperature::WaitTemperature(QObject *parent, double_t temperature) : QObjec
 
 void WaitTemperature::execute()
 {
-    //TODO
     connect(&statusLoader, SIGNAL(finished()), this, SLOT(statusLoaded()));
-    timer->start(500);
+    timer->start(1000);
     statusLoader.setFuture(QtConcurrent::run(WaitTemperature::_checkStatus));
 }
 
@@ -39,7 +38,8 @@ void WaitTemperature::statusLoaded()
 
     switch (state) {
     case e_waitQueue:
-        if(st->modelState.queueState == SEGMENT_QUEE_SIZE){
+        if((st->modelState.queueState == SEGMENT_QUEE_SIZE)
+                &&(st->modelState.modelState != ehIwork)){
             // We can send a Gcommand M109 Sxxx
             str = QString("M109 S%1").arg(targetTemperature);
 //            sttmp = executeGCommand(str);
