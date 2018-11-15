@@ -19,12 +19,12 @@ void ExecuteProgramm::execute(QFile &stream)
 {
     gcodeworker = new GcodeWorker();
 
-//    connect(gcodeworker, SIGNAL(sg_executeComplite()), this, SLOT(finished()) );
+    connect(gcodeworker, SIGNAL(sg_executeComplite()), this, SLOT(finished()) );
     gcodeworker->setFileExecute(stream);
 
 
     comdata = new ComData();
-    connect(comdata, SIGNAL(sg_executeComplite()), this, SLOT(finished()));
+//    connect(comdata, SIGNAL(sg_executeComplite()), this, SLOT(finished()));
     comdata->run(gcodeworker);
 
 }

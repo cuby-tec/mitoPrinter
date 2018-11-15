@@ -6,6 +6,8 @@
 
 
 #include "gcodeworker.h"
+#include"coordinatus.h"
+
 
 #include <string.h>
 //#include <cstring>
@@ -263,6 +265,9 @@ GcodeWorker::tagG0_Do(sGcode *sgCode)
     valueTag.f = 0;
     valueTag.s = 0;
     valueTag.n = 0;
+    Coordinatus* cord = Coordinatus::instance();
+    // G91 ; Relative positioning
+    bool absolute = cord->isAbsolute();
 
     bool ok = false;
 
@@ -320,8 +325,12 @@ GcodeWorker::tagG0_Do(sGcode *sgCode)
 
     if(valueTag.n == 0)
         valueTag.n = linecounter;
-    vTag->set(&valueTag);
-    syncXYZ(valueTag.x, valueTag.y, valueTag.z, valueTag.e);
+    if(absolute == true)
+    	vTag->set(&valueTag);
+    else
+    	vTag->add(&valueTag);
+//    syncXYZ(valueTag.x, valueTag.y, valueTag.z, valueTag.e);
+    syncXYZ(vTag->x, vTag->y, vTag->z, vTag->e);
 
     action = comproxy->sendG0Line(vTag);
 #endif
@@ -343,6 +352,9 @@ GcodeWorker::tagG1_Do(sGcode *sgCode)
     valueTag.s = 0;
     valueTag.n = 0;
     bool ok = false;
+    Coordinatus* cord = Coordinatus::instance();
+    // G91 ; Relative positioning
+    bool absolute = cord->isAbsolute();
 
     //TODO
     double_t move = 0.0;//50.0;
@@ -414,8 +426,13 @@ GcodeWorker::tagG1_Do(sGcode *sgCode)
 
     if(valueTag.n == 0)
         valueTag.n = linecounter;
-    vTag->set(&valueTag);
-    syncXYZ(valueTag.x, valueTag.y, valueTag.z, valueTag.e);
+//    vTag->set(&valueTag);
+    if(absolute == true)
+    	vTag->set(&valueTag);
+    else
+    	vTag->add(&valueTag);
+
+    syncXYZ(vTag->x, vTag->y, vTag->z, vTag->e);
     action = comproxy->sendG1Line(vTag);
 #endif
 
@@ -856,7 +873,11 @@ GcodeWorker::tagG28_Do(sGcode *sgCode)
 
     for(int i=0;i<sgCode->param_number;i++){
         sGparam* gparam = &sgCode->param[i];
-        QString value(clearNumValue(gparam->value));
+//        QString value(clearNumValue(gparam->value));
+        QString value(gparam->value);
+        value.replace(',','.');
+        double dvalue = value.toDouble(&ok);
+
         switch (gparam->group){
         case 'X':
             valueTag.x = 0.0;
@@ -871,6 +892,16 @@ GcodeWorker::tagG28_Do(sGcode *sgCode)
         case 'Z':
             valueTag.z = 0.0;
             all = false;
+            break;
+
+        case 'F':
+            Q_ASSERT(ok);
+            valueTag.f = dvalue;
+            all = false;
+            if(ok){
+                Coordinatus* cord = Coordinatus::instance();
+                cord->setSpeedrate(dvalue);
+            }
             break;
 
         case 'N':
@@ -888,6 +919,7 @@ GcodeWorker::tagG28_Do(sGcode *sgCode)
         valueTag.y = 0.0;
         valueTag.z = 0.0;
     }
+    syncXYZ(valueTag.x, valueTag.y, valueTag.z, valueTag.e);
     action = comproxy->sendG28Tag(&valueTag);
 #endif
     return action;
@@ -1294,7 +1326,7 @@ GcodeWorker::tagG92_Do(sGcode *sgCode)
         tag92.n = linecounter;
     }
 
-
+/*
     if(std::isnan(tag92.x)&&std::isnan(tag92.y)
             &&std::isnan(tag92.z)&&std::isnan(tag92.e))
     {
@@ -1307,13 +1339,19 @@ GcodeWorker::tagG92_Do(sGcode *sgCode)
     if( !std::isnan(tag92.x))
         valueTag.x = tag92.x;
     if(!std::isnan(tag92.y))
-    valueTag.y = tag92.y;
+        valueTag.y = tag92.y;
     if(!std::isnan(tag92.z))
-    valueTag.z = tag92.z;
+        valueTag.z = tag92.z;
     if(!std::isnan(tag92.e))
-    valueTag.e = tag92.e;
+        valueTag.e = tag92.e;
 
 //    valueTag.n = tag92.n;
+*/
+    tag92.x = valueTag.x;
+    tag92.y = valueTag.y;
+    tag92.z = valueTag.z;
+    tag92.n = valueTag.n;
+
 
     vTag->set(&valueTag);
 
@@ -1615,7 +1653,7 @@ GcodeWorker::tagM84_Do(sGcode *sgCode)
     }
     if(vTag->n == 0)
         vTag->n = linecounter;
-    comproxy->sendM84_Tag(vTag);
+    action = comproxy->sendM84_Tag(vTag);
     return action;
 }
 

@@ -208,6 +208,13 @@ public:
 
 
 
+    double_t getMaxSpeedrate() const{
+        return maxSpeedrate;
+    }
+    void setMaxSpeedrate(const double_t &value){
+        maxSpeedrate = value;
+    }
+
 private:
 
     size_t stepsPerRound;
@@ -229,6 +236,8 @@ private:
 
     //Максимальная скорость вращения об/мин
     double_t angular_velocity_rpm_value;
+
+    double_t maxSpeedrate;
 
 
 };

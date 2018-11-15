@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>297</width>
-    <height>382</height>
+    <height>347</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
      <x>0</x>
      <y>0</y>
      <width>291</width>
-     <height>374</height>
+     <height>341</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -252,13 +252,16 @@
        <number>10</number>
       </property>
       <property name="topMargin">
-       <number>5</number>
+       <number>0</number>
       </property>
       <property name="rightMargin">
        <number>5</number>
       </property>
       <property name="bottomMargin">
-       <number>5</number>
+       <number>0</number>
+      </property>
+      <property name="verticalSpacing">
+       <number>2</number>
       </property>
       <item row="2" column="0">
        <widget class="QLabel" name="label_ender_yrow">

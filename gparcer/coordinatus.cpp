@@ -140,7 +140,7 @@ Coordinatus::setupProfileData() {
 	        speed = fspeed.toFloat(&ok);
 	        Q_ASSERT(ok);
 //	        block->nominal_speed = speed;
-	        profileData.speed_rpm[i] = speed;
+            profileData.speedrate[i] = speed;
 
 	        acceleration = facceleration.toFloat(&ok);
 	        Q_ASSERT(ok);

@@ -206,14 +206,14 @@ ComData::setDirection_bits()
 
     }
 }
-
+/*
 //TODO planner_recalculate
 void
 ComData::planner_recalculate()
 {
 
 }
-
+*/
 
 /**
  * @brief ComData::buildG0command
@@ -712,6 +712,7 @@ void ComData::_run()
 
     case ersEOF:
         cout<<"end of file";
+        emit sg_executeComplite();
         return;
         break;
 

@@ -19,6 +19,12 @@ struct sMover{
     double_t z;
     double_t e;
     double_t f;
+    void add(sMover* src){
+    	x += src->x;
+    	y += src->y;
+    	z += src->z;
+    	e += src->e;
+    }
 };
 
 
@@ -240,8 +246,8 @@ struct sG28_t :NumberedTag, sMover {
 //    bool x;
 //    bool y;
 //    bool z;
-/*    sG28_t():x(true),y(true),z(true){}
-    void reset(){
+//	sG28_t():x(0.0),y(0.0),z(0.0){}
+/*    void reset(){
         x = false;
         y = false;
         z = false;

@@ -134,7 +134,7 @@ void Controller::buildBlock(Coordinatus* cord) {
 //        v[i] = fabs((motor->*pf)(profileData.speed_rpm[i]));
         StepMotor* m = motor[i];
         convert pm = m->getLineSpeed;
-        v[i] = fabs((m->*pm)(profileData->speed_rpm[i]));
+        v[i] = fabs((m->*pm)(profileData->speedrate[i]));
 
 
 //varant 2:     v[i] = (motor->*motor->m_struct[i])(profileData.speed_rpm[i]);

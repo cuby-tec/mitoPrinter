@@ -210,7 +210,7 @@ private:
 
     void setDirection_bits();
 
-    void planner_recalculate();
+//    void planner_recalculate();
 
     void buildComdata();
 

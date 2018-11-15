@@ -182,6 +182,7 @@ double_t StepMotor::angularSpeedrate_gear_10_43(double_t speedrate) {
 	return result;
 }
 
+
 // EOF
 
 

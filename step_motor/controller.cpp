@@ -171,11 +171,19 @@ void Controller::buildCircleStep( Coordinatus* cord) {
 
 }
 
+#define SET_ACCELERATION(A) motor[A]->setAcceleration(static_cast<double_t>(profileData->acceleration[A]))
+#define SET_SPEEDRATE(A) motor[A]->setMaxSpeedrate( static_cast<double_t>(profileData->speedrate[A]));
+
 void Controller::uploadMotorData() {
-    motor[X_AXIS]->setAcceleration(static_cast<double_t>(profileData->acceleration[X_AXIS]));
-    motor[Y_AXIS]->setAcceleration(static_cast<double_t>(profileData->acceleration[Y_AXIS]));
-    motor[Z_AXIS]->setAcceleration( static_cast<double_t>(profileData->acceleration[Z_AXIS]));
-    motor[E_AXIS]->setAcceleration( static_cast<double_t>(profileData->acceleration[E_AXIS]));
+    SET_ACCELERATION(X_AXIS);
+    SET_ACCELERATION(Y_AXIS);
+    SET_ACCELERATION(Z_AXIS);
+    SET_ACCELERATION(E_AXIS);
+
+    SET_SPEEDRATE(X_AXIS);
+    SET_SPEEDRATE(Y_AXIS);
+    SET_SPEEDRATE(Z_AXIS);
+    SET_SPEEDRATE(E_AXIS);
 
 }
 
@@ -194,17 +202,9 @@ Controller::buildBlock(Coordinatus* cord) {
 
     block_state_t* blocks = cord->nextBlocks;
 
-//    for(size_t i=0;i<N_AXIS;i++){
-//        path[i] = cord->getNextValue(i) - cord->getCurrentValue(i);
-//		qDebug()<<"Controller[74]"<<" path:"<< path[i];
-//    }
-
     //[4] Длина линии в шагах		C23
-//    uint32_t maxvector[N_AXIS];
     for(uint32_t i=0;i<N_AXIS;++i){
         block_state_t* block = &blocks[i];
-        // if(segment->axis[X_AXIS].direction == forward)
-        //   GPIOPinWrite(DIRECTION_PORT, DIR_X, DIR_X);
         StepMotor* m = motor[i];
         lines lm = m->getLineStep;
         double_t ds = ( m->*lm)(i);
@@ -830,12 +830,12 @@ double_t Controller::selectFeedrate( double_t cord_feedrate ) {
 
 	double_t maxfeedVector[N_AXIS];
     double_t maxfeedrate = 10000000.0;
-	size_t index;
+    size_t index = 0;
 
-	maxfeedVector[X_AXIS] = FEEDRATE_PULLEY_MAX;
-	maxfeedVector[Y_AXIS] = FEEDRATE_PULLEY_MAX;
-	maxfeedVector[Z_AXIS] = FEEDRATE_SHAFT_MAX;
-	maxfeedVector[E_AXIS] = FEEDRATE_GEAR_MAX;
+    maxfeedVector[X_AXIS] = motor[X_AXIS]->getMaxSpeedrate();//FEEDRATE_PULLEY_MAX;
+    maxfeedVector[Y_AXIS] = motor[Y_AXIS]->getMaxSpeedrate();//FEEDRATE_PULLEY_MAX;
+    maxfeedVector[Z_AXIS] = motor[Z_AXIS]->getMaxSpeedrate();//FEEDRATE_SHAFT_MAX;
+    maxfeedVector[E_AXIS] = motor[E_AXIS]->getMaxSpeedrate();//FEEDRATE_GEAR_MAX;
 
 	for(size_t i=0;i<N_AXIS;i++){
         if(maxvector[i]==0){

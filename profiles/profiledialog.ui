@@ -312,7 +312,7 @@
              <string>Extruder, roung per minute</string>
             </property>
             <property name="inputMask">
-             <string>000.00</string>
+             <string>00000.00</string>
             </property>
            </widget>
           </item>

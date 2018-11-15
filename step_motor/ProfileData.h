@@ -16,7 +16,7 @@ struct ProfileData_t{
 
 	float_t acceleration[N_AXIS];
 
-	float_t speed_rpm[N_AXIS];
+    float_t speedrate[N_AXIS];
 };
 
 

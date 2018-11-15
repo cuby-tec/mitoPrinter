@@ -33,6 +33,7 @@ public:
 
     double_t getNextValue(size_t axis);
 
+    // true - absolute, false - relative
     bool isAbsolute() {return absrel;}
 
     void setAbsolute(bool value){absrel = value;}
