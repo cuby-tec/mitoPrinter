@@ -522,6 +522,8 @@ void ComData::buildComData(sGcode *sgcode, bool checkBox_immediately)
     QMessageBox* msgBox;
 
     action = gworker->buildAction(sgcode);
+    if(action == nullptr)
+        return;//TODO
     switch (action->a) {
     case eWaitSend:
     case eSendWait:

@@ -43,3 +43,17 @@ statusLoader.setFuture(QtConcurrent::run(ZeroPointCommand::_checkStatus));
 ::statusLoaded(){
 Status_t* st = statusLoader.result();
 }
+============
+G0 Z1
+G0 Z0
+G92
+M84
+G0 F9000 X36.705 Y36.705 Z0.250
+G0 X0 Y0 F9000
+G28
+G0 F9000 X36.705
+G0 F9000 X0
+G0 F19000 Y76.705
+G0 F15000 Y0
+G0 F9000 X36.705 Y36.705
+=============

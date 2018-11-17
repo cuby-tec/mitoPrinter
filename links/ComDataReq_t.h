@@ -21,7 +21,8 @@ enum eOrder{
     eoSegment           // Семент движения.
     , eoHotendControl      // управление Экструдером.
     , bedTemperaure     // Температура стола.
-    , eoG92
+    , eoG92			// G92: Set Position
+	, eoM84			//  M84: Stop idle hold
 };
 
 /**

@@ -101,7 +101,6 @@ RequestFactory::build(ComDataReq_t *comdata, eOrder order, void* data )
         comdata->size = sizeof(struct ComDataReq_t);
 //        comdata->requestNumber = ++MyGlobal::requestIndex;
         comdata->command.order = eoState;
-//        sendRequest(comdata);
         break;
 
     case eoHotendControl: //управление Вентилятором
@@ -124,9 +123,13 @@ RequestFactory::build(ComDataReq_t *comdata, eOrder order, void* data )
     case eoG92:
         tagG92 = static_cast<sG92_t*>(data);
         comdata->size = sizeof(struct ComDataReq_t);
-        comdata->command.order = eoG92;
+        comdata->command.order = order;
         buildTag92(comdata,static_cast<sG92_t*>(data));
         break;
+    case eoM84:
+    	comdata->size = sizeof(struct ComDataReq_t);
+    	comdata->command.order = order;
+    	break;
     }
 
 }

@@ -261,8 +261,7 @@ GcodeWorker::tagG0_Do(sGcode *sgCode)
     sG0_t * vTag =  reinterpret_cast<sG0_t *>( arraytag->getTagValue(eG0));
     sG0_t valueTag ;
 //    vTag->get(&valueTag);
-    loadMovervalue(&valueTag);
-    valueTag.f = 0;
+//    valueTag.f = 0;
     valueTag.s = 0;
     valueTag.n = 0;
     Coordinatus* cord = Coordinatus::instance();
@@ -270,6 +269,15 @@ GcodeWorker::tagG0_Do(sGcode *sgCode)
     bool absolute = cord->isAbsolute();
 
     bool ok = false;
+
+    if(absolute == true){
+    	loadMovervalue(&valueTag);
+    }else{
+    	valueTag.init();
+    	valueTag.f = cord->getSpeedrate();
+    }
+
+
 
     for(int i=0;i<sgCode->param_number;i++)
     {
@@ -347,7 +355,6 @@ GcodeWorker::tagG1_Do(sGcode *sgCode)
     sG1_t * vTag =  reinterpret_cast<sG1_t *>( arraytag->getTagValue(eG1));
     sG1_t valueTag ;
 //    vTag->get(&valueTag);
-    loadMovervalue(&valueTag);
 //    valueTag.f = 0;
     valueTag.s = 0;
     valueTag.n = 0;
@@ -356,8 +363,15 @@ GcodeWorker::tagG1_Do(sGcode *sgCode)
     // G91 ; Relative positioning
     bool absolute = cord->isAbsolute();
 
+    if(absolute == true){
+    	loadMovervalue(&valueTag);
+    }else{
+    	valueTag.init();
+    	valueTag.f = cord->getSpeedrate();
+    }
+
     //TODO
-    double_t move = 0.0;//50.0;
+//    double_t move = 0.0;//50.0;
 
 //    char buf[20];
 //    memset(buf,0,sizeof (buf));
@@ -374,13 +388,13 @@ GcodeWorker::tagG1_Do(sGcode *sgCode)
         {
         case 'X':
             Q_ASSERT(ok);
-            dvalue -= move;
+//            dvalue -= move;
             if(ok) { valueTag.x = dvalue; }
             break;
 
         case 'Y':
             Q_ASSERT(ok);
-            dvalue -= move;
+//            dvalue -= move;
             if(ok) { valueTag.y = dvalue; }
             break;
 
@@ -869,7 +883,7 @@ GcodeWorker::tagG28_Do(sGcode *sgCode)
 //        valueTag.reset();
 //    }
     loadMovervalue(&valueTag);
-    valueTag.f = 1200;//TODO Feedrate from profile
+//    valueTag.f = 1200;//TODO Feedrate from profile
 
     for(int i=0;i<sgCode->param_number;i++){
         sGparam* gparam = &sgCode->param[i];
@@ -1274,11 +1288,14 @@ GcodeWorker::tagG92_Do(sGcode *sgCode)
     sG92_t tag92 ;
     sG1_t * vTag =  reinterpret_cast<sG1_t *>( arraytag->getTagValue(eG1));
     sG1_t valueTag ;
+    Coordinatus* cord = Coordinatus::instance();
+//    valueTag.init();
 
     vTag->get(&valueTag);
-    tag92.init(&tag92);
+//    tag92.init(&tag92);
     valueTag.n = 0;
     bool ok = false;
+    bool hasParam = false;
     double dvalue;
 
     for(int i=0;i<sgCode->param_number;i++){
@@ -1289,69 +1306,59 @@ GcodeWorker::tagG92_Do(sGcode *sgCode)
             dvalue = value.toDouble(&ok);
             Q_ASSERT(ok);
             valueTag.x = dvalue;
-            tag92.x = dvalue;
+//            tag92.x = dvalue;
+            hasParam = true;
             break;
 
         case 'Y':
             dvalue = value.toDouble(&ok);
             Q_ASSERT(ok);
             valueTag.y = dvalue;
-            tag92.y = dvalue;
+//            tag92.y = dvalue;
+            hasParam = true;
             break;
 
         case 'Z':
             dvalue = value.toDouble(&ok);
             Q_ASSERT(ok);
             valueTag.z = dvalue;
-            tag92.z = dvalue;
+//            tag92.z = dvalue;
+            hasParam = true;
             break;
         case 'E':
             dvalue = value.toDouble(&ok);
             Q_ASSERT(ok);
             valueTag.e = dvalue;
-            tag92.e = dvalue;
+//            tag92.e = dvalue;
+            hasParam = true;
             break;
 
         case 'N':
             uint number = QString(gparam->value).toUInt(&ok);
             Q_ASSERT(ok);
             valueTag.n = number;
-            tag92.n = number;
+//            tag92.n = number;
             break;
         }
 
     }
+
     if(valueTag.n == 0){
         valueTag.n = linecounter;
-        tag92.n = linecounter;
+//        tag92.n = linecounter;
     }
 
-/*
-    if(std::isnan(tag92.x)&&std::isnan(tag92.y)
-            &&std::isnan(tag92.z)&&std::isnan(tag92.e))
-    {
-        tag92.x = 0.0;
-        tag92.y = 0.0;
-        tag92.z = 0.0;
-        tag92.e = 0.0;
+    if(hasParam == false){
+    	valueTag.init();
     }
 
-    if( !std::isnan(tag92.x))
-        valueTag.x = tag92.x;
-    if(!std::isnan(tag92.y))
-        valueTag.y = tag92.y;
-    if(!std::isnan(tag92.z))
-        valueTag.z = tag92.z;
-    if(!std::isnan(tag92.e))
-        valueTag.e = tag92.e;
-
-//    valueTag.n = tag92.n;
-*/
     tag92.x = valueTag.x;
     tag92.y = valueTag.y;
     tag92.z = valueTag.z;
+    tag92.e = valueTag.e;
     tag92.n = valueTag.n;
 
+//    tag92.f = cord->getSpeedrate();
 
     vTag->set(&valueTag);
 

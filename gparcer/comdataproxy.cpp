@@ -347,7 +347,7 @@ ComdataProxy::sendG28Tag(sG28_t *data)
 #endif
     double_t sum = 0;
     for (size_t i=0;i<3;i++){
-        sum += coordinatus->getCurrentValue(i);
+        sum += coordinatus->getNextValue(i);
     }
 
     coordinatus->moveNextToCurrent();
@@ -454,7 +454,7 @@ ComdataProxy::sendG92Tag(sG92_t *data)
     RequestFactory* factory = new RequestFactory();
     factory->build(request, eoG92, data);
     action->queue.enqueue(*request);
-    action->a = eSend;//TODO
+    action->a = eWaitSend;
 //    action->a = eNext;
     return action;
 }
@@ -628,7 +628,12 @@ ComdataProxy::sendM84_Tag(sM84_t *data)
 #if DEBUGLEVEL==1
     qDebug()<<__FILE__<<__LINE__<<"M84:";
 #endif
-    //TODOH tag M84 ; Turn steppers off
+    // tag M84 ; Turn steppers off
+    ComDataReq_t* request = new ComDataReq_t;
+    RequestFactory* factory = new RequestFactory();
+    factory->build(request, eoM84, data);
+    action->queue.enqueue(*request);
+    action->a = eWaitSend;//
     return action;
 }
 

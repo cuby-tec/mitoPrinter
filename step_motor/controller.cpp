@@ -823,13 +823,13 @@ void Controller::uploadPosition(Coordinatus* cord)
         cord->position[i] =static_cast<int32_t>(lround(cord->getNextValue(i)/ds));
     }
 }
-
+#define SELECTOR    1
 double_t Controller::selectFeedrate( double_t cord_feedrate ) {
 	//TODOH
 //	bool path[N_AXIS];
 
 	double_t maxfeedVector[N_AXIS];
-    double_t maxfeedrate = 10000000.0;
+    double_t maxvalue = 10000000.0;
     size_t index = 0;
 
     maxfeedVector[X_AXIS] = motor[X_AXIS]->getMaxSpeedrate();//FEEDRATE_PULLEY_MAX;
@@ -841,21 +841,45 @@ double_t Controller::selectFeedrate( double_t cord_feedrate ) {
         if(maxvector[i]==0){
 			maxfeedVector[i] = 0.0;
         }else
-            if(maxfeedrate > maxfeedVector[i]){
-                maxfeedrate = maxfeedVector[i];
+#if SELECTOR==2
+            if(maxvalue > maxfeedVector[i]){
+                maxvalue = maxfeedVector[i];
                 index = i;
             }
+#else
+        {
+            StepMotor* m = motor[i];
+        	angularSpeedrate as = m->getAngularSpeedrate;
+        	maxfeedVector[i] = (m->*as)(maxfeedVector[i]);
+            if(maxvalue > maxfeedVector[i]){
+                maxvalue = maxfeedVector[i];
+                index = i;
+            }
+
+        }
+
+#endif
+
     }
 
-
-    if(maxfeedrate>cord_feedrate && cord_feedrate!=0.0)
-		maxfeedrate = cord_feedrate;
+#if SELECTOR==2
+    if(maxvalue>cord_feedrate && cord_feedrate!=0.0)
+		maxvalue = cord_feedrate;
 
 
 	StepMotor* m = motor[index];
 	angularSpeedrate as = m->getAngularSpeedrate;
-	double_t G4 = (m->*as)(maxfeedrate);
-
+	double_t G4 = (m->*as)(maxvalue);
+#else
+	double_t G4;
+	StepMotor* m = motor[index];
+	angularSpeedrate as = m->getAngularSpeedrate;
+	double_t angular_cord =  (m->*as)(cord_feedrate);
+    if((maxvalue > angular_cord) &&(cord_feedrate!=0.0))
+		G4 = angular_cord;
+	else
+		G4 = maxfeedVector[index];
+#endif
 	return G4;
 }//==
 

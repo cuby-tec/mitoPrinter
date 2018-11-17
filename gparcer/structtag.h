@@ -25,6 +25,13 @@ struct sMover{
     	z += src->z;
     	e += src->e;
     }
+    void init(){
+    	x = 0.0;
+    	y = 0.0;
+    	z = 0.0;
+    	e = 0.0;
+    	f = 0.0;
+    }
 };
 
 
