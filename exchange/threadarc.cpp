@@ -59,6 +59,7 @@ volatile uint32_t line = request->payload.instrument1_parameter.head.linenumber;
                     if (!restart)
                         emit sg_failed_status();
                     qDebug()<<__FILE__<<__LINE__<<"ThreadExchange[38]"<<" failed.";
+                    break;
                 }else{
                     //             status = exch->getStatus();
                     memcpy(&status,exch->getStatus(),sizeof(Status_t));
@@ -70,7 +71,7 @@ volatile uint32_t line = request->payload.instrument1_parameter.head.linenumber;
                 if(!(status.modelState.reserved1&COMMAND_ACKNOWLEDGED))
                 {
                     try_counter++;
-                    cout<<"number:"<<status.currentSegmentNumber <<"\tqueue:"<<status.freeSegments<<"\tstate:"<<status.modelState.modelState;
+                    cout<<"number:"<<status.currentSegmentNumber <<"\tqueue:"<<status.freeSegments<<"\tstate:"<<status.modelState.modelState<<"\tord_ly:"<<status.modelState.reserved1;
                     msleep(mdelay);
                 }
                 if(try_counter>=max_tryCounter){
@@ -85,6 +86,7 @@ volatile uint32_t line = request->payload.instrument1_parameter.head.linenumber;
             if(try_counter>=max_tryCounter){
                 break;
             }
+            msleep(40);//debug delay
 
         }// while()
 

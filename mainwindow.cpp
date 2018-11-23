@@ -238,6 +238,12 @@ void MainWindow::setupMenu()
         connect(tbuttonup,SIGNAL(pressed()),this, SLOT(filamentUpPressed()));
         connect(tbuttonup,SIGNAL(released()),this,SLOT(filamentUpReleased()));
 
+        QToolButton* runProgramButton = new QToolButton;
+        runProgramButton->setIcon(QIcon(":images/program_run.xpm"));
+        runProgramButton->setToolTip(QString("Run program."));
+        toolbar->addWidget(runProgramButton);
+        connect(runProgramButton,SIGNAL(clicked()),this, SLOT(on_runProgramButton()) );
+
 }
 
 void
@@ -287,18 +293,46 @@ void MainWindow::on_commandExecuteProgram()
 
 void MainWindow::on_commandOpenFile()
 {
-    QString folder("/home/walery/Документы/3d-printer/ragel"); //home/walery/Документы/3d-printer/ragel/exmple.gcode
-    QString filename = QFileDialog::getOpenFileName(this, tr("Open G-Code file"),folder,tr("Gcode (*.gcode *.ngx);;All (*.*)"));//,nullptr,QFileDialog::DontUseNativeDialog
+//    QString folder("/home/walery/Документы/3d-printer/ragel"); //home/walery/Документы/3d-printer/ragel/exmple.gcode
+
+    //-------
+    qint64 lineLength;
+    char buf[256];
+//    QString filename("filepath.txt");
+    QString path("/home/walery/Документы/3d-printer/ragel");
+    QFile path_file("filepath.txt");
+    QFileInfo *info = new QFileInfo(path_file);
+    if (!path_file.open(QIODevice::ReadWrite | QIODevice::Text)){
+        cout<<"File dosn't opened."<<info->absoluteFilePath();
+        return;
+    }
+    cout<<"File opened:"<<info->absoluteFilePath();
+
+    lineLength = path_file.readLine(buf,255);
+    if (lineLength != -1) {
+        // the line is available in buf
+        path=QString(buf);
+    }
+    //----------
+
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open G-Code file"),path,tr("Gcode (*.gcode *.ngx);;All (*.*)"));//,nullptr,QFileDialog::DontUseNativeDialog
 
     if(filename.isNull())
     {
         qDebug() << "File don't selected.";
     }else{
-
-        qDebug()<< "Open file with G-code file:"<<filename;
+        //------
+        info = new QFileInfo(filename);
+        std::string str = info->path().toStdString(); //filename.toStdString();
+        strncpy(buf,str.c_str(),255);
+        path_file.seek(0);
+        path_file.write(buf,filename.size());
+        path_file.close();
+        //--------
+        cout<< "Open file with G-code file:"<<filename;
         gcodeFile.setFileName(filename);
         if(gcodeFile.open(QIODevice::ReadOnly | QIODevice::Text)){
-            qDebug()<<__FILE__<<__LINE__<<"File opened:"<<filename;
+            cout<<"File opened:"<<filename;
 
             QAction *actionRun = ui->actionRun;
             actionRun->setEnabled(true);
@@ -371,6 +405,14 @@ void MainWindow::filamentUpReleased()
     delete pushdown;
     pushdown = nullptr;
 #endif
+}
+
+void MainWindow::on_runProgramButton()
+{
+    //TODO
+    cout<<"on_runProgramButton";
+
+    on_commandExecuteProgram();
 }
 
 

@@ -741,8 +741,8 @@ _run1:
                     req.requestNumber = ++MyGlobal::requestIndex;
                     queueSize = threadarc.putInArray(&req);
                 }
-                threadarc.setMdelay(500);
-//                threadarc.setMax_tryCounter(200);
+                threadarc.setMdelay(200);
+                threadarc.set_tryCounter(200);
                 threadarc.process();
 #if LEVEL == 1
                 cout<<"process==========<<"<<MyGlobal::requestIndex<<"\tqueeSize:"<<queueSize;

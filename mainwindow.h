@@ -12,7 +12,7 @@
 #include "messager.h"
 #include "command/zeropointcommand.h"
 #include "command/pushfilamentdown.h"
-
+#include <QAction>
 
 namespace Ui {
 class MainWindow;
@@ -44,6 +44,7 @@ public slots:
     void filamentDownReleased();
     void filamentUpPressed();
     void filamentUpReleased();
+    void on_runProgramButton();
 
 protected:
     void resizeEvent(QResizeEvent *event);

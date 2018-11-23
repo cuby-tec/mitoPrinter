@@ -50,7 +50,7 @@ ComdataProxy::sendG0Line(sG0_t *data)
     coordinatus->moveNextToCurrent();
     coordinatus->moveWorkToNext();
 
-#if DEBUGLEVEL==1
+#if DEBUGLEVEL==2
     qDebug()<<__FILE__<<__LINE__<<"DIFF:"<<"X:"<<diff(X) <<"\tY:"<<diff(Y)<<"\tZ:"<<diff(Z);
 #endif
     bool build = controller->buildBlock(coordinatus);
@@ -64,8 +64,9 @@ ComdataProxy::sendG0Line(sG0_t *data)
         delete req;
 
         ComDataReq_t &r = action->queue.head();//DEBUG
+#if DEBUGLEVEL==2
         cout<<r.requestNumber;// DEBUG
-
+#endif
         action->a = eSend;
     }else{
         action->a = eNext;

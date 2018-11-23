@@ -12,5 +12,7 @@
         <file>images/write.png</file>
         <file>images/arrowdown.xpm</file>
         <file>images/arrowup.xpm</file>
+        <file>images/program_run.xpm</file>
+        <file>images/program_run_non.xpm</file>
     </qresource>
 </RCC>
