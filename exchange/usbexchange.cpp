@@ -17,6 +17,8 @@
 
 #define STDFILE
 
+#define cout    qDebug()<<__FILE__<<__LINE__
+
 //------------- vars
 static const char* fname = "/dev/cnccontrol";
 
@@ -40,8 +42,10 @@ static const struct sHead default_segment_head = {
 int
 UsbExchange::sendRequest(ComDataReq_t* request)
 {
-    quint8* rdata = (quint8*)request;
-    int result, size, length;
+//    quint8* rdata = (quint8*)request;
+    quint8* rdata = reinterpret_cast<quint8*>(request);
+    int result = 0;
+    size_t length, size;
 #ifndef STDFILE
     QString line;
     QTextStream print(stdout, QIODevice::WriteOnly); // stdin
@@ -50,11 +54,11 @@ UsbExchange::sendRequest(ComDataReq_t* request)
     std::FILE* pFile;
 
     pFile = std::fopen(fname,"r+");
-    if (pFile!=NULL)
+    if (pFile!=nullptr)
     {
         //  fputs ("fopen example",pFile);
-//        line = QString("File opened. %1 \n").arg(fname);
-//        print<<line<<"sendRequest 48";
+        //        line = QString("File opened. %1 \n").arg(fname);
+        //        print<<line<<"sendRequest 48";
 #ifdef DEBUG_M
         qDebug() << "File opened :"<< fname << "sendRequest 48";
 #endif
@@ -63,10 +67,12 @@ UsbExchange::sendRequest(ComDataReq_t* request)
             size = sizeof(struct Status_t);
             length = fread(buffer2,1,size,pFile);
 
-            if(length < 0){
-#ifdef DEBUG_M
-                qDebug()<< "Can't read file %1 \n" << fname ;
+            if(length != size){
+#ifdef DEBUG_M_NO
+                cout<< "Can't read file:" << fname ;
 #endif
+                fclose (pFile);
+                result = EXIT_FAILURE;
             }else{
 
                 //printf("Recieved:%u\n",result);
@@ -77,21 +83,15 @@ UsbExchange::sendRequest(ComDataReq_t* request)
 #ifdef DEBUG_M
                 print_status(c_status);
 #endif
+                result = EXIT_SUCCESS;
             }
 
         }
-        result = EXIT_SUCCESS;
         fclose (pFile);
     }else{
         //        printf("Can't open device. maybe module not loaded. Use: $sudo insmod ./eclipse-workspace/usbtest/test1.ko \n"
         //               "or device dosn't connected.\n");
         result = EXIT_FAILURE;
-//        qDebug() << "Can't open device. maybe module not loaded. \n \t Use: $sudo insmod ./eclipse-workspace/usbtest/test1.ko \n \t or device dosn't connected.";
-
-//        QMessageBox msgbox;
-//        msgbox.setText("Can't open device. maybe module not loaded. Use: $sudo insmod ./eclipse-workspace/usbtest/test1.ko \n \t or device dosn't connected.");
-//        msgbox.exec();
-
     }
 
 #else
@@ -308,7 +308,7 @@ UsbExchange::build_segment_default(struct sSegment* psc, uint32_t i)
     }
 }
 #endif
-
+#define SENDBUFFER_VERSION	1
 /**
  * @brief UsbExchange::sendBuffer
  * @param buffer
@@ -317,20 +317,47 @@ UsbExchange::build_segment_default(struct sSegment* psc, uint32_t i)
  * @return
  */
 int
-UsbExchange::sendBuffer(uint8_t* buffer, uint32_t size, std::FILE* fp)
+UsbExchange::sendBuffer(uint8_t* buffer, size_t size, std::FILE* fp)
 {
     uint8_t* cursor = buffer;
     uint32_t packet_size, counter = 0;
-    qint64 length=0;
+    size_t length=0;
 
+
+#if SENDBUFFER_VERSION==1
+    while (size>MaxPacketSize){
+    	packet_size = MaxPacketSize;
+    	length = fwrite(cursor,sizeof(char),MaxPacketSize,fp);
+        if(length == 0){
+            cout << "Error Writing to " << fname;
+            return (EXIT_FAILURE);
+        }
+        counter += length;
+        cursor += length;
+        size -=MaxPacketSize;
+    }
+
+    if(size != 0){
+    	length = fwrite(cursor,sizeof(char),size,fp);
+    	if(length != size){
+            cout << "Error Writing to " << fname;
+            return (EXIT_FAILURE);
+    	}
+    }
+
+    return (EXIT_SUCCESS);
+
+#endif //SENDBUFFER_VERSION==1
+
+#if SENDBUFFER_VERSION==0
     packet_size = MaxPacketSize;
 #ifdef DEBUG_M
     qDebug() << "Write packet #1 of size:" << MaxPacketSize;
 #endif
     length = fwrite(cursor,sizeof(char),MaxPacketSize,fp);// #1 packet
 
-    if(length < 0){
-        qDebug() << "Error Writing to " << fname;
+    if(length == 0){
+        cout << "Error Writing to " << fname;
         return (EXIT_FAILURE);
     }
 #ifdef DEBUG_M
@@ -343,8 +370,8 @@ UsbExchange::sendBuffer(uint8_t* buffer, uint32_t size, std::FILE* fp)
 #endif
     length = fwrite(cursor,sizeof(char),MaxPacketSize,fp);// #2 packet
 
-    if(length < 0){
-        qDebug() << "Error Writing to " << fname;
+    if(length == 0){
+        cout << "Error Writing to " << fname;
         return (EXIT_FAILURE);
     }
 #ifdef DEBUG_M
@@ -359,8 +386,8 @@ UsbExchange::sendBuffer(uint8_t* buffer, uint32_t size, std::FILE* fp)
 #endif
     length = fwrite(cursor,sizeof(char),packet_size,fp);// #3 packet
 
-    if(length < 0){
-        qDebug() << "Error Writing to " << fname;
+    if(length == 0){
+        cout << "Error Writing to " << fname;
         return (EXIT_FAILURE);
     }
 #ifdef DEBUG_M
@@ -368,6 +395,7 @@ UsbExchange::sendBuffer(uint8_t* buffer, uint32_t size, std::FILE* fp)
 #endif
 
     return (EXIT_SUCCESS);
+#endif
 }
 
 // TODO sendBuffer

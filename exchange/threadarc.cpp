@@ -63,6 +63,8 @@ volatile uint32_t line = request->payload.instrument1_parameter.head.linenumber;
                 }else{
                     //             status = exch->getStatus();
                     memcpy(&status,exch->getStatus(),sizeof(Status_t));
+                    if(request->requestNumber != status.frameNumber)
+                        cout<<"Number status:"<<status.frameNumber <<"\treq:"<<request->requestNumber;
                 }
 
                 thermo_gmutex.unlock();
@@ -72,6 +74,7 @@ volatile uint32_t line = request->payload.instrument1_parameter.head.linenumber;
                 {
                     try_counter++;
                     cout<<"number:"<<status.currentSegmentNumber <<"\tqueue:"<<status.freeSegments<<"\tstate:"<<status.modelState.modelState<<"\tord_ly:"<<status.modelState.reserved1;
+                    cout<<"Number status:"<<status.frameNumber <<"\treq:"<<request->requestNumber;
                     msleep(mdelay);
                 }
                 if(try_counter>=max_tryCounter){

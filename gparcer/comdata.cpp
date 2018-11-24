@@ -741,7 +741,7 @@ _run1:
                     req.requestNumber = ++MyGlobal::requestIndex;
                     queueSize = threadarc.putInArray(&req);
                 }
-                threadarc.setMdelay(200);
+                threadarc.setMdelay(70);
                 threadarc.set_tryCounter(200);
                 threadarc.process();
 #if LEVEL == 1
@@ -923,11 +923,12 @@ void ComData::updateStatus(const Status_t *status)
             _run();
             break;
         case egcLine:
+            cout<<"egcLine";
             break;
         }
     }else{
         //Error
-        cout<<"Error.";
+        cout<<"Error:status.freeSegments:"<<status->freeSegments;
     }
 }
 

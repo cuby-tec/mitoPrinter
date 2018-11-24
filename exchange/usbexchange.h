@@ -68,7 +68,7 @@ private:
 
       int sendBuffer(uint8_t* buffer, uint32_t size, QFile* fp);
 
-      int sendBuffer(uint8_t* buffer, uint32_t size, std::FILE* fp);
+      int sendBuffer(uint8_t* buffer, size_t size, std::FILE* fp);
 
       void buildProfile(sProfile *sprofile_dst);
 
