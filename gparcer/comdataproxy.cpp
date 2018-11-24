@@ -455,7 +455,7 @@ ComdataProxy::sendG92Tag(sG92_t *data)
     RequestFactory* factory = new RequestFactory();
     factory->build(request, eoG92, data);
     action->queue.enqueue(*request);
-    action->a = eWaitSend;
+    action->a = eSend;
 //    action->a = eNext;
     return action;
 }

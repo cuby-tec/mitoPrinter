@@ -1280,6 +1280,7 @@ GcodeWorker::tagG91_Do(sGcode *sgCode)
     return action;
 }
 
+//G92: Set Position
 mito::Action_t*
 GcodeWorker::tagG92_Do(sGcode *sgCode)
 {
@@ -1364,7 +1365,7 @@ GcodeWorker::tagG92_Do(sGcode *sgCode)
 
     syncXYZ(vTag->x,vTag->y,vTag->z,vTag->e);
     action = comproxy->sendG92Tag(&tag92);
-    action->a = eWaitSend;
+    action->a = eSend;
     return action;
 }
 
