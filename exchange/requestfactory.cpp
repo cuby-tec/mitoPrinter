@@ -54,7 +54,7 @@ void
 RequestFactory::buildTag92(struct ComDataReq_t* request, sG92_t* data)
 {
 //    StepMotor* motor[N_AXIS];
-    int32_t target_steps;
+    int32_t target_steps = 0;
     Controller* controller = new Controller();
 
     StepMotor** motors = controller->getMotors();
@@ -79,6 +79,8 @@ RequestFactory::buildTag92(struct ComDataReq_t* request, sG92_t* data)
         request->payload.instrument1_parameter.axis[i].steps = static_cast<uint32_t>(target_steps);
     }
 
+    request->payload.instrument1_parameter.head.linenumber = data->n;
+
 
 //            StepMotor* m = motor[i];
 //            lines lm = m->getLineStep;
@@ -100,7 +102,7 @@ RequestFactory::build(ComDataReq_t *comdata, eOrder order, void* data )
         //TODO request Status only
         comdata->size = sizeof(struct ComDataReq_t);
 //        comdata->requestNumber = ++MyGlobal::requestIndex;
-        comdata->command.order = eoState;
+        comdata->command.order = order;
         break;
 
     case eoHotendControl: //управление Вентилятором

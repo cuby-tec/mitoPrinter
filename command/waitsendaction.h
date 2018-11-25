@@ -23,6 +23,11 @@ public:
 
     static Status_t* _sendAction(mito::Action_t* action);
 
+
+
+    uint32_t getSegment_number() ;
+    void setSegment_number( uint32_t &value);
+
 signals:
     void sg_commandDone();
     void sg_canceled();
@@ -35,8 +40,9 @@ public slots:
 private:
 
     WaitSend_state state;
-
     mito::Action_t* action;
+
+    uint32_t segment_number;    // current line number
 
     QFutureWatcher<Status_t*> statusLoader;
     QTimer* timer;

@@ -89,7 +89,7 @@ volatile uint32_t line = request->payload.instrument1_parameter.head.linenumber;
             if(try_counter>=max_tryCounter){
                 break;
             }
-//            msleep(40);//debug delay
+            msleep(40);//debug delay
 
         }// while()
 

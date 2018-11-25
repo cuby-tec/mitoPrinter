@@ -181,6 +181,7 @@ private:
 
     WaitSendAction* waitsendAction;
 
+    mito::Action_t* _action;
 
 
 //    block_state blocks[N_AXIS];

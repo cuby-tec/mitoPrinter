@@ -44,6 +44,7 @@ ComData::ComData(QObject *parent) : QObject(parent)
     waitTemperature = nullptr;
 
     waitsendAction = nullptr;
+    _action = nullptr;
 
     setupThread();
 
@@ -752,7 +753,16 @@ _run1:
             case eWaitSend:
             	//TODO eWaitSend
                 waitsendAction = new WaitSendAction(this,action);
+//                waitsendAction->setSegment_number()
                 connect(waitsendAction,SIGNAL(sg_commandDone()),this, SLOT(waitsendDone()));
+//                _action = action;
+                if(!action->queue.isEmpty())
+                {
+                    ComDataReq_t& req = action->queue.head();
+                    waitsendAction->setSegment_number(req.payload.instrument1_parameter.head.linenumber);
+                }
+                _action = new mito::Action_t;
+                _action->queue.enqueue(action->queue.head());
                 waitsendAction->execute();
             	break;
 
@@ -873,10 +883,26 @@ void ComData::temperatureDone()
 
 void ComData::waitsendDone()
 {
+    int queueSize;
+
     cout<<"waitsendDone";
     runState = ersRunning;
     delete waitsendAction;
     waitsendAction = nullptr;
+    /*
+    //------------
+    while (!_action->queue.isEmpty()){
+        ComDataReq_t req = _action->queue.dequeue();
+        req.requestNumber = ++MyGlobal::requestIndex;
+        queueSize = threadarc.putInArray(&req);
+    }
+    delete _action;
+    _action = nullptr;
+//    threadarc.setMdelay(70);
+//    threadarc.set_tryCounter(200);
+    threadarc.process();
+    //------------
+    */
     _run();
 }
 /*

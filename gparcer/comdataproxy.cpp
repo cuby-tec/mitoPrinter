@@ -450,12 +450,12 @@ ComdataProxy::sendG92Tag(sG92_t *data)
     coordinatus->moveWorkToNext();
     coordinatus->moveNextToCurrent();
     controller->uploadPosition(coordinatus);
-//TODO eoG92
+
     ComDataReq_t* request = new ComDataReq_t;
     RequestFactory* factory = new RequestFactory();
     factory->build(request, eoG92, data);
     action->queue.enqueue(*request);
-    action->a = eSend;
+    action->a = eWaitSend;
 //    action->a = eNext;
     return action;
 }

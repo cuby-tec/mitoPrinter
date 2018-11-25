@@ -5,6 +5,10 @@
 #include "links/eModelstate.h"
 #include <string.h>
 #include <QtConcurrent/QtConcurrent>
+#include <QDebug>
+
+#define cout qDebug()<<__FILE__<<__LINE__
+
 
 WaitSendAction::WaitSendAction(QObject *parent, mito::Action_t* action) : QObject(parent)
 {
@@ -12,6 +16,7 @@ WaitSendAction::WaitSendAction(QObject *parent, mito::Action_t* action) : QObjec
     timer = new QTimer(this);
     state = ews_waitQueue;
     connect(timer, SIGNAL(timeout()), this, SLOT(checkStatus()));
+    segment_number = 0;
 }
 
 void
@@ -46,10 +51,14 @@ void WaitSendAction::statusLoaded()
 {
     //TODO
     Status_t* st = statusLoader.result();
+    uint32_t number = st->frameNumber;
+    uint32_t req_number = MyGlobal::requestIndex;
     switch (state) {
     case ews_waitQueue:
         if((st->modelState.queueState == SEGMENT_QUEE_SIZE)
                 &&(st->modelState.modelState != ehIwork)){
+            cout<<"queueState:"<<st->modelState.queueState<<"\tmodelState:"
+               <<st->modelState.modelState<<"\tnumber:"<<number<<"\treq_number:"<<req_number;
             state = ews_sendCommand;
             statusLoader.setFuture(QtConcurrent::run(WaitSendAction::_sendAction,action));
         }
@@ -68,4 +77,14 @@ void WaitSendAction::failedStatus()
 void WaitSendAction::checkStatus()
 {
     statusLoader.setFuture(QtConcurrent::run(WaitSendAction::_checkStatus));
+}
+
+uint32_t WaitSendAction::getSegment_number()
+{
+    return segment_number;
+}
+
+void WaitSendAction::setSegment_number(uint32_t &value)
+{
+    segment_number = value;
 }

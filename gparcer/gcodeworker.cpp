@@ -1365,7 +1365,7 @@ GcodeWorker::tagG92_Do(sGcode *sgCode)
 
     syncXYZ(vTag->x,vTag->y,vTag->z,vTag->e);
     action = comproxy->sendG92Tag(&tag92);
-    action->a = eSend;
+    action->a = eWaitSend;
     return action;
 }
 
