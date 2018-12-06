@@ -702,8 +702,15 @@ void ComData::run(GcodeWorker* gworker)
 //    connect(gworker, SIGNAL(sg_executeComplite()),this, SLOT(slot_fileComplite()));
 
 }
+
+void ComData::stop()
+{
+    runState = ersStop;
+}
 #define FSMDEBUG  1
 #define FSMCOUNTER  10
+#define TRY_COUNTER 500
+#define MDELAY      70
 
 void ComData::_run()
 {
@@ -711,7 +718,14 @@ void ComData::_run()
     mito::Action_t* action;
     int queueSize;
     // TODO execute by states;
+//    cout<<"runState:"<<runState<<"\t requestIndex:"<<MyGlobal::requestIndex;
     switch (runState) {
+
+    case ersStop:
+        cout<<"Soft Stop.";
+        emit sg_executeComplite();
+//        return;
+        break;
 
     case ersEOF:
         cout<<"end of file";
@@ -727,7 +741,6 @@ void ComData::_run()
 _run1:
         action = gworker->readCommandLine();
         // Send request
-
         if(action != nullptr)
         {
             switch (action->a) {
@@ -740,10 +753,11 @@ _run1:
                 while (!action->queue.isEmpty()){
                     ComDataReq_t req = action->queue.dequeue();
                     req.requestNumber = ++MyGlobal::requestIndex;
+                    cout<<req.payload.instrument1_parameter.axis[X_AXIS].steps<<"\taccel:"<<req.payload.instrument1_parameter.axis[X_AXIS].accelerate_until<<"\tnuber:"<<req.requestNumber;
                     queueSize = threadarc.putInArray(&req);
                 }
-                threadarc.setMdelay(70);
-                threadarc.set_tryCounter(200);
+                threadarc.setMdelay(MDELAY);
+                threadarc.set_tryCounter(TRY_COUNTER);
                 threadarc.process();
 #if LEVEL == 1
                 cout<<"process==========<<"<<MyGlobal::requestIndex<<"\tqueeSize:"<<queueSize;
@@ -797,6 +811,7 @@ _run1:
 
             case eEOF:
                 runState = ersEOF;
+                cout<<"eEOF";
                 break;
             }
 
@@ -875,7 +890,8 @@ void ComData::waitTemp(mito::Action_t *action)
 void ComData::temperatureDone()
 {
     cout<<"temperatureDone";
-	runState = ersRunning;
+    if(runState != ersStop)
+        runState = ersRunning;
 	delete waitTemperature;
 	waitTemperature = nullptr;
     _run();
@@ -883,10 +899,12 @@ void ComData::temperatureDone()
 
 void ComData::waitsendDone()
 {
-    int queueSize;
-
+//    int queueSize;
+#if REPOERT_LEVEL==2
     cout<<"waitsendDone";
-    runState = ersRunning;
+#endif
+    if(runState != ersStop)
+        runState = ersRunning;
     delete waitsendAction;
     waitsendAction = nullptr;
     /*

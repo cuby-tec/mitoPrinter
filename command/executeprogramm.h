@@ -19,6 +19,11 @@ public:
     virtual void execute() override;
     void execute(QFile &stream);
 
+
+    ComData* getComdata() const{
+        return comdata;
+    }
+
 public slots:
     void finished();
 

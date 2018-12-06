@@ -51,7 +51,7 @@ private:
 
     uint max_tryCounter;
 
-    uint mdelay;// milliseconds delay
+    size_t mdelay;// milliseconds delay
 
     Status_t status;
     QVarLengthArray<ComDataReq_t,1024> array;

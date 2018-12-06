@@ -11,6 +11,7 @@ ThreadArc::ThreadArc()
     array.clear();
     max_tryCounter = MAX_TRY_COUNTER;
     mdelay = DEFAULT_DELAY;
+    mutex.lock();
 }
 
 void ThreadArc::process()
@@ -20,7 +21,10 @@ void ThreadArc::process()
         start(LowPriority);
     } else {
         restart = true;
+        mutex.lock();
         condition.wakeOne();
+        mutex.unlock();
+//        cout<<"isRunning:"<<isRunning();
     }
 }
 
@@ -34,21 +38,21 @@ void ThreadArc::run()
 {
     int result_exch = 0;
     size_t try_counter = 0;
+    ComDataReq_t* request = &buffer;
     forever{
-
+//        mutex.lock();
         while(!queue.isEmpty())
         {
-            if(!queue.isEmpty()){
+//            if(!queue.isEmpty()){
                 buffer = queue.dequeue();
-            }
+//            }
 
-            ComDataReq_t* request = &buffer;
-volatile uint32_t line = request->payload.instrument1_parameter.head.linenumber;
+//volatile uint32_t line = request->payload.instrument1_parameter.head.linenumber;
 //            request->requestNumber = ++MyGlobal::requestIndex;
             try_counter = 0;
             //
             do{
-
+//cout<<"Lock."<<queue.count();
                 thermo_gmutex.lock();
 
                 result_exch = exch->sendRequest(request);
@@ -73,8 +77,10 @@ volatile uint32_t line = request->payload.instrument1_parameter.head.linenumber;
                 if(!(status.modelState.reserved1&COMMAND_ACKNOWLEDGED))
                 {
                     try_counter++;
+#if LEVEL==2
                     cout<<"number:"<<status.currentSegmentNumber <<"\tqueue:"<<status.freeSegments<<"\tstate:"<<status.modelState.modelState<<"\tord_ly:"<<status.modelState.reserved1;
                     cout<<"Number status:"<<status.frameNumber <<"\treq:"<<request->requestNumber;
+#endif
                     msleep(mdelay);
                 }
                 if(try_counter>=max_tryCounter){
@@ -89,22 +95,31 @@ volatile uint32_t line = request->payload.instrument1_parameter.head.linenumber;
             if(try_counter>=max_tryCounter){
                 break;
             }
-            msleep(40);//debug delay
+            msleep(20);//debug delay 40
 
         }// while()
 
         if(try_counter<max_tryCounter){
-            if (!restart && (result_exch == EXIT_SUCCESS ))
+            if (!restart && (result_exch == EXIT_SUCCESS )){
                 emit sg_status_updated(&status);
+//                cout<<"restart:" <<restart<<"\tresult_exch:"<<result_exch;
+            }
+            else{
+                cout<<"restart:" <<restart<<"\tresult_exch:"<<result_exch;
+            }
         }else{
             emit sg_failed_status();
         }
-
-        mutex.lock();
-        if (!restart)
-            condition.wait(&mutex);
+//        mutex.unlock();
+//        mutex.lock();
+//        thermo_gmutex.lock();
+//        if (!restart){
+            condition.wait(&mutex);// thermo_gmutex
+//            cout;
+//        }
         restart = false;
-        mutex.unlock(); //Debug mode
+//        mutex.unlock(); //Debug mode
+//        thermo_gmutex.unlock();
 
     }// forever
 }

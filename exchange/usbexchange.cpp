@@ -71,7 +71,6 @@ UsbExchange::sendRequest(ComDataReq_t* request)
 #ifdef DEBUG_M_NO
                 cout<< "Can't read file:" << fname ;
 #endif
-                fclose (pFile);
                 result = EXIT_FAILURE;
             }else{
 

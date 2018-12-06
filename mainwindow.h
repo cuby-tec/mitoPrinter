@@ -45,6 +45,7 @@ public slots:
     void filamentUpPressed();
     void filamentUpReleased();
     void on_runProgramButton();
+    void on_stopProgram();
 
 protected:
     void resizeEvent(QResizeEvent *event);

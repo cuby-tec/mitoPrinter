@@ -244,6 +244,14 @@ void MainWindow::setupMenu()
         toolbar->addWidget(runProgramButton);
         connect(runProgramButton,SIGNAL(clicked()),this, SLOT(on_runProgramButton()) );
 
+        // Stop program button
+        QToolButton* stopProgramButton = new QToolButton;
+        stopProgramButton->setIcon(QIcon(":images/stop_program.xpm"));
+        stopProgramButton->setToolTip(QString("Stop program"));
+        toolbar->addWidget(stopProgramButton);
+        connect(stopProgramButton,SIGNAL(clicked()),this,SLOT(on_stopProgram())  );
+
+
 }
 
 void
@@ -413,6 +421,20 @@ void MainWindow::on_runProgramButton()
     cout<<"on_runProgramButton";
 
     on_commandExecuteProgram();
+}
+
+void MainWindow::on_stopProgram()
+{
+
+    QAction *action = ui->actionRun;
+    action->setEnabled(true);
+
+    action = ui->actionOpen_GCode;
+    action->setEnabled(true);
+
+    executeProgramm->getComdata()->stop();
+    statusBar()->showMessage("Program stoped.");
+
 }
 
 

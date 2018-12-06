@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>385</width>
-    <height>704</height>
+    <height>742</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -36,7 +36,7 @@ padding-left:6px;
      <x>0</x>
      <y>0</y>
      <width>300</width>
-     <height>701</height>
+     <height>741</height>
     </rect>
    </property>
    <property name="sizePolicy">
@@ -61,7 +61,7 @@ padding-left:6px;
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>-46</y>
+      <y>0</y>
       <width>284</width>
       <height>1400</height>
      </rect>

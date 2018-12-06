@@ -509,7 +509,7 @@ ComdataProxy::sendM106_Tag(sM106_t *data)
 //    crd->setFan_value(data->s);
     sHotendControl_t *hend = crd->getHotend();
     hend->_switch.cooler = static_cast<uint16_t>(data->s);
-#if DEBUGLEVEL==1
+#if DEBUGLEVEL==2
     qDebug()<<__FILE__<<__LINE__<<"GM106:"<<"s:"<< data->s<<"crd:"<<hend->_switch.cooler ;
 #endif
     //Fan speed (0 to 255; RepRapFirmware also accepts 0.0 to 1.0))

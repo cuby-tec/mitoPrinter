@@ -71,7 +71,8 @@ SOURCES += \
     command/zeropoint_runnable.cpp \
     command/pushfilamentdown.cpp \
     command/waittemperature.cpp \
-    command/waitsendaction.cpp
+    command/waitsendaction.cpp \
+    command/stopprogram.cpp
 
 
 HEADERS += \
@@ -145,7 +146,8 @@ HEADERS += \
     command/zeropoint_runnable.h \
     command/pushfilamentdown.h \
     command/waittemperature.h \
-    command/waitsendaction.h
+    command/waitsendaction.h \
+    command/stopprogram.h
 
 
 FORMS += \

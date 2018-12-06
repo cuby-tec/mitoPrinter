@@ -67,6 +67,7 @@ enum runStates{
     ersError,ersRunning=1
     ,ersWaitParamTemperature
     , ersEOF // Конец файла.
+    , ersStop   //emnergancy stop
 };
 
 enum goCondition{
@@ -106,6 +107,8 @@ public:
 
 
     void run(GcodeWorker *gworker);
+
+    void stop();
 
 signals:
     void sg_updateStatus(const Status_t* status);

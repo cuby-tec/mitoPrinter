@@ -14,5 +14,6 @@
         <file>images/arrowup.xpm</file>
         <file>images/program_run.xpm</file>
         <file>images/program_run_non.xpm</file>
+        <file>images/stop_program.xpm</file>
     </qresource>
 </RCC>

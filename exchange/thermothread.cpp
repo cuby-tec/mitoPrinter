@@ -77,10 +77,13 @@ ThermoThread::process()
              emit sg_temperature_updated(status);
 
          mutex.lock();
+//         thermo_gmutex.lock();
          if (!restart)
              condition.wait(&mutex);
+//             condition.wait(&thermo_gmutex);
          restart = false;
          mutex.unlock();
+//         thermo_gmutex.unlock();
 
      }// forever
  }

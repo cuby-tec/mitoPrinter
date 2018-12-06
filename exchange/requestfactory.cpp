@@ -39,7 +39,9 @@ void RequestFactory::build(ComDataReq_t *comdata, eOrder order, sHotendControl_t
         assignHotendParam(hend,hend_src);
 //        hend->kp = 55;//DEBUG VALUE
 //        hend->_switch.cooler = 1; //DEBUG VALUE
+#if REPORT_LEVEL==2
         cout<<hend->_switch.cooler<<"\t"<<hend->kp;
+#endif
         comdata->instruments = 1;
         comdata->size = sizeof (ComDataReq_t);
         sControlCommand_t *cmd = &comdata->command;

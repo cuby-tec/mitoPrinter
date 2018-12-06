@@ -29,7 +29,8 @@ void CoordinatusWidget::updateStatus(const Status_t *status)
         ui->c_label_positioning_value->setToolTip(MyGlobal::msg_rel_title);
     }
 
-    ui->c_label_queueState->setText(QString("%1").arg(status->modelState.queueState)) ;
+    ui->c_label_queueState->setText(QString("%1[%2]").arg(status->modelState.queueState).arg(status->freeSegments));
+    ui->c_label_queueState->setToolTip("CommandQueue size[OrderlyQueue size]");
 
     /*
      *     ehIdle = 1, ehIwork
@@ -68,8 +69,9 @@ void CoordinatusWidget::updateStatus(const Status_t *status)
     int32_t out = static_cast<int32_t>(status->instrument3_parameter);
     int32_t dinteg = static_cast<int32_t>(status->instrument4_parameter);
 
-//    ui->label_contiCnt->setText(QString("%1").arg(status->currentSegmentNumber) );
-    ui->label_contiCnt->setText(QString("d: %1 integ: %2 out:%3").arg( static_cast<double_t>(derrior) /100.0).arg(static_cast<double_t>(dinteg)).arg(static_cast<double_t>(out)/10.0));
+    ui->label_contiCnt->setText(QString("%1").arg(status->currentSegmentNumber) );
+//    ui->label_contiCnt->setText(QString("d: %1 integ: %2 out:%3").arg( static_cast<double_t>(derrior) /100.0).arg(static_cast<double_t>(dinteg)).arg(static_cast<double_t>(out)/10.0));
+    ui->c_label_regulator_value->setText(QString("d: %1 integ: %2 out:%3").arg( static_cast<double_t>(derrior) /100.0).arg(static_cast<double_t>(dinteg)).arg(static_cast<double_t>(out)/10.0));
 
 
 //    double_t d = comdata->getPath_mm();

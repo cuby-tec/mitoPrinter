@@ -1887,7 +1887,7 @@ GcodeWorker::readCommandLine()
             loop = false;
 
     }
-#if LEVEL==0
+#if LEVEL==2
     qDebug()<<__FILE__<<__LINE__<<"\tgroup:"<<gcode.group<<gcode.value<<"  line"<<line<<"num:"<<linecounter;
 #endif
     //checkBox_immediately
