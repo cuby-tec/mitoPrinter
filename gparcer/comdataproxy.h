@@ -62,6 +62,8 @@ private:
 
     void loadHotendFromProfile(sHotendControl_t* shc);
 
+    void _setMicrosteps(ComDataReq_t* req);
+
 
 };
 

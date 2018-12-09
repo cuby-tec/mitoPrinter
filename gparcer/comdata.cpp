@@ -421,7 +421,7 @@ ComData::buildG2Command()
 
     Q_ASSERT(tstr.count()>0);
 
-    double_t precicion = controller->getPrecicion(X_AXIS,1);
+    double_t precicion = controller->getPrecicion(X_AXIS,0);
 
     //TODO correct precicion from Controller.
     arc->setPrecicion(precicion);

@@ -206,6 +206,8 @@ Controller::buildBlock(Coordinatus* cord) {
     for(uint32_t i=0;i<N_AXIS;++i){
         block_state_t* block = &blocks[i];
         StepMotor* m = motor[i];
+        uint32_t microstep = cord->getMicrostep(i);
+        m->setMicrostep(microstep,i);	//TODOH getMicrostep
         lines lm = m->getLineStep;
         double_t ds = ( m->*lm)(i);
 

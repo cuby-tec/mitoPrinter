@@ -147,7 +147,8 @@ HEADERS += \
     command/pushfilamentdown.h \
     command/waittemperature.h \
     command/waitsendaction.h \
-    command/stopprogram.h
+    command/stopprogram.h \
+    step_motor/a4988.h
 
 
 FORMS += \

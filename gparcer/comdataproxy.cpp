@@ -4,6 +4,7 @@
 
 #include "mitoaction.h"
 #include "profiles/profile.h"
+#include "step_motor/a4988.h"
 
 #include <QDebug>
 #include <cmath>
@@ -12,7 +13,10 @@
 #define DEBUGLEVEL  1
 
 #define cout qDebug()<<__FILE__<<__LINE__
+//#define diff(M) coordinatus->getCurrentValue(M##_AXIS) - coordinatus->getNextValue(M##_AXIS)
+#define diff(M) coordinatus->getNextValue(M##_AXIS) - coordinatus->getCurrentValue(M##_AXIS)
 
+//--------------function
 
 ComdataProxy::ComdataProxy(QObject *parent) : QObject(parent)
   , line_counter(0)
@@ -21,8 +25,21 @@ ComdataProxy::ComdataProxy(QObject *parent) : QObject(parent)
     coordinatus = Coordinatus::instance();
 }
 
-//#define diff(M) coordinatus->getCurrentValue(M##_AXIS) - coordinatus->getNextValue(M##_AXIS)
-#define diff(M) coordinatus->getNextValue(M##_AXIS) - coordinatus->getCurrentValue(M##_AXIS)
+
+void
+ComdataProxy::_setMicrosteps(ComDataReq_t* req)
+{
+    struct sSegment* segment = &req->payload.instrument1_parameter;
+
+	for(uint i=0; i<N_AXIS;i++){
+		uint32_t ms = coordinatus->getMicrostep(i);
+        segment->axis[i].microsteps = microstepTable[ms];
+	}
+
+}
+
+
+
 
 //Line motion
 mito::Action_t*
@@ -59,7 +76,8 @@ ComdataProxy::sendG0Line(sG0_t *data)
         RequestFactory *factory = new RequestFactory();
         //    buildComdata(data->n);
         ComDataReq_t* req = factory->build(data->n);
-        req->requestNumber = line_counter;
+//        req->requestNumber = line_counter;
+        _setMicrosteps(req);
         action->queue.enqueue(*req);
         delete req;
 
@@ -73,6 +91,8 @@ ComdataProxy::sendG0Line(sG0_t *data)
     }
     return action;
 }
+
+
 
 //Line motion
 mito::Action_t*
@@ -112,6 +132,7 @@ ComdataProxy::sendG1Line(sG1_t *data)
         RequestFactory *factory = new RequestFactory();
         ComDataReq_t* req = factory->build(data->n);
 //        req->requestNumber = line_counter;
+        _setMicrosteps(req);
         action->queue.enqueue(*req);
         delete req;
 

@@ -9,6 +9,7 @@
 #include "step_motor/block_state_t.h"
 #include "step_motor/ProfileData.h"
 #include <math.h>
+#include <assert.h>     /* assert */
 
 // Singleton
 class Coordinatus//:public QObject
@@ -92,6 +93,18 @@ public:
     double_t getSpeedrate() const;
     void setSpeedrate(const double_t &value);
 
+
+    void setMicrostep(uint32_t axis, uint32_t step){
+    	assert(axis<N_AXIS);
+    	assert(step<=4);
+    	microstep[axis] = step;
+    }
+
+    uint32_t getMicrostep(uint32_t axis){
+    	assert(axis<N_AXIS);
+    	return (microstep[axis]);
+    }
+
 private:
 
 
@@ -108,6 +121,10 @@ private:
     //Units from now on are in inches.
     // 1 - millimeters, 2 - inches
     uint8_t units;	//TODO usage: now not used.
+
+    //Microstep
+    uint32_t microstep[N_AXIS];
+
 
 // Hotend state
     bool extruder_mode;// true - absolute, false - relative
@@ -134,6 +151,9 @@ private:
         hotend.ki = static_cast<int32_t>(ki*1000) ;//#define KI  0.1
         hotend.temperature = static_cast<int32_t>(40*10) ;//#define SETPOINT    40
         speedrate = 0.0;
+        for (int i=0;i<N_AXIS;i++)
+        	microstep[i] = 0;
+
     }
 
     ~Coordinatus() {}

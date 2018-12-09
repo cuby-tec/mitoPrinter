@@ -64,7 +64,7 @@ void CoordinatusWidget::updateStatus(const Status_t *status)
 //     ui->c_label_modelState->setText(QString("%1").arg(status->modelState.modelState));
     ui->c_label_modelState->setText(QString(t_state));
 
-    ui->c_label_temperature->setText(QString("%1 C").arg(status->temperature,0,'g',4) );//&deg;
+    ui->c_label_temperature->setText(QString("%1C [%2]").arg(static_cast<double_t>(status->temperature) ,0,'g',4).arg( static_cast<double_t>(status->bed_temperature),0,'g',4) );//&deg;
     int32_t derrior = static_cast<int32_t>(status->instrument2_parameter);
     int32_t out = static_cast<int32_t>(status->instrument3_parameter);
     int32_t dinteg = static_cast<int32_t>(status->instrument4_parameter);

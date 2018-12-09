@@ -95,6 +95,12 @@ GcodeWorker::buildAction(sGcode *src)
 
 //    void *action = nullptr;
 
+    Coordinatus* cord = Coordinatus::instance();
+    cord->setMicrostep(X_AXIS,2);	//TODOH set micro step
+    cord->setMicrostep(Y_AXIS,2);
+    cord->setMicrostep(Z_AXIS,0);
+    cord->setMicrostep(E_AXIS,0);
+
     QString tag(src->group);
 
     if(tag == 'G' || tag =='M'){

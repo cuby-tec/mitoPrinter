@@ -108,8 +108,22 @@ public:
 	 * Для каждой оси может быть назначен свой микрошаг.
 	 */
 	double_t getAlfa(uint32_t axis){
+//        Q_ASSERT(axis < N_AXIS);
 		return (alfa/microstep[axis]);
 	}
+
+    //    void setMicrostep(uint32_t axis, uint32_t _microstep){
+    //    	assert(_microstep==1 || _microstep==2 || _microstep==4||_microstep==8||_microstep==16);
+    //        microstep[axis] = _microstep;
+    //	}
+    /**
+    * Назначение микрошага
+    */
+    void setMicrostep(uint32_t step, uint32_t axis){
+        assert(step<=4);
+        assert(axis < N_AXIS);
+        microstep[axis] = stepsTable[step];
+    }
 
 	/**
 	 * linear velocity to angular_velocity
@@ -140,10 +154,6 @@ public:
 
 
 
-    void setMicrostep(uint32_t axis, uint32_t _microstep){
-    	assert(_microstep==1 || _microstep==2 || _microstep==4||_microstep==8||_microstep==16);
-        microstep[axis] = _microstep;
-	}
 
     // Угловое ускорение, рад/сек^2
 	double_t getAcceleration() const {
@@ -239,6 +249,7 @@ private:
 
     double_t maxSpeedrate;
 
+    const u_int32_t stepsTable[5] = {1,2,4,8,16};
 
 };
 
