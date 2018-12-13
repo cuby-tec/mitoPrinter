@@ -521,6 +521,7 @@ ComdataProxy::sendM104Tag(sM104_t *data)
     return action;
 }
 
+
 //Set param send
 mito::Action_t*
 ComdataProxy::sendM106_Tag(sM106_t *data)
@@ -600,6 +601,27 @@ ComdataProxy::sendM109_Tag(sM109_t *data)
 
     return action;
 }
+
+mito::Action_t*
+ComdataProxy::sendM140_Tag(sM140_t *data)
+{
+    line_counter++;
+    mito::Action_t* action = new mito::Action_t;
+    ComDataReq_t* request = new ComDataReq_t;
+    request->command.order = bedTemperaure;
+    request->payload.instrument2_paramter = static_cast<uint32_t>(data->s);
+    request->size = sizeof(struct ComDataReq_t);
+    sBedControl_t* bedcontrol = reinterpret_cast<sBedControl_t*>(request->payload.data);
+    bedcontrol->temperature = data->s;
+    bedcontrol->kd = 123;
+    bedcontrol->ki = 234;
+    bedcontrol->kp = 345;
+    action->queue.enqueue(*request);
+    action->a = eSend;
+
+    return action;
+}
+
 
 //Wait param
 mito::Action_t*

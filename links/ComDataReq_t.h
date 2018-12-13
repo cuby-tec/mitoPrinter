@@ -50,6 +50,7 @@ struct ComDataReq_t{
     uint32_t    instrument3_paramter;       // или параметры инструмента 3
     uint32_t    instrument4_paramter;       // или параметры инструмента 4
     struct  sProfile profile;
+    void* data;
     }payload;
 };
 

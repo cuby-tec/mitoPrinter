@@ -37,6 +37,7 @@ public:
     mito::Action_t* sendM107_Tag(sM106_t * data);
     mito::Action_t* sendM109_Tag(sM109_t * data);
     mito::Action_t *sendM104Tag(sM104_t *data);
+    mito::Action_t* sendM140_Tag(sM140_t* data);
     mito::Action_t* sendM190_Tag(sM190_t* data);
 
     mito::Action_t *sendG92Tag(sG92_t * data);

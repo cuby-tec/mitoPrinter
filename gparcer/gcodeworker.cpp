@@ -64,7 +64,7 @@ GcodeWorker::GcodeWorker(QObject *parent) : QObject(parent)
     callTagRef[eM106] = &GcodeWorker::tagM106_Do;
     callTagRef[eM107] = &GcodeWorker::tagM107_Do;
     callTagRef[eM109] = &GcodeWorker::tagM109_Do;
-    callTagRef[eM140] = nullptr;
+    callTagRef[eM140] = &GcodeWorker::tagM140_Do;
     callTagRef[eM190] = &GcodeWorker::tagM190_Do;
     callTagRef[eM550] = nullptr;
     callTagRef[eF] = &GcodeWorker::tagF_Do;
@@ -208,6 +208,7 @@ GcodeWorker::buildAction(sGcode *src)
         action = (this->*callTagRef[etag])(src); //tagM109_Do
         break;
     case eM140:
+        action = (this->*callTagRef[etag])(src); //tagM140_Do
         break;
     case eM190:
         action = (this->*callTagRef[etag])(src); // tagM190 TODO
@@ -1554,6 +1555,41 @@ GcodeWorker::tagM109_Do(sGcode *sgCode)
     action = comproxy->sendM109_Tag(vTag);
     return action;
 }
+
+
+mito::Action_t*
+GcodeWorker::tagM140_Do(sGcode* sgCode)
+{
+    mito::Action_t* action = nullptr;
+    sM140_t* vTag = reinterpret_cast<sM140_t *>( arraytag->getTagValue(eM140));
+    bool ok;
+    double dvalue;
+
+    for(int i=0;i<sgCode->param_number;i++){
+        sGparam* gparam = &sgCode->param[i];
+        QString value(clearNumValue(gparam->value));
+
+        switch (gparam->group){
+        case 'S':
+            dvalue = value.toDouble(&ok);
+            Q_ASSERT(ok);
+            vTag->s = dvalue;
+            break;
+        case 'N':
+            uint number = QString(gparam->value).toUInt(&ok);
+            Q_ASSERT(ok);
+            if(ok) {vTag->n = number; }
+            break;
+        }
+    }
+    if(vTag->n == 0)
+        vTag->n = linecounter;
+
+    action = comproxy->sendM140_Tag(vTag);
+
+    return action;
+}
+
 
 //M190: Wait for bed temperature to reach target temp
 mito::Action_t*

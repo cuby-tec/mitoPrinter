@@ -71,6 +71,13 @@ struct sHotendControl_t {
 
 };
 
+struct sBedControl_t{
+    int32_t temperature;
+    int32_t kp;     // Коэффициент пропорциональной составляющей.
+    int32_t ki;     // Коэффициент интегральной составляющей.
+    int32_t kd;     // Коэффициент дифференциальной составляющей.
+};
+
 #endif
 
 //-------------- vars
