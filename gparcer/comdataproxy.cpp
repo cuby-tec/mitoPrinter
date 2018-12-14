@@ -800,7 +800,7 @@ ComdataProxy::loadBedFromProfile(sBedControl_t* shc)
     Profile* profile = Profile::instance();
     QString strp = profile->get_BED_PROPTIONAL();
     datap = strp.toDouble(&ok);
-    shc->kp = static_cast<int32_t>(datap);
+    shc->kp = static_cast<int32_t>(datap*1000);
 
     strp = profile->get_BED_INTEGRAL();
     datap = strp.toDouble(&ok);
