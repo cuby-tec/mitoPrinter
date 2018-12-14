@@ -609,13 +609,14 @@ ComdataProxy::sendM140_Tag(sM140_t *data)
     mito::Action_t* action = new mito::Action_t;
     ComDataReq_t* request = new ComDataReq_t;
     request->command.order = bedTemperaure;
-    request->payload.instrument2_paramter = static_cast<uint32_t>(data->s);
+//    request->payload.instrument2_paramter = static_cast<uint32_t>(data->s*10);
     request->size = sizeof(struct ComDataReq_t);
-    sBedControl_t* bedcontrol = reinterpret_cast<sBedControl_t*>(request->payload.data);
-    bedcontrol->temperature = data->s;
-    bedcontrol->kd = 123;
-    bedcontrol->ki = 234;
-    bedcontrol->kp = 345;
+    sBedControl_t* bedcontrol = reinterpret_cast<sBedControl_t*>(&request->payload.bedcontrol);
+    bedcontrol->temperature = static_cast<int32_t>(data->s*10);
+//    bedcontrol->kd = 123;
+//    bedcontrol->ki = 234;
+//    bedcontrol->kp = 345;
+    loadBedFromProfile(bedcontrol);
     action->queue.enqueue(*request);
     action->a = eSend;
 
@@ -791,6 +792,23 @@ void ComdataProxy::loadHotendFromProfile(sHotendControl_t *shc)
 
 }
 
+void
+ComdataProxy::loadBedFromProfile(sBedControl_t* shc)
+{
+    bool ok;
+    double_t datap;
+    Profile* profile = Profile::instance();
+    QString strp = profile->get_BED_PROPTIONAL();
+    datap = strp.toDouble(&ok);
+    shc->kp = static_cast<int32_t>(datap);
 
+    strp = profile->get_BED_INTEGRAL();
+    datap = strp.toDouble(&ok);
+    shc->ki = static_cast<int32_t>(datap*1000);
+
+    strp = profile->get_BED_DERIVATIVE();
+    datap = strp.toDouble(&ok);
+    shc->kd = static_cast<int32_t>(datap*1000);
+}
 
 

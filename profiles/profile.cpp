@@ -8,6 +8,7 @@
 
 #include <QDebug>
 #include <QJsonObject>
+#include <QVariant>
 
 #include <QList>
 #include <QComboBox>
@@ -21,7 +22,7 @@
 //#define PROFILE_PATH    ":/profile/"
 #define PROFILE_PATH    "profile/"
 
-
+#define HOTBED_TEMPERATURE "HOTBED_TEMPERATURE"//"TEMPERATURE_H"
 
 //------------- vars
 
@@ -780,6 +781,49 @@ Profile::getE_ACCELERATION()
     return result;
 }
 
+/*
+ *        "HOTBED_INTEGRAL": "0.08",
+        "HOTBED_PROPOTIONAL": "5.0",
+        "HOTBED_DERIVATIVE": "09.00",
+        "HOTBED_TEMPERATURE": "55"
+ */
+
+QString Profile::get_BED_TEMPERATURE()
+{
+    QString result;
+    QJsonObject obj;
+    QJsonObject generic_obj;
+    GENERIC_GET_VALUE("generic",HOTBED_TEMPERATURE);
+    return result;
+}
+
+QString Profile::get_BED_INTEGRAL()
+{
+    QString result;
+    QJsonObject obj;
+    QJsonObject generic_obj;
+    GENERIC_GET_VALUE("generic","HOTBED_INTEGRAL");
+    return result;
+}
+
+QString Profile::get_BED_PROPTIONAL()
+{
+    QString result;
+    QJsonObject obj;
+    QJsonObject generic_obj;
+    GENERIC_GET_VALUE("generic","HOTBED_PROPOTIONAL");
+    return result;
+}
+
+QString Profile::get_BED_DERIVATIVE()
+{
+    QString result;
+    QJsonObject obj;
+    QJsonObject generic_obj;
+    GENERIC_GET_VALUE("generic","HOTBED_DERIVATIVE");
+    return result;
+}
+
 
 //=================== getter helper ============
 
@@ -1082,6 +1126,50 @@ Profile::set_DERIVATIVE(QString num)
     SET_FILED_VALUE("DERIVATIVE");
 
 }
+// hot bed
+/*
+ *        "HOTBED_INTEGRAL": "0.08",
+        "HOTBED_PROPOTIONAL": "5.0",
+        "HOTBED_DERIVATIVE": "09.00",
+        "HOTBED_TEMPERATURE": "55"
+ */
+QString Profile::set_BED_TEMPERATURE(QString num)
+{
+     QJsonObject obj;
+     SET_FILED_VALUE(HOTBED_TEMPERATURE);
+//qDebug()<<__FILE__<<__LINE__<<num;
+//     nob.insert("TEMPERATURE_H", num);
+//     nob.insert("INTEGRAL_H", num);
+//     nob.insert("DERIVATIVE_H", num);
+//     nob.insert("PROPOTIONAL_H", num);
+         writeObject(obj,"generic",nob);
+         profile_doc.setObject(obj);
+}
+
+QString Profile::set_BED_INTEGRAL(QString num)
+{
+    QJsonObject obj;
+    SET_FILED_VALUE("HOTBED_INTEGRAL");
+    writeObject(obj,"generic",nob);
+    profile_doc.setObject(obj);
+}
+
+QString Profile::set_BED_PROPTIONAL(QString num)
+{
+    QJsonObject obj;
+    SET_FILED_VALUE("HOTBED_PROPOTIONAL");
+    writeObject(obj,"generic",nob);
+    profile_doc.setObject(obj);
+}
+
+QString Profile::set_BED_DERIVATIVE(QString num)
+{
+    QJsonObject obj;
+    SET_FILED_VALUE("HOTBED_DERIVATIVE");
+    writeObject(obj,"generic",nob);
+    profile_doc.setObject(obj);
+}
+
 
 //DEFAULT_E_MAX_RATE
 void

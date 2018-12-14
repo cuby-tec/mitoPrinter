@@ -83,6 +83,11 @@ void ProfileDialog::fillProfilePage()
     uia->tpropotional_lineEdit->setText(profile->get_PROPTIONAL());
     uia->tintegral_lineEdit->setText(profile->get_INTEGRAL());
     uia->tderivative_lineEdit->setText(profile->get_DERIVATIVE());
+    //hot bed
+    uia->bed_temperature_lineEdit->setText(profile->get_BED_TEMPERATURE());
+    uia->bed_integral_lineEdit->setText(profile->get_BED_INTEGRAL());
+    uia->bed_derivative_lineEdit->setText(profile->get_BED_DERIVATIVE());
+    uia->bed_propotional_lineEdit->setText(profile->get_BED_PROPTIONAL());
     //DEFAULT_X_STEPS_PER_MM
     uia->lineEdit_X_STEPS->setText(profile->getX_STEPS());
     //DEFAULT_Y_STEPS_PER_MM
@@ -238,8 +243,47 @@ void ProfileDialog::on_tderivative_lineEdit_textEdited(const QString &arg1)
     profile->set_DERIVATIVE(arg1);
     profile->profileSaved = false;
     indicate_ProfileSaved();
-
 }
+
+//hot bed
+/*
+ *        "HOTBED_INTEGRAL": "0.08",
+        "HOTBED_PROPOTIONAL": "5.0",
+        "HOTBED_DERIVATIVE": "09.00",
+        "HOTBED_TEMPARATURE": "55"
+ */
+void ProfileDialog::on_bed_temperature_lineEdit_textEdited(const QString &arg1)
+{
+    profile->set_BED_TEMPERATURE(arg1);
+    profile->profileSaved = false;
+    indicate_ProfileSaved();
+    qDebug()<<__FILE__<<__LINE__<<arg1;
+}
+
+void ProfileDialog::on_bed_propotional_lineEdit_textEdited(const QString &arg1)
+{
+    profile->set_BED_PROPTIONAL(arg1);
+    profile->profileSaved = false;
+    indicate_ProfileSaved();
+    qDebug()<<__FILE__<<__LINE__<<arg1;
+}
+
+void ProfileDialog::on_bed_integral_lineEdit_textEdited(const QString &arg1)
+{
+    profile->set_BED_INTEGRAL(arg1);
+    profile->profileSaved = false;
+    indicate_ProfileSaved();
+    qDebug()<<__FILE__<<__LINE__<<arg1;
+}
+
+void ProfileDialog::on_bed_derivative_lineEdit_textEdited(const QString &arg1)
+{
+    profile->set_BED_DERIVATIVE(arg1);
+    profile->profileSaved = false;
+    indicate_ProfileSaved();
+    qDebug()<<__FILE__<<__LINE__<<arg1;
+}
+
 
 //DEFAULT_X_STEPS_PER_MM
 void ProfileDialog::on_lineEdit_X_STEPS_textEdited(const QString &arg1)
@@ -483,4 +527,5 @@ void ProfileDialog::on_pushButton_3_clicked()
 
 
 //-------------- temperature
+
 

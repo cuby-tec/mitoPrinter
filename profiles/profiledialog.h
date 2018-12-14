@@ -92,6 +92,14 @@ private slots:
 
     void on_lineEdit_E_ACCELERATION_textEdited(const QString &arg1);
 
+    void on_bed_temperature_lineEdit_textEdited(const QString &arg1);
+
+    void on_bed_propotional_lineEdit_textEdited(const QString &arg1);
+
+    void on_bed_integral_lineEdit_textEdited(const QString &arg1);
+
+    void on_bed_derivative_lineEdit_textEdited(const QString &arg1);
+
 private:
     Ui::ProfileDialog *uia;
 

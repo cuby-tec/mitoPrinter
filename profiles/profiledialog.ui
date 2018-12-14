@@ -64,7 +64,7 @@
       </font>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab_3">
       <property name="font">
@@ -349,42 +349,42 @@
           <property name="bottomMargin">
            <number>10</number>
           </property>
-          <item row="0" column="0">
+          <item row="4" column="0">
            <widget class="QLabel" name="hOMING_DIR_MASKLabel">
             <property name="text">
              <string>HOMING_DIR_MASK</string>
             </property>
            </widget>
           </item>
-          <item row="0" column="1">
+          <item row="4" column="1">
            <widget class="QLineEdit" name="LineEdit_HOMING_DIR_MASK">
             <property name="toolTip">
              <string>HOMING_DIR_MASK</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="0">
+          <item row="5" column="0">
            <widget class="QLabel" name="hOMING_FEED_RATELabel">
             <property name="text">
              <string>HOMING_FEED_RATE</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="1">
+          <item row="5" column="1">
            <widget class="QLineEdit" name="LineEdit_HOMING_FEED_RATE">
             <property name="toolTip">
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;table border=&quot;0&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px;&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot;&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Liberation Sans';&quot;&gt;Число оборотов (об/мин)&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
            </widget>
           </item>
-          <item row="2" column="0">
+          <item row="6" column="0">
            <widget class="QLabel" name="hOMING_SEEK_RATELabel">
             <property name="text">
              <string>HOMING_SEEK_RATE</string>
             </property>
            </widget>
           </item>
-          <item row="2" column="1">
+          <item row="6" column="1">
            <widget class="QLineEdit" name="LineEdit_HOMING_SEEK_RATE">
             <property name="toolTip">
              <string>Число оборотов (об/мин)
@@ -392,29 +392,85 @@
             </property>
            </widget>
           </item>
-          <item row="3" column="0">
+          <item row="7" column="0">
            <widget class="QLabel" name="hOMING_D_DELAYLabel">
             <property name="text">
              <string>HOMING_D_DELAY</string>
             </property>
            </widget>
           </item>
-          <item row="3" column="1">
+          <item row="7" column="1">
            <widget class="QLineEdit" name="LineEdit_HOMING_D_DELAY">
             <property name="toolTip">
              <string>HOMING_DEBOUNCE_DELAY</string>
             </property>
            </widget>
           </item>
-          <item row="4" column="0">
+          <item row="8" column="1">
+           <widget class="QLineEdit" name="LineEdit_HOMING_PULLOFF"/>
+          </item>
+          <item row="8" column="0">
            <widget class="QLabel" name="hOMING_PULLOFFLabel">
             <property name="text">
              <string>HOMING_PULLOFF</string>
             </property>
            </widget>
           </item>
-          <item row="4" column="1">
-           <widget class="QLineEdit" name="LineEdit_HOMING_PULLOFF"/>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_17">
+            <property name="text">
+             <string>BED temperature</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="bed_temperature_lineEdit">
+            <property name="inputMask">
+             <string>0000.0</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_18">
+            <property name="text">
+             <string>BED propotional Kp</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="bed_propotional_lineEdit">
+            <property name="inputMask">
+             <string>000.000</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_19">
+            <property name="text">
+             <string>BED integral Ki</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="bed_integral_lineEdit">
+            <property name="inputMask">
+             <string>000.000</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_20">
+            <property name="text">
+             <string>BED derivative Kd</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QLineEdit" name="bed_derivative_lineEdit">
+            <property name="inputMask">
+             <string>000.0000</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>

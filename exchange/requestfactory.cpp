@@ -103,6 +103,7 @@ RequestFactory::build(ComDataReq_t *comdata, eOrder order, void* data )
     case eoState:
         //TODO request Status only
         comdata->size = sizeof(struct ComDataReq_t);
+//        cout<<comdata->size;/
 //        comdata->requestNumber = ++MyGlobal::requestIndex;
         comdata->command.order = order;
         break;

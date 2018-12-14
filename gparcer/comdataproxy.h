@@ -63,6 +63,8 @@ private:
 
     void loadHotendFromProfile(sHotendControl_t* shc);
 
+    void loadBedFromProfile(sBedControl_t* shc);
+
     void _setMicrosteps(ComDataReq_t* req);
 
 

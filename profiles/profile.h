@@ -190,6 +190,17 @@ public:
     //E_ACCELERATION
     QString getE_ACCELERATION();
 
+    // hot bed
+
+    QString get_BED_TEMPERATURE();
+
+    QString get_BED_INTEGRAL();
+
+    QString get_BED_PROPTIONAL();
+
+    QString get_BED_DERIVATIVE();
+
+
 
 //---------------------------------- setters
     //DEFAULT_X_STEPS_PER_MM
@@ -278,7 +289,15 @@ public:
     void  set_PROPTIONAL(QString num);
     void  set_DERIVATIVE(QString num);
 
+    // hot bed
 
+    QString set_BED_TEMPERATURE(QString num);
+
+    QString set_BED_INTEGRAL(QString num);
+
+    QString set_BED_PROPTIONAL(QString num);
+
+    QString set_BED_DERIVATIVE(QString num);
 
 
     void saveProfileDocument();
