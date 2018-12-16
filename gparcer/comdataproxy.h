@@ -40,7 +40,8 @@ public:
     mito::Action_t* sendM140_Tag(sM140_t* data);
     mito::Action_t* sendM190_Tag(sM190_t* data);
 
-    mito::Action_t *sendG92Tag(sG92_t * data);
+//    mito::Action_t *sendG92Tag(sG92_t * data);
+    mito::Action_t *sendG92Tag(sMover * data);
 
     uint getLine_counter() const;
 

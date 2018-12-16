@@ -94,12 +94,17 @@ GcodeWorker::buildAction(sGcode *src)
     mito::Action_t* action = nullptr;
 
 //    void *action = nullptr;
-
+/*
+ * #define MICROSTEP_X 2
+#define MICROSTEP_Y 2
+#define MICROSTEP_Z 2
+#define MICROSTEP_E 2
+ */
     Coordinatus* cord = Coordinatus::instance();
-    cord->setMicrostep(X_AXIS,2);	//TODOH set micro step
-    cord->setMicrostep(Y_AXIS,2);
-    cord->setMicrostep(Z_AXIS,0);
-    cord->setMicrostep(E_AXIS,0);
+    cord->setMicrostep(X_AXIS,MICROSTEP_X);	//TODOH set micro step
+    cord->setMicrostep(Y_AXIS,MICROSTEP_Y);
+    cord->setMicrostep(Z_AXIS,MICROSTEP_Z);
+    cord->setMicrostep(E_AXIS,MICROSTEP_E);
 
     QString tag(src->group);
 
@@ -1293,13 +1298,14 @@ GcodeWorker::tagG92_Do(sGcode *sgCode)
 {
     mito::Action_t * action = nullptr;
 //    sG92_t * vTag =  reinterpret_cast<sG92_t *>( arraytag->getTagValue(eG92));
-    sG92_t tag92 ;
+//    sG92_t tag92 ;
     sG1_t * vTag =  reinterpret_cast<sG1_t *>( arraytag->getTagValue(eG1));
     sG1_t valueTag ;
     Coordinatus* cord = Coordinatus::instance();
 //    valueTag.init();
 
-    vTag->get(&valueTag);
+    loadMovervalue(&valueTag);
+//    vTag->get(&valueTag);
 //    tag92.init(&tag92);
     valueTag.n = 0;
     bool ok = false;
@@ -1360,18 +1366,18 @@ GcodeWorker::tagG92_Do(sGcode *sgCode)
     	valueTag.init();
     }
 
-    tag92.x = valueTag.x;
-    tag92.y = valueTag.y;
-    tag92.z = valueTag.z;
-    tag92.e = valueTag.e;
-    tag92.n = valueTag.n;
+//    tag92.x = valueTag.x;
+//    tag92.y = valueTag.y;
+//    tag92.z = valueTag.z;
+//    tag92.e = valueTag.e;
+//    tag92.n = valueTag.n;
 
 //    tag92.f = cord->getSpeedrate();
 
     vTag->set(&valueTag);
 
     syncXYZ(vTag->x,vTag->y,vTag->z,vTag->e);
-    action = comproxy->sendG92Tag(&tag92);
+    action = comproxy->sendG92Tag(&valueTag);
     action->a = eWaitSend;
     return action;
 }

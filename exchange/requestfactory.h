@@ -14,10 +14,10 @@ public:
     void build(ComDataReq_t *comdata, eOrder order, sHotendControl_t *hend_src);
 
     ComDataReq_t *build(uint linenumber);
+    void buildTag92(struct ComDataReq_t* request, sMover* data);
 
 private:
     ComDataReq_t *request;
-    void buildTag92(struct ComDataReq_t* request, sG92_t *data);
 
 
 

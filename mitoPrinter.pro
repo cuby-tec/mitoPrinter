@@ -148,7 +148,9 @@ HEADERS += \
     command/waittemperature.h \
     command/waitsendaction.h \
     command/stopprogram.h \
-    step_motor/a4988.h
+    step_motor/a4988.h \
+    step_motor/settings.h \
+    step_motor/stepstable.h
 
 
 FORMS += \

@@ -13,7 +13,7 @@ struct NumberedTag{
     uint n;
 };
 
-struct sMover{
+struct sMover: NumberedTag{
     double_t x;
     double_t y;
     double_t z;
@@ -36,7 +36,7 @@ struct sMover{
 
 
 //Rapid linear Move
-struct sG0_t : NumberedTag, sMover {
+struct sG0_t : sMover {
 //    double x;
 //    double y;
 //    double z;
@@ -64,7 +64,7 @@ struct sG0_t : NumberedTag, sMover {
 };
 
 //Linear Move
-struct sG1_t :NumberedTag , sMover{
+struct sG1_t : sMover{
 //    double x;
 //    double y;
 //    double z;
@@ -249,7 +249,7 @@ struct sG20_21_t :NumberedTag{
 
 
 //Move to Origin (Home)
-struct sG28_t :NumberedTag, sMover {
+struct sG28_t : sMover {
 //    bool x;
 //    bool y;
 //    bool z;
@@ -403,11 +403,11 @@ struct sG91_t:NumberedTag {
 
 
 //Set Position
-struct sG92_t:NumberedTag {
-    double x;
-    double y;
-    double z;
-    double e;
+struct sG92_t: sMover {
+//    double x;
+//    double y;
+//    double z;
+//    double e;
     void set(sG92_t* src){
         x = src->x;
         y = src->y;

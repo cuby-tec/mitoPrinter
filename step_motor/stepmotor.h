@@ -8,7 +8,10 @@
 #define STEPMOTOR_H
 
 //#include <QString>
-#include <stdint.h>
+
+#include "stepstable.h"
+
+//#include <stdint.h>
 #include <stddef.h>
 
 //#include <qmath.h>
@@ -111,6 +114,8 @@ public:
 //        Q_ASSERT(axis < N_AXIS);
 		return (alfa/microstep[axis]);
 	}
+
+//    const uint32_t stepsTable[5] = {1,2,4,8,16};   //u_int32_t
 
     //    void setMicrostep(uint32_t axis, uint32_t _microstep){
     //    	assert(_microstep==1 || _microstep==2 || _microstep==4||_microstep==8||_microstep==16);
@@ -249,7 +254,6 @@ private:
 
     double_t maxSpeedrate;
 
-    const u_int32_t stepsTable[5] = {1,2,4,8,16};
 
 };
 

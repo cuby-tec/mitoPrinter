@@ -12,7 +12,7 @@
 //#include "gparcer/araytag.h"
 #include "lexer.h"
 #include "comdataproxy.h"
-
+#include "step_motor/settings.h"
 //#include <cstdio>
 #include <QFile>
 #include <QTextStream>

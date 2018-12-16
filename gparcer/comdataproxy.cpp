@@ -453,7 +453,7 @@ ComdataProxy::sendG90_Tag(sG90_t *data)
 
 //Set param
 mito::Action_t*
-ComdataProxy::sendG92Tag(sG92_t *data)
+ComdataProxy::sendG92Tag(sMover *data)
 {
     mito::Action_t* action = new mito::Action_t;
     line_counter++;
@@ -474,7 +474,8 @@ ComdataProxy::sendG92Tag(sG92_t *data)
 
     ComDataReq_t* request = new ComDataReq_t;
     RequestFactory* factory = new RequestFactory();
-    factory->build(request, eoG92, data);
+    factory->buildTag92(request, data);
+//    factory->build(request, eoG92, data);
     action->queue.enqueue(*request);
     action->a = eWaitSend;
 //    action->a = eNext;

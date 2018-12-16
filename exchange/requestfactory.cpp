@@ -53,13 +53,20 @@ void RequestFactory::build(ComDataReq_t *comdata, eOrder order, sHotendControl_t
 }
 
 void
-RequestFactory::buildTag92(struct ComDataReq_t* request, sG92_t* data)
+RequestFactory::buildTag92(struct ComDataReq_t* request, sMover* data)
 {
 //    StepMotor* motor[N_AXIS];
     int32_t target_steps = 0;
     Controller* controller = new Controller();
 
     StepMotor** motors = controller->getMotors();
+
+    Coordinatus* cord = Coordinatus::instance();
+    for(uint32_t i=0;i<N_AXIS;i++){
+    	StepMotor* m = motors[i];
+    	m->setMicrostep(cord->getMicrostep(i),i);
+    }
+
     for(uint32_t i=0;i<N_AXIS;++i){
         StepMotor* m = motors[i];
         lines lm = m->getLineStep;
@@ -82,12 +89,8 @@ RequestFactory::buildTag92(struct ComDataReq_t* request, sG92_t* data)
     }
 
     request->payload.instrument1_parameter.head.linenumber = data->n;
-
-
-//            StepMotor* m = motor[i];
-//            lines lm = m->getLineStep;
-//            double_t ds = ( m->*lm)(i);
-
+    request->size = sizeof(struct ComDataReq_t);
+    request->command.order = eoG92;
 }
 void
 RequestFactory::build(ComDataReq_t *comdata, eOrder order, void* data )
@@ -126,10 +129,10 @@ RequestFactory::build(ComDataReq_t *comdata, eOrder order, void* data )
 //        buildComData(comdata);
         break;
     case eoG92:
-        tagG92 = static_cast<sG92_t*>(data);
-        comdata->size = sizeof(struct ComDataReq_t);
-        comdata->command.order = order;
-        buildTag92(comdata,static_cast<sG92_t*>(data));
+//        tagG92 = (sG92_t*)(data);
+//        comdata->size = sizeof(struct ComDataReq_t);
+//        comdata->command.order = order;
+        buildTag92(comdata,static_cast<sG92_t*>(data));// TODO don't casting.
         break;
     case eoM84:
     	comdata->size = sizeof(struct ComDataReq_t);

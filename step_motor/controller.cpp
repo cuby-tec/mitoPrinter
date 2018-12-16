@@ -820,6 +820,8 @@ void Controller::uploadPosition(Coordinatus* cord)
 {
     for(uint32_t i=0;i<N_AXIS;++i){
         StepMotor* m = motor[i];
+        uint32_t microstep = cord->getMicrostep(i);
+        m->setMicrostep(microstep,i);	//TODOH getMicrostep
         lines lm = m->getLineStep;
         double_t ds = ( m->*lm)(i);
         cord->position[i] =static_cast<int32_t>(lround(cord->getNextValue(i)/ds));
