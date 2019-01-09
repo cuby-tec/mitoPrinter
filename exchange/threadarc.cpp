@@ -67,8 +67,10 @@ void ThreadArc::run()
                 }else{
                     //             status = exch->getStatus();
                     memcpy(&status,exch->getStatus(),sizeof(Status_t));
+#if DEBUG_LEVEL==1
                     if(request->requestNumber != status.frameNumber)
                         cout<<"Number status:"<<status.frameNumber <<"\treq:"<<request->requestNumber;
+#endif
                 }
 
                 thermo_gmutex.unlock();

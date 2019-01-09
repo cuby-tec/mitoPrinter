@@ -2,7 +2,7 @@
 #define MITOACTION_H
 
 #include "links/ComDataReq_t.h"
-
+#include <math.h>
 #include <QQueue>
 
 // Action_t.a - способ обработки этого действия.

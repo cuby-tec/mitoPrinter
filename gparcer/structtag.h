@@ -2,6 +2,7 @@
 #define STRUCTTAG_H
 
 #include <QString>
+#include <math.h>
 
 enum eGCodeTag{
     eG0=0, eG1, eG2, eG3, eG4, eG6, eG10, eG20, eG21 , eG28, eG29_1, eG29_2, eG30, eG33

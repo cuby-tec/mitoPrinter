@@ -102,8 +102,9 @@ Coordinatus::setupProfileData() {
 	//    float seekspeed;
 	    bool ok;
 
-	    QString fspeed; // rpm unit
-	    float speed;
+        QString fspeed, qvalue; // rpm unit
+        float speed, fvalue;
+        uint ivalue;
 
 	    QString facceleration;
 	    float acceleration;
@@ -147,6 +148,11 @@ Coordinatus::setupProfileData() {
 //	        block->acceleration = acceleration;
 	        profileData.acceleration[i] = acceleration;
 
+
+            qvalue = profile->get_MICROSTEP();
+            ivalue = qvalue.toUInt(&ok);
+            Q_ASSERT(ok);
+            microstep[i] = ivalue;
 	    }
 }
 

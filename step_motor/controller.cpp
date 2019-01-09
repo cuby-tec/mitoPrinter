@@ -32,6 +32,9 @@
 #define SCHEMSTATE_2    SCH(FLATMOTION,FLATMOTION,FLATMOTION)
 //"\_/"
 #define SCHEMSTATE_3    SCH(DECCELERATION,FLATMOTION,ACCELERATION)
+// " /\"
+#define SCHEMSTATE_4    SCH(ACCELERATION,DECCELERATION,DECCELERATION)
+
 
 
 
@@ -169,6 +172,15 @@ void Controller::buildCircleStep( Coordinatus* cord) {
 
     }
 
+}
+
+double_t
+Controller::get_MMperStep(uint axis, Coordinatus* cord)
+{
+    StepMotor* m = motor[axis];
+    m->setMicrostep(cord->getMicrostep(axis),axis);
+    lines lm = m->getLineStep;
+    return ( m->*lm)(axis);
 }
 
 #define SET_ACCELERATION(A) motor[A]->setAcceleration(static_cast<double_t>(profileData->acceleration[A]))
@@ -325,10 +337,29 @@ Controller::buildBlock(Coordinatus* cord) {
 
         case SCHEMSTATE_3:
 //TODO acceleration scheme
+            block->initial_rate = cnt;
+            block->final_rate = cnt;
+            block->nominal_rate = nominal_rate;
+            block->decelerate_after = block->steps - dccpath;
+            break;
+
+        case SCHEMSTATE_4:
+            block->initial_rate = cnt;
+            block->final_rate = cnt;
+            block->nominal_rate = nominal_rate;
+            block->decelerate_after = block->steps - dccpath;
+
+            break;
+
+        default:
+            block->initial_rate = cnt;
+            block->final_rate = cnt;
+            block->nominal_rate = nominal_rate;
+            block->decelerate_after = block->steps - dccpath;
             break;
 
         }
-
+//cout<<block->steps<<"[0]"<<block->schem[0]<<"[1]"<<block->schem[1]<<"[2]"<<block->schem[2];
 
 //        block->initial_rate = cnt;
 //        block->final_rate = cnt;

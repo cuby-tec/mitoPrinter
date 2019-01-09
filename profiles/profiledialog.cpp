@@ -4,6 +4,8 @@
 
 #include <QDebug>
 
+#define cout    qDebug()<<__FILE__<<__LINE__
+
 ProfileDialog::ProfileDialog(QWidget *parent) :
     QDialog(parent),
     uia(new Ui::ProfileDialog)
@@ -136,6 +138,7 @@ void ProfileDialog::fillProfilePage()
     uia->lineEdit_E_RATE->setText(profile->getE_MAX_RATE());
     //E_ACCELERATION
     uia->lineEdit_E_ACCELERATION->setText(profile->getE_ACCELERATION());
+    uia->lineEdit_microstep->setText(profile->get_MICROSTEP());
 }
 
 void  ProfileDialog::setupProfile(QWidget * tab)
@@ -282,6 +285,14 @@ void ProfileDialog::on_bed_derivative_lineEdit_textEdited(const QString &arg1)
     profile->profileSaved = false;
     indicate_ProfileSaved();
     qDebug()<<__FILE__<<__LINE__<<arg1;
+}
+
+void ProfileDialog::on_lineEdit_microstep_textEdited(const QString &arg1)
+{
+    profile->setMICROSTEP(arg1);
+    profile->profileSaved = false;
+    indicate_ProfileSaved();
+
 }
 
 

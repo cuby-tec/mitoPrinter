@@ -100,6 +100,8 @@ private slots:
 
     void on_bed_derivative_lineEdit_textEdited(const QString &arg1);
 
+    void on_lineEdit_microstep_textEdited(const QString &arg1);
+
 private:
     Ui::ProfileDialog *uia;
 

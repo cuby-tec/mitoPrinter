@@ -24,6 +24,9 @@
 #include <string.h>
 #include <math.h>
 
+#define cout qDebug()<<__FILE__<<__LINE__
+
+
 /*
  *     eG0=0, eG1, eG2, eG3, eG4, eG6, eG10, eG28, eG29_1, eG29_2, eG30, eG33
     , eG90, eG91, eG92, eG92_1, eM82, eM84, eM104, eM106, eM107, eM109, eM140, eM190, eM550
@@ -101,16 +104,17 @@ GcodeWorker::buildAction(sGcode *src)
 #define MICROSTEP_E 2
  */
     Coordinatus* cord = Coordinatus::instance();
-    cord->setMicrostep(X_AXIS,MICROSTEP_X);	//TODOH set micro step
-    cord->setMicrostep(Y_AXIS,MICROSTEP_Y);
-    cord->setMicrostep(Z_AXIS,MICROSTEP_Z);
-    cord->setMicrostep(E_AXIS,MICROSTEP_E);
+//    cord->setMicrostep(X_AXIS,MICROSTEP_X);	//TODOH set micro step
+//    cord->setMicrostep(Y_AXIS,MICROSTEP_Y);
+//    cord->setMicrostep(Z_AXIS,MICROSTEP_Z);
+//    cord->setMicrostep(E_AXIS,MICROSTEP_E);
+    cout<<"X microstep:"<<cord->getMicrostep(0);
 
     QString tag(src->group);
 
-    if(tag == 'G' || tag =='M'){
+    if(tag == "G" || tag =="M"){
         tag.append(src->value);
-    }else if (tag == '(' || tag == ";" || QString(tag).isEmpty() ){
+    }else if (tag == "(" || tag == ";" || QString(tag).isEmpty() ){
         //comment
         return action;
     }
@@ -149,10 +153,10 @@ GcodeWorker::buildAction(sGcode *src)
 
     switch (etag) {
     case eG0:
-        action = (this->*callTagRef[etag])(src); //tagG0_Do
-        break;
+//        action = (this->*callTagRef[etag])(src); //tagG0_Do
+//        break;
     case eG1:
-        action = (this->*callTagRef[etag])(src); //tagG1_Do
+        action = (this->*callTagRef[eG0])(src); //tagG1_Do
         break;
     case eG2:
         action = (this->*callTagRef[etag])(src); //tagG2_Do
@@ -1939,6 +1943,9 @@ GcodeWorker::readCommandLine()
     qDebug()<<__FILE__<<__LINE__<<"\tgroup:"<<gcode.group<<gcode.value<<"  line"<<line<<"num:"<<linecounter;
 #endif
     //checkBox_immediately
+#if LOG_LEVEL==1
+    cout<<"line:"<<line;
+#endif
     action = buildAction(dst);
 
     return (action);

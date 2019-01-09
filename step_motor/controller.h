@@ -72,6 +72,8 @@ public:
         return motor;
     }
 
+    double_t get_MMperStep(uint axis, Coordinatus *cord);
+
 private:
     size_t frequency;
 

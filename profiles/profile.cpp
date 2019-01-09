@@ -17,12 +17,13 @@
 //------------------------ defs
 
 #define PROFILE_BUFFER_SiZE	1024
-
+#define cout    qDebug()<<__FILE__<<__LINE__
 
 //#define PROFILE_PATH    ":/profile/"
 #define PROFILE_PATH    "profile/"
 
 #define HOTBED_TEMPERATURE "HOTBED_TEMPERATURE"//"TEMPERATURE_H"
+#define MICROSTEP           "MICROSTEP"
 
 //------------- vars
 
@@ -824,6 +825,15 @@ QString Profile::get_BED_DERIVATIVE()
     return result;
 }
 
+QString
+Profile::get_MICROSTEP()
+{
+    QString result;
+    QJsonObject obj;
+    QJsonObject generic_obj;
+    GENERIC_GET_VALUE("generic",MICROSTEP);
+    return result;
+}
 
 //=================== getter helper ============
 
@@ -1133,7 +1143,8 @@ Profile::set_DERIVATIVE(QString num)
         "HOTBED_DERIVATIVE": "09.00",
         "HOTBED_TEMPERATURE": "55"
  */
-QString Profile::set_BED_TEMPERATURE(QString num)
+QString
+Profile::set_BED_TEMPERATURE(QString num)
 {
      QJsonObject obj;
      SET_FILED_VALUE(HOTBED_TEMPERATURE);
@@ -1146,7 +1157,8 @@ QString Profile::set_BED_TEMPERATURE(QString num)
          profile_doc.setObject(obj);
 }
 
-QString Profile::set_BED_INTEGRAL(QString num)
+QString
+Profile::set_BED_INTEGRAL(QString num)
 {
     QJsonObject obj;
     SET_FILED_VALUE("HOTBED_INTEGRAL");
@@ -1154,7 +1166,8 @@ QString Profile::set_BED_INTEGRAL(QString num)
     profile_doc.setObject(obj);
 }
 
-QString Profile::set_BED_PROPTIONAL(QString num)
+QString
+Profile::set_BED_PROPTIONAL(QString num)
 {
     QJsonObject obj;
     SET_FILED_VALUE("HOTBED_PROPOTIONAL");
@@ -1162,7 +1175,8 @@ QString Profile::set_BED_PROPTIONAL(QString num)
     profile_doc.setObject(obj);
 }
 
-QString Profile::set_BED_DERIVATIVE(QString num)
+QString
+Profile::set_BED_DERIVATIVE(QString num)
 {
     QJsonObject obj;
     SET_FILED_VALUE("HOTBED_DERIVATIVE");
@@ -1189,6 +1203,15 @@ Profile::setE_ACCELERATION(QString num)
     SET_FILED_VALUE("E_ACCELERATION");
 
 }
+
+void
+Profile::setMICROSTEP(QString num)
+{
+    QJsonObject obj;
+
+    SET_FILED_VALUE(MICROSTEP);
+}
+
 
 //======================== setter helper =======
 
@@ -1240,23 +1263,19 @@ Profile::init_profile()
 
     if(loadProfile())
     {
-
         profile_filename = getProfileFileName(profileIndex); // TODO Найти профиль по-умолчанию.
         profile_doc = loadDocument(profile_filename);
-        qDebug() << parseError.errorString() << "init_profile:590";
-
+//        qDebug() << parseError.errorString() << "init_profile:590";
+        cout<<"init_profile:"<<parseError.errorString() ;
         if(profile_doc.isEmpty())
         {
-            qDebug() << "Empty init_profile 335 \n";
+//            qDebug() << "Empty init_profile 335 \n";
+            cout<<"Empty init_profile:"<<profile_filename;
         }else{
-
-
-//       QString str = getX_STEPS();
+//         QString str = getX_STEPS();
             profileAtive = true;
             result = true;
         }
-
-//        i = 1;
     }
 
     return result;

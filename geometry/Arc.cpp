@@ -12,12 +12,13 @@
 #include "mLine.h"
 #include <cmath>
 #include "myglobal.h"
+#include <assert.h>
 
 Arc::Arc() {
 	// TODO Auto-generated constructor stub
 	this->radious = qQNaN();
 	this->precicion = qQNaN();
-	this->points_number = NULL;
+    this->points_number = 0;
 	clockWise = true;
 	alfa = 0.0;
 	angle = 0.0;

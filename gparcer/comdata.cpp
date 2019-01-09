@@ -753,7 +753,10 @@ _run1:
                 while (!action->queue.isEmpty()){
                     ComDataReq_t req = action->queue.dequeue();
                     req.requestNumber = ++MyGlobal::requestIndex;
+#if DEBUG_LEVEL==1
                     cout<<req.payload.instrument1_parameter.axis[X_AXIS].steps<<"\taccel:"<<req.payload.instrument1_parameter.axis[X_AXIS].accelerate_until<<"\tnuber:"<<req.requestNumber;
+#endif
+//                    cout<<req.payload.instrument1_parameter.head.linenumber;
                     queueSize = threadarc.putInArray(&req);
                 }
                 threadarc.setMdelay(MDELAY);

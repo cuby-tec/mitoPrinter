@@ -200,7 +200,7 @@ public:
 
     QString get_BED_DERIVATIVE();
 
-
+    QString get_MICROSTEP();
 
 //---------------------------------- setters
     //DEFAULT_X_STEPS_PER_MM
@@ -299,6 +299,7 @@ public:
 
     QString set_BED_DERIVATIVE(QString num);
 
+    void setMICROSTEP(QString num);
 
     void saveProfileDocument();
 
