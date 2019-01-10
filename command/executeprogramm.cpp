@@ -5,7 +5,7 @@
 ExecuteProgramm::ExecuteProgramm(QObject *parent) : QObject(parent)
 {
     producer = new Producer(this);
-    producer->setActionQueue(&actionQueue);
+    producer->setActionQueue(&ExecuteProgramm::actionQueue);
 }
 
 void ExecuteProgramm::execute()
@@ -46,4 +46,6 @@ uint ExecuteProgramm::queueSize = 10;
 
 uint ExecuteProgramm::numaction;
 
+QQueue<mito::Action_t> ExecuteProgramm::actionQueue;
 
+mito::Action_t ExecuteProgramm::action;

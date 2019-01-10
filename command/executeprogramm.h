@@ -30,11 +30,21 @@ public:
     static QMutex exec_mutex;
     static QWaitCondition queueNotFull;
     static uint queueSize;
-    static uint numaction;
+    static uint numaction;// amount actions in queue.
+    static QQueue<mito::Action_t> actionQueue;
+
+
+    static mito::Action_t* getAction(){
+        exec_mutex.lock();
+        ExecuteProgramm::action = actionQueue.dequeue();
+        numaction--;
+        queueNotFull.wakeAll();
+        exec_mutex.unlock();
+        return &ExecuteProgramm::action;
+    }
 
 public slots:
     void finished();
-
 
 
 signals:
@@ -46,9 +56,9 @@ private:
     ComData * comdata;
 
 
-    QQueue<mito::Action_t> actionQueue;
-
     Producer* producer;
+
+   static mito::Action_t action;
 
 };
 
@@ -64,7 +74,12 @@ public:
     Producer(QObject* parent=nullptr):QThread(parent) {
         abort = false;
         restart = false;
+    }
 
+    ~Producer() override
+    {
+        abort = true;
+//        QThread::~QThread();
     }
 
     void run() override {

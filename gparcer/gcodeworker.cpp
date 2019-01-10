@@ -1928,7 +1928,16 @@ GcodeWorker::readCommandLine()
 
         if(line.isEmpty())
             continue;
-        result = lexer->parcer(line);
+        try {
+            result = lexer->parcer(line);
+        } catch (const std::bad_alloc &) {
+            // clean up here, e.g. save the session
+            // and close all config files.
+            qDebug()<<__FILE__<<__LINE__<<"Parcer Error: SPACE mast be before commentary ' ;'";
+            qWarning("ERROR #13");
+            qFatal("Error 13:");//<<__FILE__<<__LINE__;
+            return nullptr; // exit the application
+        }
 #if LEVEL==1
         qDebug()<<__FILE__<<__LINE__<<line<<"\tline:"<<linecounter;
 #endif

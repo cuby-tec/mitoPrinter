@@ -1,4 +1,7 @@
 ﻿#include "comdata.h"
+
+#include "command/executeprogramm.h"
+
 #include <string.h>
 #include <QString>
 #include <QDebug>
@@ -705,7 +708,8 @@ void ComData::_run()
 #endif
         // Build request
 _run1:
-        action = gworker->readCommandLine();
+//        action = gworker->readCommandLine();
+        action = ExecuteProgramm::getAction();
         // Send request
         if(action != nullptr)
         {
