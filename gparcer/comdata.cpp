@@ -433,40 +433,6 @@ ComData::buildG2Command()
 
 }
 
-/*
-void
-ComData::buildGgroup()
-{
-    int groupnumber;
-    bool ok;
-
-    groupnumber = QString(sgCode->value).toInt(&ok);
-
-    switch (groupnumber) {
-
-    case 0:
-    case 1:
-        state = ecdOne;
-        buildG0command();
-        break;
-
-    case 2:
-    case 3:
-        state = ecdCircle;
-        buildG2Command();
-        break;
-
-    case 4:
-        break;
-
-
-
-    default:
-        break;
-    }
-
-}
-*/
 
 void
 ComData::buildMgroup()

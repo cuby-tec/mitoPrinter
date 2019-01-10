@@ -19,10 +19,12 @@
 #include <QString>
 #include <QTimer>
 #include <QObject>
+//#include <QThread>
+#include <QWaitCondition>
 
 #define VERSION 1
 
-class GcodeWorker: public QObject
+class GcodeWorker: public QObject//public QThread//
 {
 
     Q_OBJECT
@@ -35,6 +37,9 @@ public:
 //        delete comproxy;
 //#endif
 //    }
+
+
+//    void run() override;
 
     void fileOpen(QString filename);
 
@@ -49,6 +54,8 @@ public:
     mito::Action_t *buildAction(sGcode * src);
 
     uint getLinecounter() const;
+
+    void setQueueNotFull(QWaitCondition* value){queueNotFull = value;}
 
 public slots:
     void queueReady();
@@ -121,6 +128,10 @@ private:
 #if LEVEL==4
     QTimer *timer;
 #endif
+
+    QWaitCondition* queueNotFull;
+
+// function
 
     QString clearNumValue(QString value);
 

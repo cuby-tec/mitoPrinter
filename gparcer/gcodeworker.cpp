@@ -87,6 +87,11 @@ GcodeWorker::GcodeWorker(QObject *parent) : QObject(parent)
 
 }
 
+//void GcodeWorker::run()
+//{
+
+//}
+
 
 
 //void
@@ -1732,6 +1737,7 @@ GcodeWorker::tagF_Do(sGcode *sgCode)
     //qDebug()<<__FILE__<<__LINE__<<"F:"<<number;
     return action;
 }
+
 
 uint GcodeWorker::getLinecounter() const
 {

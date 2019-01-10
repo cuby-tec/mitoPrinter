@@ -4,7 +4,8 @@
 
 ExecuteProgramm::ExecuteProgramm(QObject *parent) : QObject(parent)
 {
-
+    producer = new Producer(this);
+    producer->setActionQueue(&actionQueue);
 }
 
 void ExecuteProgramm::execute()
@@ -25,6 +26,8 @@ void ExecuteProgramm::execute(QFile &stream)
 
     comdata = new ComData();
 //    connect(comdata, SIGNAL(sg_executeComplite()), this, SLOT(finished()));
+    producer->setGcodeWorker(gcodeworker);
+    producer->start();
     comdata->run(gcodeworker);
 
 }
@@ -34,3 +37,13 @@ void ExecuteProgramm::finished()
     cout<<"finished";
     emit sg_executionFinished();
 }
+
+QMutex ExecuteProgramm::exec_mutex;
+
+QWaitCondition ExecuteProgramm::queueNotFull;
+
+uint ExecuteProgramm::queueSize = 10;
+
+uint ExecuteProgramm::numaction;
+
+

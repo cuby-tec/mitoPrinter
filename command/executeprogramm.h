@@ -7,6 +7,9 @@
 
 #include <QTextStream>
 //#include <QObject>
+#include <QMutex>
+
+class Producer;
 
 class ExecuteProgramm : public QObject, public ICommand
 {
@@ -24,6 +27,11 @@ public:
         return comdata;
     }
 
+    static QMutex exec_mutex;
+    static QWaitCondition queueNotFull;
+    static uint queueSize;
+    static uint numaction;
+
 public slots:
     void finished();
 
@@ -37,6 +45,68 @@ private:
 
     ComData * comdata;
 
+
+    QQueue<mito::Action_t> actionQueue;
+
+    Producer* producer;
+
 };
+
+
+class Producer: public QThread
+{
+    typedef ExecuteProgramm ThreadViser;
+
+
+public:
+//    QQueue<mito::Action_t> actionQueue;
+
+    Producer(QObject* parent=nullptr):QThread(parent) {
+        abort = false;
+        restart = false;
+
+    }
+
+    void run() override {
+        forever{
+
+            ThreadViser::exec_mutex.lock();
+
+            while(ThreadViser::numaction<ThreadViser::queueSize)
+            {
+                mito::Action_t* action = gcodeWorker->readCommandLine();
+                actionQueue->enqueue(*action);
+                ThreadViser::numaction++;
+                if(action->a == eEOF){
+                    abort = true;
+                    break;
+                }
+            }
+
+            qDebug()<<__FILE__<<__LINE__<<"numaction:"<<ThreadViser::numaction;
+
+            if(abort == false)
+                ThreadViser::queueNotFull.wait(&ThreadViser::exec_mutex);
+            else{
+                ThreadViser::exec_mutex.unlock();
+                break;
+            }
+
+            ThreadViser::exec_mutex.unlock();
+
+        }
+    }
+
+    void setActionQueue(QQueue<mito::Action_t>* value){actionQueue = value;}
+    void setGcodeWorker(GcodeWorker* value){gcodeWorker = value;}
+
+private:
+    QQueue<mito::Action_t>* actionQueue;
+    GcodeWorker* gcodeWorker;
+
+    bool abort;
+    bool restart;
+};
+
 
 #endif // EXECUTEPROGRAMM_H
