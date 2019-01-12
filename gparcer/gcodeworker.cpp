@@ -113,7 +113,7 @@ GcodeWorker::buildAction(sGcode *src)
 //    cord->setMicrostep(Y_AXIS,MICROSTEP_Y);
 //    cord->setMicrostep(Z_AXIS,MICROSTEP_Z);
 //    cord->setMicrostep(E_AXIS,MICROSTEP_E);
-    cout<<"X microstep:"<<cord->getMicrostep(0);
+//    cout<<"X microstep:"<<cord->getMicrostep(0);
 
     QString tag(src->group);
 
@@ -1905,6 +1905,9 @@ GcodeWorker::readCommandLine()
     bool loop = true;
     int result;
     mito::Action_t* action = nullptr;
+    char buffer[12];
+
+    memset(buffer,0x00,12);
 
     QString line;// = _file->readLine();
 
@@ -1920,6 +1923,7 @@ GcodeWorker::readCommandLine()
             emit sg_executeComplite();
             action = new mito::Action_t;
             action->a = eEOF;
+            action->index = 1;
              qDebug()<<__FILE__<<__LINE__<<"Stopped.";
             return (action);
         }
@@ -1961,7 +1965,26 @@ GcodeWorker::readCommandLine()
 #if LOG_LEVEL==1
     cout<<"line:"<<line;
 #endif
+
     action = buildAction(dst);
+
+    //Build index of G-CODE tag.
+//    char buffer[12]={0};
+    buffer[0] = dst->group;
+    strncat(buffer,dst->value,10);
+    size_t len = strlen(buffer);
+    uint index = MyGlobal::crc32(reinterpret_cast<unsigned char*>(&buffer[0]),len);
+    action->index = index;
+/*    if(current_index == index)
+    {
+        tag_action.queue.enqueue(action->queue.dequeue());
+    }else{
+        tag_action.queue.clear();
+        current_index = index;
+        if(!action->queue.isEmpty())
+            tag_action.queue.enqueue(action->queue.dequeue());
+    }
+*/
 
     return (action);
 }
@@ -1981,7 +2004,7 @@ void GcodeWorker::setFileExecute(QFile &file)
 
     QFileInfo info(file);
 //    QString line = this->_file->readLine();
-    qDebug()<<__FILE__<<__LINE__<<"File info:"<<info.size();
+    qDebug()<<__FILE__<<__LINE__<<"File info:size:"<<info.size();
 #if LEVEL==4
     timer->start(100);
 #endif

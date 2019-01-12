@@ -18,9 +18,10 @@ namespace mito {
 
 struct Action_t{
     eActionDo a;
+    uint index;	// index of command group; index = F(sGcode.group,sGcode.value).
 //    double b[20];
     QQueue<ComDataReq_t> queue;
-    union {
+    union {	// for parameters
         double_t d;
         float f;
         int32_t i;

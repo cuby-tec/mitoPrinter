@@ -58,6 +58,8 @@ public:
 
     static int parceString(char* src,sGcode* dst );
 
+    static uint_least32_t crc32(unsigned char* buff, size_t len);
+
 };
 
 #endif // MYGLOBAL_H

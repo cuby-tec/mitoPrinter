@@ -36,24 +36,46 @@ timer->start(1000);
 
 
 
-::checkStatus(){
-statusLoader.setFuture(QtConcurrent::run(ZeroPointCommand::_checkStatus));
-}
-
-::statusLoaded(){
-Status_t* st = statusLoader.result();
-}
 ============
-G0 Z1
-G0 Z0
-G92
-M84
-G0 F9000 X36.705 Y36.705 Z0.250
-G0 X0 Y0 F9000
-G28
-G0 F9000 X36.705
-G0 F9000 X0
-G0 F19000 Y76.705
-G0 F15000 Y0
-G0 F9000 X36.705 Y36.705
+class LTop
+{
+public:
+    virtual void notInMid() const
+    {
+        qDebug("Method LTop::notInMode()");
+    }
+    virtual void allDo() const
+    {
+        qDebug("Method LTop::allDo()");
+    }
+};
+class LMid : public LTop
+{
+    typedef LTop Base;
+public:
+    virtual void allDo() const
+    {
+        Base::allDo();
+        qDebug("Method LMid::allDo()");
+    }
+};
+class LBottom : public LMid
+{
+    typedef LMid Base;
+public:
+    virtual void notInMid() const
+    {
+        //Cannot make this call because it does not exist
+        //Base::notInMid();
+        //Only works if there is public inheritance.
+        LTop::notInMid();
+        qDebug("Method LBottom::notInMode()");
+    }
+    virtual void allDo() const
+    {
+        //this->LMid::allDo();
+        Base::allDo();
+        qDebug("Method LBottom::allDo()");
+    }
+};
 =============

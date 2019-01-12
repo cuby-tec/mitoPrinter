@@ -42,6 +42,8 @@ QMutex ExecuteProgramm::exec_mutex;
 
 QWaitCondition ExecuteProgramm::queueNotFull;
 
+QWaitCondition ExecuteProgramm::queueNotEmpty;
+
 uint ExecuteProgramm::queueSize = 10;
 
 uint ExecuteProgramm::numaction;

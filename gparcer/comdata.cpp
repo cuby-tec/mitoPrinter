@@ -219,59 +219,6 @@ ComData::planner_recalculate()
 }
 */
 
-/**
- * @brief ComData::buildG0command
- */
-/*
-void
-ComData::buildG0command()
-{
-    bool ok;
-
-    sGparam* gparam;
-
-    sSegment* segment = &request.payload.instrument1_parameter;
-
-    for(int i=0;i<sgCode->param_number;i++)
-    {
-        gparam = &sgCode->param[i];
-
-        switch (gparam->group)
-        {
-        case 'X':
-        case 'Y':
-        case 'Z':
-            setParam_coord(gparam);
-            break;
-
-        case 'N': // Номер строки
-            uint32_t number = QString(gparam->value).toInt(&ok);
-            Q_ASSERT(ok);
-            segment->head.linenumber = number;
-            break;
-        }
-
-    }
-
-    cord->moveNextToCurrent();
-    cord->moveWorkToNext();
-    if(!isPlaneHasSteps())
-    {
-        return;
-    }
-
-    Recalculate_flag* flag;
-
-    for(int i=0;i<M_AXIS;i++){
-        byte* fl = &cord->nextBlocks[i].recalculate_flag;
-        *fl |= true; // Одиночная команда.
-    }
-
-    controller->buildBlock(cord);
-
-    buildComdata();
-}
-*/
 
 
 void
@@ -344,6 +291,7 @@ ComData::buildComdata()
 }
 
 //TODOH Circle G2 G3 (Clockwise Arc)
+
 void
 ComData::buildG2Command()
 {
@@ -436,7 +384,7 @@ ComData::buildG2Command()
 
 }
 
-
+/*
 void
 ComData::buildMgroup()
 {
@@ -456,31 +404,9 @@ ComData::buildMgroup()
     }
 
 }
-
-/*
-ComDataReq_t*
-ComData::build(sGcode *sgcode)
-{
-    this->sgCode = sgcode;
-
-    cord->initWork();
-
-    switch (sgCode->group) {
-    case 'G':
-        buildGgroup();
-        break;
-
-    case 'M':
-        buildMgroup();
-        break;
-
-    default:
-        // somthing wrong.
-        break;
-    }
-    return(&request);
-}
 */
+
+
 #define cout	qDebug()<<__FILE__<<__LINE__
 // from GConsole
 void ComData::buildComData(sGcode *sgcode, bool checkBox_immediately)

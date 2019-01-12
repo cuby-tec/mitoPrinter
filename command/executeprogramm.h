@@ -29,6 +29,7 @@ public:
 
     static QMutex exec_mutex;
     static QWaitCondition queueNotFull;
+    static QWaitCondition queueNotEmpty;
     static uint queueSize;
     static uint numaction;// amount actions in queue.
     static QQueue<mito::Action_t> actionQueue;
@@ -36,10 +37,17 @@ public:
 
     static mito::Action_t* getAction(){
         exec_mutex.lock();
-        ExecuteProgramm::action = actionQueue.dequeue();
-        numaction--;
-        queueNotFull.wakeAll();
+//        if(numaction == 0)
+        if(actionQueue.isEmpty())
+            queueNotEmpty.wait(&exec_mutex);
         exec_mutex.unlock();
+
+        ExecuteProgramm::action = actionQueue.dequeue();
+        qDebug()<<__FILE__<<__LINE__<<"\tnumaction:"<<numaction;
+        exec_mutex.lock();
+         numaction--;
+        exec_mutex.unlock();
+        queueNotFull.wakeAll();
         return &ExecuteProgramm::action;
     }
 
@@ -74,6 +82,8 @@ public:
     Producer(QObject* parent=nullptr):QThread(parent) {
         abort = false;
         restart = false;
+        current_index = 0;
+        tag_action.index = 0;
     }
 
     ~Producer() override
@@ -85,13 +95,45 @@ public:
     void run() override {
         forever{
 
-            ThreadViser::exec_mutex.lock();
 
-            while(ThreadViser::numaction<ThreadViser::queueSize)
+            while(ThreadViser::numaction < ThreadViser::queueSize)
             {
+                producer_m1:
                 mito::Action_t* action = gcodeWorker->readCommandLine();
-                actionQueue->enqueue(*action);
-                ThreadViser::numaction++;
+
+                if(tag_action.index == 0){
+                    tag_action = *action;
+                    current_index = tag_action.index;
+//                    actionQueue->enqueue(tag_action);
+                    goto producer_m1;
+                }
+
+
+                if((current_index == action->index)&&(current_index != 1))
+                {
+                    do {
+                        tag_action.queue.enqueue(action->queue.dequeue());
+                        action = gcodeWorker->readCommandLine();
+                     }while(current_index == action->index);
+
+                    actionQueue->enqueue(tag_action);
+                    current_index = action->index;
+                    tag_action = *action;
+                }else{
+                    actionQueue->enqueue(tag_action);
+                    current_index = action->index;
+                    tag_action = *action;
+                    if(action->index==1)
+                    {
+                        actionQueue->enqueue(*action);
+                    }
+                }
+
+                ThreadViser::exec_mutex.lock();
+//                ThreadViser::numaction++;
+                ThreadViser::numaction = static_cast<uint>(actionQueue->size());
+                ThreadViser::queueNotEmpty.wakeAll();
+                ThreadViser::exec_mutex.unlock();
                 if(action->a == eEOF){
                     abort = true;
                     break;
@@ -100,6 +142,7 @@ public:
 
             qDebug()<<__FILE__<<__LINE__<<"numaction:"<<ThreadViser::numaction;
 
+            ThreadViser::exec_mutex.lock();
             if(abort == false)
                 ThreadViser::queueNotFull.wait(&ThreadViser::exec_mutex);
             else{
@@ -108,7 +151,6 @@ public:
             }
 
             ThreadViser::exec_mutex.unlock();
-
         }
     }
 
@@ -121,6 +163,11 @@ private:
 
     bool abort;
     bool restart;
+
+    uint current_index ;
+    mito::Action_t tag_action;
+
+
 };
 
 

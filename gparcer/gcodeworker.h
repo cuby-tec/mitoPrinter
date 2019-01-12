@@ -21,6 +21,7 @@
 #include <QObject>
 //#include <QThread>
 #include <QWaitCondition>
+//#include <sgcode.h>
 
 #define VERSION 1
 
