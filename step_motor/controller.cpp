@@ -19,7 +19,7 @@
 
 #include <algorithm>
 
-#define BUILDBLOCKVERSION   2
+#define BUILDBLOCKVERSION   3
 
 #define ACCELERATION    1
 #define FLATMOTION      2
@@ -59,7 +59,8 @@ Controller::Controller()
     motor[Z_AXIS] = new StepMotor(e17HS4401_shuft);
 
     motor[E_AXIS] = new StepMotor(e17HS4401_tooth_10_43);
-#if BUILDBLOCKVERSION==2
+//#if BUILDBLOCKVERSION==2
+#if BUILDBLOCKVERSION>1
     uploadMotorData();
 #endif
 }
@@ -205,6 +206,219 @@ void Controller::uploadMotorData() {
 /**
  * Заполнение полей разгона, торможения, и т.д.
  */
+#if BUILDBLOCKVERSION==3
+//cosin
+
+bool
+Controller::buildBlock(Coordinatus* cord) {
+//    double_t path[N_AXIS];						//	B2
+    int32_t target_steps[N_AXIS];
+    double_t k;
+
+    block_state_t* blocks = cord->nextBlocks;
+
+    double_t dircos[N_AXIS];
+
+    //abs angle
+//    for (uint32_t i=0;i<M_AXIS;i++){
+    	double_t dx = cord->getNextValue(X_AXIS) - cord->getCurrentValue(X_AXIS);
+    	double_t dy = cord->getNextValue(Y_AXIS) - cord->getCurrentValue(Y_AXIS);
+    	double_t dz = cord->getNextValue(Z_AXIS) - cord->getCurrentValue(Z_AXIS);
+        double_t de = cord->getNextValue(E_AXIS) - cord->getCurrentValue(E_AXIS);
+
+        double_t radical = sqrt(pow(dx,2)+pow(dy,2)+pow(dz,2)+pow(de,2));
+
+//    	double_t cosx = dx/radical;
+    	dircos[X_AXIS] = dx/radical;
+//    	double_t cosy = dy/radical;
+    	dircos[Y_AXIS] = dy/radical;
+//    	double_t cosz = dz/radical;
+    	dircos[Z_AXIS] = dz/radical;
+
+        dircos[E_AXIS] = de/radical;
+
+//    }
+
+
+
+    //[4] Длина линии в шагах		C23
+    for(uint32_t i=0;i<N_AXIS;++i){
+        block_state_t* block = &blocks[i];
+        StepMotor* m = motor[i];
+        uint32_t microstep = cord->getMicrostep(i);
+        m->setMicrostep(microstep,i);	//TODOH getMicrostep
+        lines lm = m->getLineStep;
+        double_t ds = ( m->*lm)(i);
+
+        target_steps[i] = static_cast<int32_t>(lround(cord->getNextValue(i)/ds));
+        int32_t stp = target_steps[i]-cord->position[i];
+        maxvector[i] = static_cast<uint32_t>(abs(stp));
+//        cord->nextBlocks[i].steps = maxvector[i];
+        block->steps = maxvector[i];
+        cord->position[i] = target_steps[i];
+        if(stp > 0)
+            block->direction_bits = edForward;
+        else
+            block->direction_bits = edBackward;
+    }
+
+    // Наибольшая длина линии						C26
+    uint32_t maxLenLine = *std::max_element(maxvector,maxvector+N_AXIS);
+    if(maxLenLine == 0)
+        return (false);
+    Q_ASSERT(maxLenLine > 0);
+
+    double_t angular_velocity = selectFeedrate(cord->getSpeedrate());
+
+//    uint32_t accel_steps[N_AXIS];
+    for(uint32_t i=0;i<N_AXIS;i++){
+
+        block_state_t* block = &blocks[i];
+        //=radian_speed*(D4)
+        double_t k1 = static_cast<double_t>( maxvector[i]) / static_cast<double_t>(maxLenLine);
+#if BUILDBLOCKVERSION==2
+//        double_t G4 =  ( k* motor[i]->getAngular_velocity_rad_value());  //G4 alternative
+//        StepMotor* m = motor[i];
+//        angularSpeedrate as = m->getAngularSpeedrate;
+//        double_t G4 = k* (m->*as)(cord->getSpeedrate());
+        double_t G4 =  ( k* angular_velocity);//TODO
+#endif
+#define k	fabs(dircos[i])
+
+        double_t G4 = fabs(dircos[i])*angular_velocity;
+
+#if LEVEL==1
+        cout<<"G4:"<<G4;
+#endif
+        //radian_accel
+        double_t racc = k * motor[i]->getAcceleration();
+
+        //radian_deccel
+        double_t rdcc = k * motor[i]->getDecceleration();
+
+        //accel steps: max _ s _ lim
+        double_t acs = pow(G4,2.0)/(2.0*motor[i]->getAlfa(i)*racc);
+
+        //accel_lim
+        double_t acl = maxvector[i] * racc/(racc + rdcc);
+
+        //accel_path
+        uint32_t accpath =  static_cast<uint32_t>( MIN(acs,acl) );
+
+        //deccel_path
+        uint32_t dccpath =  static_cast<uint32_t>( MIN(acs,acl) * racc/rdcc );
+
+        //speed_path
+        uint32_t speed_path = maxvector[i] - (accpath + dccpath);
+
+        //schem
+        if(accpath == 0){
+            block->schem[0]=FLATMOTION;  //2 no acceleration
+        }else{
+            block->schem[0]=ACCELERATION;  //1 acceleration
+        }
+
+        if(speed_path == 0)
+            block->schem[1] = DECCELERATION;	//3 decceleration
+        else{
+            block->schem[1] = FLATMOTION;	//2 равномерно
+        }
+
+
+        if(dccpath == 0){
+            block->schem[2] = FLATMOTION; //2 no decceleration
+        }else{
+            block->schem[2] = DECCELERATION; //3 decceleration
+        }
+
+        uint32_t schemState = 0;
+        schemState |= block->schem[0];
+        schemState |=  static_cast<uint32_t>(block->schem[1])<<2;
+        schemState |= static_cast<uint32_t>(block->schem[2])<<4;
+
+        //C0
+        // double_t cnt = sqrt(2*motor[i]->getAlfa(i)/accel[i])*frequency;
+        uint32_t cnt = static_cast<uint32_t>( frequency * sqrt(2.0 * motor[i]->getAlfa(i)/racc ) );
+        // nominal_rate
+        uint32_t nominal_rate = static_cast<uint32_t>(frequency * motor[i]->getAlfa(i)/G4 );
+
+        if(nominal_rate > 16777214){ // 0xfffffe
+            nominal_rate = 0xfffffe;
+            cout<<"NOMINAL RATE OUT OF RANGE, ASYNCRONOUS:"<<nominal_rate;
+            qWarning("NOMINAL RATE OUT OF RANGE:%d",nominal_rate);
+        }
+
+        switch (schemState) {
+        case SCHEMSTATE_1:
+            block->initial_rate = cnt;
+            block->final_rate = cnt;
+            block->nominal_rate = nominal_rate;
+
+            block->decelerate_after = block->steps - dccpath;
+
+            break;
+
+        case SCHEMSTATE_2:
+            block->initial_rate = nominal_rate;
+            block->final_rate = nominal_rate;
+            block->nominal_rate = nominal_rate;
+
+            block->decelerate_after = block->steps + 1;
+
+            break;
+
+        case SCHEMSTATE_3:
+//TODO acceleration scheme
+            block->initial_rate = cnt;
+            block->final_rate = cnt;
+            block->nominal_rate = nominal_rate;
+            block->decelerate_after = block->steps - dccpath;
+            break;
+
+        case SCHEMSTATE_4:
+            block->initial_rate = cnt;
+            block->final_rate = cnt;
+            block->nominal_rate = nominal_rate;
+            block->decelerate_after = block->steps - dccpath;
+
+            break;
+
+        default:
+            block->initial_rate = cnt;
+            block->final_rate = cnt;
+            block->nominal_rate = nominal_rate;
+            block->decelerate_after = block->steps - dccpath;
+            break;
+
+        }
+//cout<<block->steps<<"[0]"<<block->schem[0]<<"[1]"<<block->schem[1]<<"[2]"<<block->schem[2];
+
+//        block->initial_rate = cnt;
+//        block->final_rate = cnt;
+
+//        block->steps = maxvector[i];
+        block->accelerate_until = accpath;
+//        block->decelerate_after = block->steps - dccpath;
+
+        block->microstep = 0;   //TODO Micro-step
+        block->axis_mask = 0;
+        if(block->steps > 0)
+            block->axis_mask |= (1<<i);
+
+        block->speedLevel = accpath;
+    }
+
+#undef k
+
+    return (true);
+}// end buildBlock
+
+
+
+
+#endif
+
+
 #if BUILDBLOCKVERSION == 2
 bool
 Controller::buildBlock(Coordinatus* cord) {
