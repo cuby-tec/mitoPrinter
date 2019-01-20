@@ -176,9 +176,9 @@ double_t StepMotor::angularSpeedrate_pitch(double_t speedrate) {
 double_t StepMotor::angularSpeedrate_gear_10_43(double_t speedrate) {
 	//TODO
 	double_t result = speedrate/60;
-	double_t extruder_gear = GEAR_LITTLE/GEAR_LARGE;
-	extruder_gear *= shaft_diameter/2;
-	result /= extruder_gear;
+    double_t extruder_gear = GEAR_LARGE/GEAR_LITTLE;
+	result /= shaft_diameter/2;
+	result *= extruder_gear;
 	return result;
 }
 
