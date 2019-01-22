@@ -145,7 +145,8 @@ double_t StepMotor::gear10_43_Step(uint32_t axis)
     double_t result;
     //TODO
     double_t alpha = getAlfa(axis);
-    result = alpha*shaft_diameter/2.0*(GEAR_LITTLE/GEAR_LARGE);
+    result = alpha*shaft_diameter/2.0;
+    result /=(GEAR_LARGE/GEAR_LITTLE);
     return result;
 
 }
@@ -158,6 +159,12 @@ double_t StepMotor::getLinearAcceleration() {
     return result;
 }
 
+/**
+ * @brief StepMotor::angularSpeedrate_pulley
+ * @param speedrate - feedrate(mm/min).
+ * @return
+ * Convert Feedrate(mm/min) to angular speedrate(rad/sec).
+ */
 double_t StepMotor::angularSpeedrate_pulley(double_t speedrate) {
 	//TODO
 	double_t result = speedrate/60;
@@ -165,6 +172,12 @@ double_t StepMotor::angularSpeedrate_pulley(double_t speedrate) {
 	return result;
 }
 
+/**
+ * @brief StepMotor::angularSpeedrate_pitch
+ * @param speedrate - feedrate(mm/min).
+ * @return
+ * Convert Feedrate(mm/min) to angular speedrate(rad/sec).
+ */
 double_t StepMotor::angularSpeedrate_pitch(double_t speedrate) {
 	//TODO
 	double_t result = speedrate/60;
@@ -173,6 +186,12 @@ double_t StepMotor::angularSpeedrate_pitch(double_t speedrate) {
 	return result;
 }
 
+/**
+ * @brief StepMotor::angularSpeedrate_gear_10_43
+ * @param speedrate - feedrate(mm/min).
+ * @return
+ * Convert Feedrate(mm/min) to angular speedrate(rad/sec).
+ */
 double_t StepMotor::angularSpeedrate_gear_10_43(double_t speedrate) {
 	//TODO
 	double_t result = speedrate/60;

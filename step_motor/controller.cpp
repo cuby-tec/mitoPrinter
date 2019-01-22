@@ -215,6 +215,10 @@ Controller::buildBlock(Coordinatus* cord) {
     int32_t target_steps[N_AXIS];
     double_t k;
 
+    double_t _feedrate = cord->getSpeedrate();
+
+    double_t angular_velocity; // = selectFeedrate(cord->getSpeedrate());
+
     block_state_t* blocks = cord->nextBlocks;
 
     double_t dircos[N_AXIS];
@@ -249,6 +253,7 @@ Controller::buildBlock(Coordinatus* cord) {
         m->setMicrostep(microstep,i);	//TODOH getMicrostep
         lines lm = m->getLineStep;
         double_t ds = ( m->*lm)(i);
+        block->path = cord->getNextValue(i);
 
         target_steps[i] = static_cast<int32_t>(lround(cord->getNextValue(i)/ds));
         int32_t stp = target_steps[i]-cord->position[i];
@@ -260,6 +265,14 @@ Controller::buildBlock(Coordinatus* cord) {
             block->direction_bits = edForward;
         else
             block->direction_bits = edBackward;
+        // Check feedrate @ maximum value.
+        if(block->steps > 0){
+            if(_feedrate > profileData->speedrate[i])
+            {
+                _feedrate = profileData->speedrate[i];
+                cout<<"Reduction feedrate to value:"<<_feedrate<<" from :"<<cord->getSpeedrate()<<" axis:"<<i;
+            }
+        }
     }
 
     // Наибольшая длина линии						C26
@@ -268,13 +281,14 @@ Controller::buildBlock(Coordinatus* cord) {
         return (false);
     Q_ASSERT(maxLenLine > 0);
 
-    double_t angular_velocity = selectFeedrate(cord->getSpeedrate());
-
+    // axis circle.
 //    uint32_t accel_steps[N_AXIS];
     for(uint32_t i=0;i<N_AXIS;i++){
 
         block_state_t* block = &blocks[i];
         //=radian_speed*(D4)
+        if(block->steps == 0)
+            continue;
         double_t k1 = static_cast<double_t>( maxvector[i]) / static_cast<double_t>(maxLenLine);
 #if BUILDBLOCKVERSION==2
 //        double_t G4 =  ( k* motor[i]->getAngular_velocity_rad_value());  //G4 alternative
@@ -284,20 +298,27 @@ Controller::buildBlock(Coordinatus* cord) {
         double_t G4 =  ( k* angular_velocity);//TODO
 #endif
 #define k	fabs(dircos[i])
-
+        StepMotor* m = motor[i];
+        angularSpeedrate as = m->getAngularSpeedrate;
+        angular_velocity = (m->*as)(_feedrate);
         double_t G4 = fabs(dircos[i])*angular_velocity;
+        block->nominal_speed = dircos[i]*angular_velocity;
 
 #if LEVEL==1
         cout<<"G4:"<<G4;
 #endif
         //radian_accel
         double_t racc = k * motor[i]->getAcceleration();
+        block->acceleration = motor[i]->getAcceleration();
 
         //radian_deccel
         double_t rdcc = k * motor[i]->getDecceleration();
+        block->deceleration = motor[i]->getDecceleration();
 
         //accel steps: max _ s _ lim
-        double_t acs = pow(G4,2.0)/(2.0*motor[i]->getAlfa(i)*racc);
+        block->alfa = motor[i]->getAlfa(i);
+//        double_t acs = pow(G4,2.0)/(2.0*motor[i]->getAlfa(i)*racc);
+        double_t acs = pow(G4,2.0)/(2.0*block->alfa*racc);
 
         //accel_lim
         double_t acl = maxvector[i] * racc/(racc + rdcc);
@@ -1072,6 +1093,32 @@ void Controller::uploadPosition(Coordinatus* cord)
         cord->position[i] =static_cast<int32_t>(lround(cord->getNextValue(i)/ds));
     }
 }
+
+
+#if BUILDBLOCKVERSION==3
+/**
+ * Return cosindir.F8 , feedrate not greater every using axis feedrate.
+*/
+double_t
+Controller::selectFeedrate( double_t cord_feedrate ) {
+	double_t result;
+//	result = motor[X_AXIS]->getMaxSpeedrate();//FEEDRATE_PULLEY_MAX;
+	Profile* profile = Profile::instance();
+
+//	profile->getE_MAX_RATE();
+//	profile->getX_MAX_RATE();
+//	profile->getY_MAX_RATE();
+//	profile->getZ_MAX_RATE();
+
+//	profileData->speedrate[0];
+
+
+	return result;
+}
+#endif
+
+
+#if BUILDBLOCKVERSION==2
 #define SELECTOR    1
 double_t Controller::selectFeedrate( double_t cord_feedrate ) {
 	//TODOH
@@ -1131,6 +1178,9 @@ double_t Controller::selectFeedrate( double_t cord_feedrate ) {
 #endif
 	return G4;
 }//==
+#endif
+
+
 
 #ifdef REMOVED
 /**

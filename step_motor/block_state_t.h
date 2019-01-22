@@ -28,14 +28,16 @@ typedef struct block_state_t {
     word speedLevel; //  ступень скорости   разгона
     word final_rate;
     word final_speedLevel;
-    word step_event_count;
+    word step_event_count;//accel_lim
     double_t tan_theta;		//  Значение тангенса угла наклона отрезка траектории.
 //	double_t tangent_inv; //  Обратное значение тангенса. Для подпрограммы обработки прерываний.
-    double_t nominal_speed; //Максимальное значение для это оси из Профиля.
-    double_t acceleration; // Максимальное значение для оси из Профиля.
 
-    double_t	entry_speed;
-    double_t	max_entry_speed;
+    double_t nominal_speed; //radian speed , rad/sec, signed
+    double_t acceleration; // radian_accel
+    double_t deceleration; // radian_deccel
+    double_t	alfa;    // motor[i]->getAlfa(i)
+    double_t	optimization;
+
     double_t	millimeters;
     byte	recalculate_flag;	// Recaculate_flag:Набор флагов: для консольной или пограммной обработки;
     byte	nominal_length_flag;

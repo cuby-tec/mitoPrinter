@@ -14,9 +14,9 @@
 
 struct ProfileData_t{
 
-	float_t acceleration[N_AXIS];
+    double_t acceleration[N_AXIS];
 
-    float_t speedrate[N_AXIS];
+    double_t speedrate[N_AXIS];
 };
 
 

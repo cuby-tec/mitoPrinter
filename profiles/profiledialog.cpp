@@ -371,6 +371,15 @@ void ProfileDialog::on_lineEdit_Z_ACCEL_textEdited(const QString &arg1)
     indicate_ProfileSaved();
 }
 
+//E_ACCELERATION
+void ProfileDialog::on_lineEdit_E_ACCELERATION_textEdited(const QString &arg1)
+{
+    profile->setE_ACCELERATION(arg1);
+    profile->profileSaved = false;
+    indicate_ProfileSaved();
+}
+
+
 //DEFAULT_X_MAX_TRAVEL
 void ProfileDialog::on_LineEdit_X_TRAVEL_textEdited(const QString &arg1)
 {
@@ -486,12 +495,6 @@ void ProfileDialog::on_lineEdit_E_RATE_textEdited(const QString &arg1)
     profile->setE_MAX_RATE(arg1);
     profile->profileSaved = false;
     indicate_ProfileSaved();
-
-}
-
-//E_ACCELERATION
-void ProfileDialog::on_lineEdit_E_ACCELERATION_textEdited(const QString &arg1)
-{
 
 }
 

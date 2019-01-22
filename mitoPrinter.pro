@@ -72,7 +72,8 @@ SOURCES += \
     command/pushfilamentdown.cpp \
     command/waittemperature.cpp \
     command/waitsendaction.cpp \
-    command/stopprogram.cpp
+    command/stopprogram.cpp \
+    command/optimization.cpp
 
 
 HEADERS += \
@@ -150,7 +151,9 @@ HEADERS += \
     command/stopprogram.h \
     step_motor/a4988.h \
     step_motor/settings.h \
-    step_motor/stepstable.h
+    step_motor/stepstable.h \
+    command/optimization.h \
+    command/scontrolblocks.h
 
 
 FORMS += \

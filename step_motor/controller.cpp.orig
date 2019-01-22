@@ -93,6 +93,7 @@ void Controller::uploadMotorData() {
     motor[X_AXIS]->setAcceleration(profileData->acceleration[X_AXIS]);
     motor[Y_AXIS]->setAcceleration(profileData->acceleration[Y_AXIS]);
     motor[Z_AXIS]->setAcceleration(profileData->acceleration[Z_AXIS]);
+    motor[E_AXIS]->setAcceleration(profileData->acceleration[E_AXIS]);
 
 }
 
