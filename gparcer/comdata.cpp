@@ -13,10 +13,18 @@
 #include "myglobal.h"
 #include "geometry/Arc.h"
 
+#include <settings.h>
 
 #include <cmath>
 
 #define cout qDebug()<<__FILE__<<__LINE__
+
+#define FSMDEBUG  1
+#define FSMCOUNTER  10
+//#define TRY_COUNTER 1000
+//#define MDELAY      70
+
+
 
 //const QString msg3 = "Conversion error.";
 //const QString msg4 = "Profile should be selected.";
@@ -602,10 +610,6 @@ void ComData::stop()
 {
     runState = ersStop;
 }
-#define FSMDEBUG  1
-#define FSMCOUNTER  10
-#define TRY_COUNTER 500
-#define MDELAY      70
 
 void ComData::_run()
 {

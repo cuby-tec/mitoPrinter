@@ -2,6 +2,7 @@
 #include "gparcer/gcodeworker.h"
 #include "icommand.h"
 
+#include <settings.h>
 #include <QDebug>
 
 #define cout qDebug()<<__FILE__<<__LINE__
@@ -35,8 +36,9 @@ ICommand::_checkStatus()
     }
 
     thermo_gmutex.unlock();
-
+#if DEBUG_LOGGING==3
     cout<<"checkStatus";
+#endif
     return status;
 }
 

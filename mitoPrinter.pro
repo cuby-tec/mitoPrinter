@@ -153,7 +153,8 @@ HEADERS += \
     step_motor/settings.h \
     step_motor/stepstable.h \
     command/optimization.h \
-    command/scontrolblocks.h
+    command/scontrolblocks.h \
+    settings.h
 
 
 FORMS += \

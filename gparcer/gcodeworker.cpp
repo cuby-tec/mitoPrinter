@@ -242,14 +242,20 @@ GcodeWorker::buildAction(sGcode *src)
     	action = (this->*callTagRef[etag])(src); //tagGF_Do
         break;
     case eS:
+        action = new mito::Action_t;
+        action->a = eNext;
         break;
     case eT:
+        action = new mito::Action_t;
+        action->a = eNext;
         break;
 
     default:
         qWarning()<<__FILE__<<__LINE__<<"value:"<<etag;
 //        qFatal("Wrong index, wrong Profile");
         errorCounter++;
+        action = new mito::Action_t;
+        action->a = eNext;
     }
 
 
