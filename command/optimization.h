@@ -10,7 +10,7 @@ public:
     Optimization();
 
 //QQueue<sControlBlocks> controlblocks;
-    void calc(mito::Action_t* action, QQueue<sControlBlocks>& blocks);
+    void calc(mito::Action_t &action, QQueue<sControlBlocks>& blocks);
 
 };
 

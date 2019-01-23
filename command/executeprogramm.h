@@ -137,7 +137,7 @@ public:
 
                      }while(current_index == action->index);
                     //TODO optimization tag_action & controlblocks
-                    optimization->calc(action, controlblocks);
+                    optimization->calc(tag_action, controlblocks);
                     controlblocks.clear();
                     actionQueue->enqueue(tag_action);
                     current_index = action->index;
