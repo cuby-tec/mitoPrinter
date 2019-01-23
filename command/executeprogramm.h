@@ -143,9 +143,13 @@ public:
                     current_index = action->index;
                     tag_action = *action;
                 }else{
+                    controlblocks.clear();
                     actionQueue->enqueue(tag_action);
                     current_index = action->index;
                     tag_action = *action;
+                    memcpy(blocks.bb,cord->nextBlocks,sizeof (sControlBlocks));
+                    controlblocks.enqueue(blocks);
+
                     if(action->index==1)
                     {
                         actionQueue->enqueue(*action);
