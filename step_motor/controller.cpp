@@ -302,18 +302,18 @@ Controller::buildBlock(Coordinatus* cord) {
         angularSpeedrate as = m->getAngularSpeedrate;
         angular_velocity = (m->*as)(_feedrate);
         double_t G4 = fabs(dircos[i])*angular_velocity;
-        block->nominal_speed = dircos[i]*angular_velocity;
+        block->nominal_speed = G4;//dircos[i]*angular_velocity;
 
 #if LEVEL==1
         cout<<"G4:"<<G4;
 #endif
         //radian_accel
         double_t racc = k * motor[i]->getAcceleration();
-        block->acceleration = motor[i]->getAcceleration();
+        block->acceleration = k*motor[i]->getAcceleration();
 
         //radian_deccel
         double_t rdcc = k * motor[i]->getDecceleration();
-        block->deceleration = motor[i]->getDecceleration();
+        block->deceleration = k* motor[i]->getDecceleration();
 
         //accel steps: max _ s _ lim
         block->alfa = motor[i]->getAlfa(i);
@@ -321,7 +321,7 @@ Controller::buildBlock(Coordinatus* cord) {
         double_t acs = pow(G4,2.0)/(2.0*block->alfa*racc);
 
         //accel_lim
-        double_t acl = maxvector[i] * racc/(racc + rdcc);
+        double_t acl = maxvector[i] * rdcc/(racc + rdcc);
 
         //accel_path
         uint32_t accpath =  static_cast<uint32_t>( MIN(acs,acl) );
