@@ -10,6 +10,7 @@ struct sAccPathParam{
 	double_t	radAccel;
 	double_t	alfa;
 	uint		steps;
+	double_t	koptim;
 };
 
 struct sParamOptim{
@@ -34,18 +35,18 @@ public:
     double_t accPath(sAccPathParam* params, double_t coef);
 
     //  steps for change speed
-    double_t stepsChandSpeed(double_t coefX);
+    double_t stepsChandSpeed(int axis, double_t coefX);
 
     double_t aStepsChangeSpeed(int axis);
 
     // speed correction coefficient
     double_t opt(double_t X0);
 
-    double_t fn(double_t X);
+    double_t fn(int axis, double_t X);
 
-    sAccPathParam params[2];
+//    sAccPathParam params[2];
 
-    double_t step;
+//    double_t step;
 
     double_t coefficien;//18
 
@@ -55,7 +56,11 @@ public:
 
     // check array sParamOptim aParamOptim[2]
     bool isOptimized();
+    bool isOptimized(int axis);
 
+    bool hasSteps(int axis);
+
+    int index;// DEBUG
 
 
 };
