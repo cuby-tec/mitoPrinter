@@ -10,42 +10,42 @@
 Optimization::Optimization()
 {
 	coefficien = 1.0;
-//	step = 0.0;
+    //	step = 0.0;
 }
 
-void Optimization::calc(mito::Action_t &action, QQueue<sControlBlocks> &blocks)
+Optimization::~Optimization()
 {
-    QList<sControlBlocks>::iterator bIterator;// block iterator.
-
-    QList<sControlBlocks>::iterator agIterator;
-
-    QList<ComDataReq_t>::iterator   rIterator;// request iterator.
-
-
-
-    int32_t acs_change_x, acs_change_y;
+    free(opti_BI);
+    cout<<"Exit optimization.";
+}
 
 #define BJ  acs_change_x
 #define BK  acs_change_y
 #define G4 bIterator->bb[X_AXIS].nominal_speed
 #define block   bIterator
 #define RAD_SPEED    opti_BI[counter].rad_speed
+#define OPTI_K		opti_BI[counter].k
 
-    struct _Opti{
-        double_t    k;
-        double_t rad_speed;
-    };
+void Optimization::calc(mito::Action_t &action, QQueue<sControlBlocks> &blocks)
+{
 
+    QList<sControlBlocks>::iterator bIterator;// block iterator.
 
-//    blocks.end();
-//START for all paires
+    QList<sControlBlocks>::iterator agIterator;
+
+    QList<ComDataReq_t>::iterator   rIterator;// request iterator.
+
+    int32_t acs_change_x, acs_change_y;
+
+    //vars for all paires
     bIterator = blocks.end();
     agIterator = blocks.end();
     --agIterator;
     rIterator = action.queue.end();
-    size_t counter = blocks.size();
-    _Opti *opti_BI  = static_cast<_Opti*>( malloc( counter * sizeof (_Opti)));
-    --counter;
+
+    counter = blocks.size();
+
+    opti_BI  = static_cast<_Opti*>( malloc( counter * sizeof (_Opti)));
 
     assert(opti_BI != nullptr);
 
@@ -77,21 +77,9 @@ void Optimization::calc(mito::Action_t &action, QQueue<sControlBlocks> &blocks)
 
     bIterator = blocks.end();
     --bIterator;
-/*
-    params[CURRENTPARAM].alfa = bIterator->bb[X_AXIS].alfa;
-    params[CURRENTPARAM].radAccel = bIterator->bb[X_AXIS].acceleration;
-    params[CURRENTPARAM].radSpeed = bIterator->bb[X_AXIS].nominal_speed; //G4
-    params[CURRENTPARAM].steps = bIterator->bb[X_AXIS].steps;
-    step = bIterator->bb[X_AXIS].steps;
-
-    --bIterator;
-    params[PREVPARAM].alfa = bIterator->bb[X_AXIS].alfa;
-    params[PREVPARAM].radAccel = bIterator->bb[X_AXIS].acceleration;
-    params[PREVPARAM].radSpeed = bIterator->bb[X_AXIS].nominal_speed; //G4
-    params[PREVPARAM].steps = bIterator->bb[X_AXIS].steps;
-*/
 
     LoadParams(*bIterator ); //load first(LAST) segment/block
+
     --bIterator;
     LoadParams(*bIterator ); //load second(LAST-1) segment/block
 
@@ -101,31 +89,35 @@ void Optimization::calc(mito::Action_t &action, QQueue<sControlBlocks> &blocks)
 
 
 //START
-    index = blocks.size();
+//    index = blocks.size();
     bIterator = blocks.end();// current source
     agIterator = blocks.end(); // prev source
     --agIterator;
-    --index;
+    --counter;
+//    --index;
 
     rIterator = action.queue.end();// destination
 
     LoadParams(*agIterator ); //load first(LAST) segment/block
 
-    cout<<"Start compare ";
+    cout<<"Start optimization ";
 
-    cout<<"\nsteps\tacc_path\tspeed_path\tdecel_path\tBJx";
+//    cout<<"\nsteps\tacc_path\tspeed_path\tdecel_path\tBJx";
 
+    // Main circle analize optimizaation
     while(bIterator != blocks.begin()){
         --bIterator;
+
         if(agIterator != blocks.begin()){
             --agIterator;
-            --index;
+//            --index;
+            --counter;
         }
         --rIterator;
 
-        _controlBlocks *sc = &bIterator->bb;
+        _controlBlocks *sc = &bIterator->bb;//  source data
 
-        sSegment* segment = &rIterator->payload.instrument1_parameter;
+        sSegment* segment = &rIterator->payload.instrument1_parameter;// destination data
 
         //=IF(steps_x>0, accsteps_x-AG8,0)
         if(bIterator != blocks.begin()){
@@ -140,41 +132,45 @@ void Optimization::calc(mito::Action_t &action, QQueue<sControlBlocks> &blocks)
         //block->acceleration->racc   block->nominal_speed
         //radian_accel
 //        bIterator->bb[X_AXIS].alfa
-        opti_BI[counter].rad_speed = G4;
+//        opti_BI[counter].rad_speed = G4;
 
-        double_t acs = pow(G4,2.0)/(2.0* bIterator->bb[X_AXIS].alfa *bIterator->bb[X_AXIS].acceleration);
-        double_t acl = block->bb[X_AXIS].steps*block->bb[X_AXIS].deceleration/(block->bb[X_AXIS].acceleration+block->bb[X_AXIS].acceleration);
+//        double_t acs = pow(G4,2.0)/(2.0* bIterator->bb[X_AXIS].alfa *bIterator->bb[X_AXIS].acceleration);
+//        double_t acl = block->bb[X_AXIS].steps*block->bb[X_AXIS].deceleration/(block->bb[X_AXIS].acceleration+block->bb[X_AXIS].acceleration);
 
 //        double_t acs_change_x =
         //=IF((ABS(steps_y)>=ABS(BK34))AND(ABS(steps_x)>=ABS(BJ34)))
-        bool BN = (block->bb[X_AXIS].steps >= static_cast<uint32_t>(abs(BJ))) && (block->bb[Y_AXIS].steps >= static_cast<uint32_t>(abs(BK)));
+//        bool BN = (block->bb[X_AXIS].steps >= static_cast<uint32_t>(abs(BJ))) && (block->bb[Y_AXIS].steps >= static_cast<uint32_t>(abs(BK)));
 
         LoadParams(*agIterator);//push
         if( isOptimized() )
             continue;
         //  Coefficient should be find. Start value 1.0.
         opt(1.0);
+        cout<<"Modified:"<<counter<<"\tcoefficient:"<<OPTI_K;
 
 //        cout<<"accelerate until:"<< bIterator->bb[X_AXIS].accelerate_until <<"\tsteps:"<<bIterator->bb[X_AXIS].steps
 //           <<"\tbj:"<<acs_change_x <<"\tAGsteps:"<<agIterator->bb[X_AXIS].steps;
 
 //        cout<<"steps:"<<block->bb[X_AXIS].steps<<"\tBJx:"<<BJ<<"\tBKy:"<<BK<<"\tBN:"<<BN;
-        qDebug()<<block->bb[X_AXIS].steps
+      /*
+       *   qDebug()<<block->bb[X_AXIS].steps
                <<"\t"<<block->bb[X_AXIS].accelerate_until
                <<"\t"<< block->bb[X_AXIS].decelerate_after - block->bb[X_AXIS].accelerate_until
 //               << "\t"<< block->bb[X_AXIS].steps -block->bb[X_AXIS].decelerate_after
               <<"\t"<<block->bb[Y_AXIS].steps
              <<"\t"<<block->bb[Y_AXIS].accelerate_until
             <<"\t"<<block->bb[Y_AXIS].decelerate_after - block->bb[Y_AXIS].accelerate_until
-               << "\t"<<BJ
-               <<"\t"<<BK
-               <<"\t"<<BN
-              <<"\t"<< (MIN(acs,acl))
-              <<"\t"<<counter--;
+//               << "\t"<<BJ
+//               <<"\t"<<BK
+//               <<"\t"<<BN
+//              <<"\t"<< (MIN(acs,acl))
+              <<"\t"<<counter;
+        */
     }
 
+    //TODOH  data Synthesis
 
-    free(opti_BI);
+//    free(opti_BI); << in destructor
 }
 
 double_t
@@ -269,6 +265,7 @@ double_t Optimization::opt(double_t X0) {
                         aParamOptim[PREVPARAM].para_y.koptim = Xnext;
                         aParamOptim[PREVPARAM].para_z.koptim = Xnext;
                         aParamOptim[PREVPARAM].para_e.koptim = Xnext;
+                        OPTI_K = Xnext;
                         goto opt_m1;
 //                        break;
                     }

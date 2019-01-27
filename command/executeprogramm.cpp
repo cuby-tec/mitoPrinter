@@ -8,6 +8,14 @@ ExecuteProgramm::ExecuteProgramm(QObject *parent) : QObject(parent)
     producer->setActionQueue(&ExecuteProgramm::actionQueue);
 }
 
+ExecuteProgramm::~ExecuteProgramm()
+{
+    producer->quit();
+    producer->wait(1000);
+
+    delete  producer;
+}
+
 void ExecuteProgramm::execute()
 {
     //TODO

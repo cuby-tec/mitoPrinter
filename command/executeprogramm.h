@@ -20,7 +20,7 @@ class ExecuteProgramm : public QObject, public ICommand
 
 public:
     explicit ExecuteProgramm(QObject *parent = nullptr);
-    virtual ~ ExecuteProgramm() override {}
+    virtual ~ ExecuteProgramm() override;// {}
     virtual void execute() override;
     void execute(QFile &stream);
 
@@ -95,13 +95,14 @@ public:
         current_index = 0;
         tag_action.index = 0;
         cord = Coordinatus::instance();
-        optimization = new Optimization;
+//        optimization = new Optimization;
     }
 
     ~Producer() override
     {
         abort = true;
 //        QThread::~QThread();
+        delete optimization;
     }
 
     void run() override {
@@ -136,8 +137,13 @@ public:
                         }while (action->a == eNext); //(action->queue.isEmpty());
 
                      }while(current_index == action->index);
+
                     //TODO optimization tag_action & controlblocks
+                    optimization = new Optimization;
                     optimization->calc(tag_action, controlblocks);
+
+                    delete  optimization;
+
                     controlblocks.clear();
                     actionQueue->enqueue(tag_action);
                     current_index = action->index;

@@ -28,6 +28,8 @@ class Optimization
 public:
     Optimization();
 
+    ~Optimization();
+
 //QQueue<sControlBlocks> controlblocks;
     void calc(mito::Action_t &action, QQueue<sControlBlocks>& blocks);
 
@@ -61,6 +63,14 @@ public:
     bool hasSteps(int axis);
 
     int index;// DEBUG
+
+    size_t counter;//OPTI_K
+
+    struct _Opti{
+        double_t    k;
+        double_t rad_speed;
+    };
+    _Opti *opti_BI;
 
 
 };
