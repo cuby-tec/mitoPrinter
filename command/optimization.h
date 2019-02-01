@@ -23,6 +23,8 @@ struct sParamOptim{
 #define PREVPARAM		1	// for X1
 #define CURRENTPARAM	0 	// for X0
 
+//using namespace tf;
+
 class Optimization
 {
 public:
@@ -37,9 +39,7 @@ public:
     double_t accPath(sAccPathParam* params, double_t coef);
 
     //  steps for change speed
-    double_t stepsChandSpeed(int axis, double_t coefX);
-
-    double_t aStepsChangeSpeed(int axis);
+    double_t stepsChandSpeed(int axis, double_t coefX=1.0);
 
     // speed correction coefficient
     double_t opt(double_t X0);
@@ -71,6 +71,9 @@ public:
         double_t rad_speed;
     };
     _Opti *opti_BI;
+
+    double_t calcAngle(sControlBlocks& curr, sControlBlocks& next);
+
 
 
 };

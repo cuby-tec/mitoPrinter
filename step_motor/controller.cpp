@@ -254,6 +254,7 @@ Controller::buildBlock(Coordinatus* cord) {
         lines lm = m->getLineStep;
         double_t ds = ( m->*lm)(i);
         block->path = cord->getNextValue(i);
+        block->path -= cord->getCurrentValue(i);
 
         target_steps[i] = static_cast<int32_t>(lround(cord->getNextValue(i)/ds));
         int32_t stp = target_steps[i]-cord->position[i];

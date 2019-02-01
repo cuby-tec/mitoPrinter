@@ -41,7 +41,13 @@ public:
         exec_mutex.lock();
 //        if(numaction == 0)
         if(actionQueue.isEmpty())
+        {
+            qDebug()<<__FILE__<<__LINE__<<"Waiting Queue.";
             queueNotEmpty.wait(&exec_mutex);
+//            if(queueNotEmpty.wait(&exec_mutex,1000) == false){
+//                qFatal("\tWaiting command timeout.");
+//            }
+        }
         exec_mutex.unlock();
 
         ExecuteProgramm::action = actionQueue.dequeue();

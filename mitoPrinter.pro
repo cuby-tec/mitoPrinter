@@ -177,6 +177,7 @@ FORMS += \
 unix:!macx: LIBS += -L/usr/lib/mito -lgcode-lexer
 unix:LIBS += -lglut -lGL -lGLU
 INCLUDEPATH += /usr/include/mito
+INCLUDEPATH += /home/walery/tf/geometry2/tf2/include/tf2/
 DEPENDPATH += /usr/lib/mito
 # Default rules for deployment.
 #qnx: target.path = /tmp/$${TARGET}/bin

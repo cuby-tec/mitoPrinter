@@ -2,7 +2,7 @@
 
 #include <QDebug>
 #include <assert.h>
-
+#include <LinearMath/Vector3.h>
 
 #define cout    qDebug()<<__FILE__<<__LINE__
 #define MIN(A,B) A<B?A:B
@@ -141,6 +141,9 @@ void Optimization::calc(mito::Action_t &action, QQueue<sControlBlocks> &blocks)
         //=IF((ABS(steps_y)>=ABS(BK34))AND(ABS(steps_x)>=ABS(BJ34)))
 //        bool BN = (block->bb[X_AXIS].steps >= static_cast<uint32_t>(abs(BJ))) && (block->bb[Y_AXIS].steps >= static_cast<uint32_t>(abs(BK)));
 
+        double_t angle = calcAngle(*bIterator, *agIterator);
+        cout<<"angle:"<<angle*180/3.1415;
+
         LoadParams(*agIterator);//push
         if( isOptimized() )
             continue;
@@ -167,7 +170,7 @@ void Optimization::calc(mito::Action_t &action, QQueue<sControlBlocks> &blocks)
               <<"\t"<<counter;
         */
     }
-
+    cout<<"End optimization.";
     //TODOH  data Synthesis
 
 //    free(opti_BI); << in destructor
@@ -178,66 +181,70 @@ Optimization::accPath(sAccPathParam* params, double_t coef) {
 	return ( pow( (coef * params->radSpeed) ,2.0)/(2.0*params->alfa*params->radAccel) );
 }
 
+/**
+ * @brief Optimization::aStepsChangeSpeed
+ * ROUNDDOWN( 1/(2*alfaX*INDEX(radaccel,$A7,1))*(INDEX(radspeed,$A7,2)^2-INDEX(radspeed,$A7,1)^2) )
+ * @param axis
+ * @return
+ */
 double_t
-Optimization::stepsChandSpeed(int axis, double_t coefX)
+Optimization::stepsChandSpeed(int axis, double_t coef)
 {
 //	return ( (accPath_a>0)?(accPath_a - accPath_b):(accPath_a+accPath_b));
-    double_t pathA = 0.0, pathB = 0.0, result;
+//    double_t pathA = 0.0, pathB = 0.0, result;
+    double_t path = 0.0;
 #if OPTI_V==1
-	pathA = accPath(&params[CURRENTPARAM], coefX);//19
+    pathA = accPath(&params[CURRENTPARAM], coef);//19
 	pathB = accPath(&params[PREVPARAM],coefficien);//18
 #endif
     switch (axis) {
     case X_AXIS:
-        pathA = accPath(&aParamOptim[CURRENTPARAM].para_x,aParamOptim[CURRENTPARAM].para_x.koptim);
-        pathB = accPath(&aParamOptim[PREVPARAM].para_x,coefX);//coefficien
+//        pathA = accPath(&aParamOptim[CURRENTPARAM].para_x,aParamOptim[CURRENTPARAM].para_x.koptim);
+//        pathB = accPath(&aParamOptim[PREVPARAM].para_x,coef);//coefficien
+        path =  pow(aParamOptim[CURRENTPARAM].para_x.radSpeed * aParamOptim[CURRENTPARAM].para_x.koptim,2.0) ;
+        if( (aParamOptim[CURRENTPARAM].para_x.radSpeed - aParamOptim[PREVPARAM].para_x.radSpeed) != 0.0 )
+            path -= pow(aParamOptim[PREVPARAM].para_x.radSpeed * coef,2.0) ;
+        path /= 2.0*aParamOptim[CURRENTPARAM].para_x.alfa*aParamOptim[CURRENTPARAM].para_x.radAccel ;
+
         break;
 
     case Y_AXIS:
-        pathA = accPath(&aParamOptim[CURRENTPARAM].para_y,aParamOptim[CURRENTPARAM].para_y.koptim);
-        pathB = accPath(&aParamOptim[PREVPARAM].para_y,coefX);
+//        pathA = accPath(&aParamOptim[CURRENTPARAM].para_y,aParamOptim[CURRENTPARAM].para_y.koptim);
+//        pathB = accPath(&aParamOptim[PREVPARAM].para_y,coef);
+        path =  pow(aParamOptim[CURRENTPARAM].para_y.radSpeed * aParamOptim[CURRENTPARAM].para_y.koptim,2.0) ;
+        if( (aParamOptim[CURRENTPARAM].para_y.radSpeed - aParamOptim[PREVPARAM].para_y.radSpeed) != 0.0 )
+            path -= pow(aParamOptim[PREVPARAM].para_y.radSpeed * coef,2.0) ;
+        path /= 2.0*aParamOptim[CURRENTPARAM].para_y.alfa*aParamOptim[CURRENTPARAM].para_y.radAccel ;
+
         break;
 
     case Z_AXIS:
-        pathA = accPath(&aParamOptim[CURRENTPARAM].para_z,aParamOptim[CURRENTPARAM].para_z.koptim);
-        pathB = accPath(&aParamOptim[PREVPARAM].para_z,coefX);
+//        pathA = accPath(&aParamOptim[CURRENTPARAM].para_z,aParamOptim[CURRENTPARAM].para_z.koptim);
+//        pathB = accPath(&aParamOptim[PREVPARAM].para_z,coef);
+        path =  pow(aParamOptim[CURRENTPARAM].para_z.radSpeed * aParamOptim[CURRENTPARAM].para_z.koptim,2.0) ;
+        if( (aParamOptim[CURRENTPARAM].para_z.radSpeed - aParamOptim[PREVPARAM].para_z.radSpeed) != 0.0 )
+            path -= pow(aParamOptim[PREVPARAM].para_z.radSpeed * coef,2.0) ;
+        path /= 2.0*aParamOptim[CURRENTPARAM].para_z.alfa*aParamOptim[CURRENTPARAM].para_z.radAccel ;
+
         break;
 
     case E_AXIS:
-        pathA = accPath(&aParamOptim[CURRENTPARAM].para_e,aParamOptim[CURRENTPARAM].para_e.koptim);
-        pathB = accPath(&aParamOptim[PREVPARAM].para_e,coefX);
+//        pathA = accPath(&aParamOptim[CURRENTPARAM].para_e,aParamOptim[CURRENTPARAM].para_e.koptim);
+//        pathB = accPath(&aParamOptim[PREVPARAM].para_e,coef);
+        path =  pow(aParamOptim[CURRENTPARAM].para_e.radSpeed * aParamOptim[CURRENTPARAM].para_e.koptim,2.0) ;
+        if( (aParamOptim[CURRENTPARAM].para_e.radSpeed - aParamOptim[PREVPARAM].para_e.radSpeed) != 0.0 )
+            path -= pow(aParamOptim[PREVPARAM].para_e.radSpeed * coef,2.0) ;
+        path /= 2.0*aParamOptim[CURRENTPARAM].para_e.alfa*aParamOptim[CURRENTPARAM].para_e.radAccel ;
+
         break;
 
     }
-    result = ((pathA - pathB));
+//    result = ((pathA - pathB));
+//    return result;
 
-    return result;
+    return path;
 }
 
-double_t Optimization::aStepsChangeSpeed(int axis)
-{
-    double_t pathA = 0.0, pathB = 0.0;
-    switch (axis)
-    {
-    case X_AXIS:
-        pathA = accPath(&aParamOptim[CURRENTPARAM].para_x, aParamOptim[CURRENTPARAM].para_x.koptim);//19
-        pathB = accPath(&aParamOptim[PREVPARAM].para_x, aParamOptim[PREVPARAM].para_x.koptim);//18
-        break;
-    case Y_AXIS:
-        pathA = accPath(&aParamOptim[CURRENTPARAM].para_y, aParamOptim[CURRENTPARAM].para_y.koptim);//19
-        pathB = accPath(&aParamOptim[PREVPARAM].para_y, aParamOptim[PREVPARAM].para_y.koptim);//18
-        break;
-    case Z_AXIS:
-        pathA = accPath(&aParamOptim[CURRENTPARAM].para_z, aParamOptim[CURRENTPARAM].para_z.koptim);//19
-        pathB = accPath(&aParamOptim[PREVPARAM].para_z, aParamOptim[PREVPARAM].para_z.koptim);//18
-        break;
-    case E_AXIS:
-        pathA = accPath(&aParamOptim[CURRENTPARAM].para_e, aParamOptim[CURRENTPARAM].para_e.koptim);//19
-        pathB = accPath(&aParamOptim[PREVPARAM].para_e, aParamOptim[PREVPARAM].para_e.koptim);//18
-        break;
-    }
-    return ((pathA - pathB));
-}
 
 //coefficient
 double_t Optimization::opt(double_t X0) {
@@ -252,6 +259,9 @@ double_t Optimization::opt(double_t X0) {
         {
             if( !isOptimized(axis) )
              {
+                Xnext = 0.99 * X0;
+                X1 = X0;
+
                 for(size_t i=0;i<5;i++)
                 {
                     X2 = X1 - fn(axis,X1)*(X1 - Xnext)/(fn(axis,X1)-fn(axis,Xnext));
@@ -350,26 +360,30 @@ bool Optimization::isOptimized()
     bool result = false ;
     double_t acch;
 
-    acch = aStepsChangeSpeed(X_AXIS);
-    if(aParamOptim[CURRENTPARAM].para_x.steps >= fabs(acch))
-        result = true;  else { result = false;  }
+//    acch = aStepsChangeSpeed(X_AXIS);
+//    if(aParamOptim[CURRENTPARAM].para_x.steps >= fabs(acch))
+//        result = true;  else { result = false;  }
+    result = isOptimized(X_AXIS);
 
     if(result == true){
-        acch = aStepsChangeSpeed(Y_AXIS);
-        if(aParamOptim[CURRENTPARAM].para_x.steps >= fabs(acch))
-            result = true;  else { result = false;  }
+//        acch = aStepsChangeSpeed(Y_AXIS);
+//        if(aParamOptim[CURRENTPARAM].para_x.steps >= fabs(acch))
+//            result = true;  else { result = false;  }
+        result = isOptimized(Y_AXIS);
     }
 
     if(result == true){
-        acch = aStepsChangeSpeed(Z_AXIS);
-        if(aParamOptim[CURRENTPARAM].para_x.steps >= fabs(acch))
-            result = true;  else { result = false;  }
+//        acch = aStepsChangeSpeed(Z_AXIS);
+//        if(aParamOptim[CURRENTPARAM].para_x.steps >= fabs(acch))
+//            result = true;  else { result = false;  }
+        result = isOptimized(Z_AXIS);
     }
 
     if(result == true){
-        acch = aStepsChangeSpeed(E_AXIS);
-        if(aParamOptim[CURRENTPARAM].para_x.steps >= fabs(acch))
-            result = true;  else { result = false;  }
+//        acch = aStepsChangeSpeed(E_AXIS);
+//        if(aParamOptim[CURRENTPARAM].para_x.steps >= fabs(acch))
+//            result = true;  else { result = false;  }
+        result = isOptimized(E_AXIS);
     }
 
     return result;
@@ -379,27 +393,43 @@ bool Optimization::isOptimized(int axis)
 {
     bool result = false ;
     double_t acch;
-    acch =  round(1000.0* aStepsChangeSpeed(axis))/1000.0;
+//    acch =  round(1000.0* aStepsChangeSpeed(axis))/1000.0;
+    acch =  round(stepsChandSpeed(axis, aParamOptim[PREVPARAM].para_x.koptim));
 
     switch (axis) {
     case X_AXIS:
-        if(aParamOptim[CURRENTPARAM].para_x.steps >= fabs(acch))
-            result = true;  else { result = false;  }
+        if(aParamOptim[CURRENTPARAM].para_x.steps>0)
+        {
+            if (aParamOptim[CURRENTPARAM].para_x.steps >= fabs(acch))
+                result = true;
+            else
+            { result = false;  }
+        }else { result = true; }
         break;
 
     case Y_AXIS:
-        if(aParamOptim[CURRENTPARAM].para_y.steps >= fabs(acch))
-            result = true;  else { result = false;  }
+        if(aParamOptim[CURRENTPARAM].para_y.steps>0)
+        {
+            if(aParamOptim[CURRENTPARAM].para_y.steps >= fabs(acch))
+                result = true;  else { result = false;  }
+        }else{  result = true; }
+
         break;
 
     case Z_AXIS:
-        if(aParamOptim[CURRENTPARAM].para_z.steps >= fabs(acch))
-            result = true;  else { result = false;  }
+        if(aParamOptim[CURRENTPARAM].para_z.steps>0)
+        {
+            if(aParamOptim[CURRENTPARAM].para_z.steps >= fabs(acch))
+                result = true;  else { result = false;  }
+        }else{ result = true; }
         break;
 
     case E_AXIS:
+        if(aParamOptim[CURRENTPARAM].para_e.steps>0)
+        {
         if(aParamOptim[CURRENTPARAM].para_e.steps >= fabs(acch))
             result = true;  else { result = false;  }
+        }else { result = true; }
         break;
     }
 
@@ -428,6 +458,24 @@ bool Optimization::hasSteps(int axis)
    return(steps != 0);
 }
 
+/**
+ * Вычисление угла между векторами.
+ */
+double_t Optimization::calcAngle(sControlBlocks& curr, sControlBlocks& next) {
+	double_t result=0.0;
 
+	tf2::Vector3 vectorCur;
+	tf2::Vector3 vectorNext;
 
+	vectorCur.setX(curr.bb[X_AXIS].path);
+	vectorCur.setY(curr.bb[Y_AXIS].path);
+	vectorCur.setZ(curr.bb[Z_AXIS].path);
 
+	vectorNext.setX(next.bb[X_AXIS].path);
+	vectorNext.setY(next.bb[Y_AXIS].path);
+	vectorNext.setZ(next.bb[Z_AXIS].path);
+
+	result = vectorCur.angle(vectorNext);
+
+	return result;
+}
