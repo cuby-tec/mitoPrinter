@@ -34,9 +34,11 @@ public:
 
 //QQueue<sControlBlocks> controlblocks;
     void calc(mito::Action_t &action, QQueue<sControlBlocks>& blocks);
-
+/*
     // acceleration path
     double_t accPath(sAccPathParam* params, double_t coef);
+*/
+    double_t stepsTransition(uint axis, double_t enterSpeed, double_t nominalSpeed);
 
     //  steps for change speed
     double_t stepsChandSpeed(int axis, double_t coefX=1.0);

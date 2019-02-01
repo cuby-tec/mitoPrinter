@@ -1,5 +1,5 @@
 #include "optimization.h"
-
+#include <cstdio>
 #include <QDebug>
 #include <assert.h>
 #include <LinearMath/Vector3.h>
@@ -93,12 +93,17 @@ void Optimization::calc(mito::Action_t &action, QQueue<sControlBlocks> &blocks)
     bIterator = blocks.end();// current source
     agIterator = blocks.end(); // prev source
     --agIterator;
-    --counter;
+//    --counter;
 //    --index;
 
     rIterator = action.queue.end();// destination
 
     LoadParams(*agIterator ); //load first(LAST) segment/block
+    // First segment
+//    agIterator->bb[X_AXIS].enter_speed = 0.0;
+//    agIterator->bb[Y_AXIS].enter_speed = 0.0;
+//    agIterator->bb[Z_AXIS].enter_speed = 0.0;
+//    agIterator->bb[E_AXIS].enter_speed = 0.0;
 
     cout<<"Start optimization ";
 
@@ -107,49 +112,67 @@ void Optimization::calc(mito::Action_t &action, QQueue<sControlBlocks> &blocks)
     // Main circle analize optimizaation
     while(bIterator != blocks.begin()){
         --bIterator;
+        --rIterator;
+        --counter;
+
+        _controlBlocks *sc = &bIterator->bb;//  source data
+        sSegment* segment = &rIterator->payload.instrument1_parameter;// destination data
 
         if(agIterator != blocks.begin()){
             --agIterator;
 //            --index;
-            --counter;
-        }
-        --rIterator;
-
-        _controlBlocks *sc = &bIterator->bb;//  source data
-
-        sSegment* segment = &rIterator->payload.instrument1_parameter;// destination data
-
-        //=IF(steps_x>0, accsteps_x-AG8,0)
-        if(bIterator != blocks.begin()){
-            acs_change_x = static_cast<int32_t>( block->bb[X_AXIS].accelerate_until - agIterator->bb[X_AXIS].accelerate_until);//BJ
-            acs_change_y = static_cast<int32_t>( block->bb[Y_AXIS].accelerate_until - agIterator->bb[Y_AXIS].accelerate_until);//BK
-        }
-        else {
-            acs_change_x = static_cast<int32_t>( block->bb[X_AXIS].accelerate_until);
-            acs_change_y = static_cast<int32_t>( block->bb[Y_AXIS].accelerate_until);
+            //Enter speed
+            bIterator->bb[X_AXIS].enter_speed = agIterator->bb[X_AXIS].nominal_speed;
+            bIterator->bb[Y_AXIS].enter_speed = agIterator->bb[Y_AXIS].nominal_speed;
+            bIterator->bb[Z_AXIS].enter_speed = agIterator->bb[Z_AXIS].nominal_speed;
+            bIterator->bb[E_AXIS].enter_speed = agIterator->bb[E_AXIS].nominal_speed;
+        }else {
+            bIterator->bb[X_AXIS].enter_speed = 0.0;
+            bIterator->bb[Y_AXIS].enter_speed = 0.0;
+            bIterator->bb[Z_AXIS].enter_speed = 0.0;
+            bIterator->bb[Z_AXIS].enter_speed = 0.0;
         }
 
         //block->acceleration->racc   block->nominal_speed
         //radian_accel
-//        bIterator->bb[X_AXIS].alfa
-//        opti_BI[counter].rad_speed = G4;
 
 //        double_t acs = pow(G4,2.0)/(2.0* bIterator->bb[X_AXIS].alfa *bIterator->bb[X_AXIS].acceleration);
 //        double_t acl = block->bb[X_AXIS].steps*block->bb[X_AXIS].deceleration/(block->bb[X_AXIS].acceleration+block->bb[X_AXIS].acceleration);
-
-//        double_t acs_change_x =
-        //=IF((ABS(steps_y)>=ABS(BK34))AND(ABS(steps_x)>=ABS(BJ34)))
 //        bool BN = (block->bb[X_AXIS].steps >= static_cast<uint32_t>(abs(BJ))) && (block->bb[Y_AXIS].steps >= static_cast<uint32_t>(abs(BK)));
 
         double_t angle = calcAngle(*bIterator, *agIterator);
         cout<<"angle:"<<angle*180/3.1415;
-
+        double_t co = 1.0;
         LoadParams(*agIterator);//push
-        if( isOptimized() )
-            continue;
-        //  Coefficient should be find. Start value 1.0.
-        opt(1.0);
-        cout<<"Modified:"<<counter<<"\tcoefficient:"<<OPTI_K;
+        if( !isOptimized() ){
+            //  Coefficient should be find. Start value 1.0.
+            co = opt(1.0);
+            cout<<"Modified:"<<counter<<"-1\tcoefficient:"<<OPTI_K;
+        }
+//            continue;
+
+        agIterator->bb[X_AXIS].nominal_speed *= co;
+        agIterator->bb[Y_AXIS].nominal_speed *= co;
+        agIterator->bb[Z_AXIS].nominal_speed *= co;
+        agIterator->bb[E_AXIS].nominal_speed *= co;
+
+        bIterator->bb[X_AXIS].enter_speed = agIterator->bb[X_AXIS].nominal_speed;
+        bIterator->bb[Y_AXIS].enter_speed = agIterator->bb[Y_AXIS].nominal_speed;
+        bIterator->bb[Z_AXIS].enter_speed = agIterator->bb[Z_AXIS].nominal_speed;
+        bIterator->bb[E_AXIS].enter_speed = agIterator->bb[E_AXIS].nominal_speed;
+
+        // Count value of transition steps from enter speed to nomnal.
+        double_t sv;
+
+        for (uint i=0 ;i<N_AXIS;++i) {
+            sv = stepsTransition(i, bIterator->bb[i].enter_speed, bIterator->bb[i].nominal_speed);
+//            cout<<"sv:"<<sv<<"\tenter:"<<bIterator->bb[i].enter_speed
+//            std::printf( "sv:%7.2f enter:%7.2f nom:%7.2f acc:%d   " ,sv,bIterator->bb[i].enter_speed, bIterator->bb[i].nominal_speed, bIterator->bb[i].accelerate_until  );
+            cout<< "axis:"<<i<<" sv:"<<sv<<" enter:"<<bIterator->bb[i].enter_speed<<"nom:"
+                << bIterator->bb[i].nominal_speed<<" acc:"<< bIterator->bb[i].accelerate_until;
+        }
+
+
 
 //        cout<<"accelerate until:"<< bIterator->bb[X_AXIS].accelerate_until <<"\tsteps:"<<bIterator->bb[X_AXIS].steps
 //           <<"\tbj:"<<acs_change_x <<"\tAGsteps:"<<agIterator->bb[X_AXIS].steps;
@@ -173,14 +196,38 @@ void Optimization::calc(mito::Action_t &action, QQueue<sControlBlocks> &blocks)
     cout<<"End optimization.";
     //TODOH  data Synthesis
 
-//    free(opti_BI); << in destructor
+    //    free(opti_BI); << in destructor
 }
 
+double_t Optimization::stepsTransition(uint axis, double_t enterSpeed, double_t nominalSpeed)
+{
+    double_t result = pow(nominalSpeed,2.0);
+    result -= pow(enterSpeed,2.0);
+    switch (axis) {
+    case X_AXIS:
+        result /= 2.0*aParamOptim[CURRENTPARAM].para_x.alfa*aParamOptim[CURRENTPARAM].para_x.radAccel ;
+        break;
+
+    case Y_AXIS:
+        result /= 2.0*aParamOptim[CURRENTPARAM].para_y.alfa*aParamOptim[CURRENTPARAM].para_y.radAccel ;
+        break;
+
+    case Z_AXIS:
+        result /= 2.0*aParamOptim[CURRENTPARAM].para_z.alfa*aParamOptim[CURRENTPARAM].para_z.radAccel ;
+        break;
+
+    case E_AXIS:
+        result /= 2.0*aParamOptim[CURRENTPARAM].para_e.alfa*aParamOptim[CURRENTPARAM].para_e.radAccel ;
+        break;
+    }
+    return result;
+}
+/*
 double_t
 Optimization::accPath(sAccPathParam* params, double_t coef) {
 	return ( pow( (coef * params->radSpeed) ,2.0)/(2.0*params->alfa*params->radAccel) );
 }
-
+*/
 /**
  * @brief Optimization::aStepsChangeSpeed
  * ROUNDDOWN( 1/(2*alfaX*INDEX(radaccel,$A7,1))*(INDEX(radspeed,$A7,2)^2-INDEX(radspeed,$A7,1)^2) )
@@ -358,31 +405,19 @@ void Optimization::LoadParams(sControlBlocks &blocks)
 bool Optimization::isOptimized()
 {
     bool result = false ;
-    double_t acch;
+//    double_t acch;
 
-//    acch = aStepsChangeSpeed(X_AXIS);
-//    if(aParamOptim[CURRENTPARAM].para_x.steps >= fabs(acch))
-//        result = true;  else { result = false;  }
     result = isOptimized(X_AXIS);
 
     if(result == true){
-//        acch = aStepsChangeSpeed(Y_AXIS);
-//        if(aParamOptim[CURRENTPARAM].para_x.steps >= fabs(acch))
-//            result = true;  else { result = false;  }
         result = isOptimized(Y_AXIS);
     }
 
     if(result == true){
-//        acch = aStepsChangeSpeed(Z_AXIS);
-//        if(aParamOptim[CURRENTPARAM].para_x.steps >= fabs(acch))
-//            result = true;  else { result = false;  }
         result = isOptimized(Z_AXIS);
     }
 
     if(result == true){
-//        acch = aStepsChangeSpeed(E_AXIS);
-//        if(aParamOptim[CURRENTPARAM].para_x.steps >= fabs(acch))
-//            result = true;  else { result = false;  }
         result = isOptimized(E_AXIS);
     }
 

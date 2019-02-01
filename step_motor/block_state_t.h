@@ -32,6 +32,7 @@ typedef struct block_state_t {
     double_t tan_theta;		//  Значение тангенса угла наклона отрезка траектории.
 //	double_t tangent_inv; //  Обратное значение тангенса. Для подпрограммы обработки прерываний.
 
+    double_t enter_speed;//speed at the segment start and end speed of previous segment.
     double_t nominal_speed; //radian speed , rad/sec, signed
     double_t acceleration; // radian_accel
     double_t deceleration; // radian_deccel
