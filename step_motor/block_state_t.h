@@ -7,7 +7,7 @@
 #include <math.h>
 #define word uint32_t
 
-//  Описатель состояний обработки фаз движения по оси Y.
+//  Описатель состояний обработки фаз движения по оси.
 //  Три состояния: разгон, движение, торможение.
 //
 //  Функция перерегулирования. При разгоне будет отставание, при торможении - опережение.
@@ -15,7 +15,7 @@ typedef struct block_state_t {
 //public:
     //  Индикатор текущего и начального состояния автомата обработки прерываний по оси X.
     byte state;
-    uint8_t  direction_bits;            // The direction bit set for this block (refers to *_DIRECTION_BIT in config.h)
+    uint8_t  direction_bits;    // edForward|edBackward The direction bit set for this block (refers to *_DIRECTION_BIT in config.h)
     uint8_t axis_mask;          // маска активности оси
     uint8_t microstep;
     word steps;
