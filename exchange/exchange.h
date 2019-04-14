@@ -43,7 +43,7 @@ public:
      * 	psc - data to be filled.
      * 	i - offset for line number.
      */
-    void build_segment_default(struct sSegment* psc, uint32_t i);
+    void build_segment_default(struct svSegment* psc, uint32_t i);
 
     int sendRequest(ComDataReq_t* request);
 

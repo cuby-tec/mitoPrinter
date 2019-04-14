@@ -28,7 +28,7 @@ struct sHead{
  * Единица обмена данными.
  * Описатель отрезка траектории.
  */
-struct sSegment
+struct svSegment
 {
     struct sHead        head;
 

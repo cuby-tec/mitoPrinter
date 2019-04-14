@@ -233,7 +233,7 @@ void
 ComData::buildComdata()
 {
     ComDataReq_t* req = &request;
-    sSegment* segment;
+    svSegment* segment;
     sControl* control;
     block_state_t* bstates = cord->nextBlocks;
 
@@ -311,7 +311,7 @@ ComData::buildG2Command()
 
     QString xstr,ystr,istr,jstr,rstr;
 
-    sSegment* segment = &request.payload.instrument1_parameter;
+    svSegment* segment = &request.payload.instrument1_parameter;
 
     for(int i=0;i<sgCode->param_number;i++)
     {

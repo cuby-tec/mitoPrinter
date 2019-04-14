@@ -37,7 +37,7 @@ typedef struct block_state_t {
     double_t acceleration; // radian_accel
     double_t deceleration; // radian_deccel
     double_t	alfa;    // motor[i]->getAlfa(i)
-    double_t	optimization;
+    double_t	optimization; // optimization coefficient
 
     double_t	millimeters;
     byte	recalculate_flag;	// Recaculate_flag:Набор флагов: для консольной или пограммной обработки;

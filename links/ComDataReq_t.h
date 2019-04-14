@@ -44,7 +44,7 @@ struct ComDataReq_t{
     struct sControlCommand_t    command;        // Команда управления контроллером
     //-------- payload
     union {
-    struct sSegment instrument1_parameter;  // Сегмент движения.
+    struct svSegment instrument1_parameter;  // Сегмент движения.
     struct sHotendControl_t instrument_hotend;           // Управление инструментом Hotend.
     uint32_t    instrument2_paramter;       // или параметры инструмента 2
     uint32_t    instrument3_paramter;       // или параметры инструмента 3

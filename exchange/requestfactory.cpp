@@ -150,7 +150,7 @@ RequestFactory::build(uint linenumber)
 
     //    ComDataReq_t* req = &request;
         ComDataReq_t* req = new ComDataReq_t;
-        sSegment* segment;
+        svSegment* segment;
         sControl* control;
         block_state_t* bstates = coordinatus->nextBlocks;
 

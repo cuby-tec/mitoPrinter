@@ -9,8 +9,10 @@ struct sAccPathParam{
 	double_t	radSpeed;
 	double_t	radAccel;
 	double_t	alfa;
-	uint		steps;
-	double_t	koptim;
+    double_t	koptim;
+    double_t    enterSpeed;
+    uint		steps;
+    uint        tmp;
 };
 
 struct sParamOptim{
@@ -76,7 +78,7 @@ public:
 
     double_t calcAngle(sControlBlocks& curr, sControlBlocks& next);
 
-
+    bool recalc; // need recalc - true,
 
 };
 

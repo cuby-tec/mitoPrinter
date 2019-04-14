@@ -29,7 +29,7 @@ ComdataProxy::ComdataProxy(QObject *parent) : QObject(parent)
 void
 ComdataProxy::_setMicrosteps(ComDataReq_t* req)
 {
-    struct sSegment* segment = &req->payload.instrument1_parameter;
+    struct svSegment* segment = &req->payload.instrument1_parameter;
 
 	for(uint i=0; i<N_AXIS;i++){
 		uint32_t ms = coordinatus->getMicrostep(i);
@@ -707,7 +707,7 @@ ComdataProxy::buildComdata(uint linenumber)
 {
 //    ComDataReq_t* req = &request;
     ComDataReq_t* req = new ComDataReq_t;
-    sSegment* segment;
+    svSegment* segment;
     sControl* control;
     block_state_t* bstates = coordinatus->nextBlocks;
 

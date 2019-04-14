@@ -251,7 +251,7 @@ Exchange::load_defaults(struct sControl* pctl)
 }
 
 void
-Exchange::build_segment_default(struct sSegment* psc, uint32_t i)
+Exchange::build_segment_default(struct svSegment* psc, uint32_t i)
 {
     uint32_t j;
 
@@ -432,7 +432,7 @@ Exchange::buildComData(ComDataReq_t* comdata)
 {
     uint32_t index = 3;
 
-    struct sSegment* psc = &comdata->payload.instrument1_parameter; //&sc;
+    struct svSegment* psc = &comdata->payload.instrument1_parameter; //&sc;
 
     build_segment_default(psc, index);
 

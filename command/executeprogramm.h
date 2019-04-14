@@ -145,10 +145,10 @@ public:
                      }while(current_index == action->index);
 
                     //TODO optimization tag_action & controlblocks
-                    optimization = new Optimization;
-                    optimization->calc(tag_action, controlblocks);
+//                    optimization = new Optimization;
+//                    optimization->calc(tag_action, controlblocks);
 
-                    delete  optimization;
+//                    delete  optimization;
 
                     controlblocks.clear();
                     actionQueue->enqueue(tag_action);
