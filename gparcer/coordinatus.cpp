@@ -157,7 +157,20 @@ Coordinatus::setupProfileData() {
 }
 
 
+void Coordinatus::_initSpeedrate() {
 
+    double_t maxvalue = 0.0;
+    size_t i;
 
+    setupProfileData();
+
+    for(i=0;i<N_AXIS;++i){
+        if(maxvalue < profileData.acceleration[i])
+			maxvalue = profileData.acceleration[i];
+	}
+
+    speedrate =  maxvalue;
+
+}
 //==================
 

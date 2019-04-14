@@ -12,6 +12,7 @@
 #include <QDebug>
 #include <math.h>
 #include <stdbool.h>
+#include <assert.h>
 
 #include "profiles/profile.h"
 
@@ -216,6 +217,7 @@ Controller::buildBlock(Coordinatus* cord) {
     double_t k;
 
     double_t _feedrate = cord->getSpeedrate();
+    assert(_feedrate != 0.0);
 
     double_t angular_velocity; // = selectFeedrate(cord->getSpeedrate());
 

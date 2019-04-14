@@ -133,6 +133,11 @@ private:
 
     void sendSignalCoord();
 
+    /**
+     * set speed rate from profile maximum value.
+     */
+    void _initSpeedrate();
+
 #define KD  0.12
 #define KP  0.8//0.75
 #define KI  1.0 - (KP + KD)
@@ -150,7 +155,8 @@ private:
         hotend.kp = static_cast<int32_t>(KP*1000); //#define KP  0.6//0.75
         hotend.ki = static_cast<int32_t>(ki*1000) ;//#define KI  0.1
         hotend.temperature = static_cast<int32_t>(40*10) ;//#define SETPOINT    40
-        speedrate = 0.0;
+//        speedrate = 0.0;
+        _initSpeedrate(); // set speed rate from profile.
         for (int i=0;i<N_AXIS;i++)
         	microstep[i] = 0;
 
