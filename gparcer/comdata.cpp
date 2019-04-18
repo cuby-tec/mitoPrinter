@@ -44,7 +44,7 @@ ComData::ComData(QObject *parent) : QObject(parent)
     profile = Profile::instance();
 
     cord = Coordinatus::instance();
-//    cord->setupProfileData();
+    cord->setupProfileData();
 
 //    motor = new StepMotor();
 

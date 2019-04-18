@@ -29,7 +29,7 @@ GConsole::GConsole(QWidget *parent) : QWidget(parent)
     setupGconsole();
 
      coord = Coordinatus::instance();
-//     coord->setupProfileData();
+     coord->setupProfileData();
 
      req_builder = new ComData();
      setupThread();
@@ -259,7 +259,7 @@ GConsole::on_pushButton_linestep_clicked()
 
 //    Coordinatus* coord = Coordinatus::instance();
 
-//    coord->setupProfileData();
+    coord->setupProfileData();
 
     memset(&sgcode,0,sizeof(struct sGcode));
 //    sgcode = parceString(pbuffer, &parce_error);

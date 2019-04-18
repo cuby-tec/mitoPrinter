@@ -54,7 +54,7 @@
 
 
 // диаметр вала экструдера с учётом проточки
-#define shaft_diameter   6.6//7
+#define shaft_diameter   6.0//6.6//7
 
 #endif
 
