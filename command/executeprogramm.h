@@ -118,7 +118,10 @@ public:
             while(ThreadViser::numaction < ThreadViser::queueSize)
             {
                 producer_m1:
-                mito::Action_t* action = gcodeWorker->readCommandLine();
+                mito::Action_t* action;
+                do{
+                    action = gcodeWorker->readCommandLine();
+                }while(action->a == eNext);
 
                 if(tag_action.index == 0){
                     tag_action = *action;
