@@ -271,7 +271,7 @@ GcodeWorker::loadMovervalue(sMover* data)
     data->x = cord->getNextValue(X_AXIS);
     data->y = cord->getNextValue(Y_AXIS);
     data->z = cord->getNextValue(Z_AXIS);
-    data->e = cord->getNextValue(E_AXIS);
+//    data->e = cord->getNextValue(E_AXIS);
     data->f = cord->getSpeedrate();
 }
 
@@ -295,6 +295,11 @@ GcodeWorker::tagG0_Do(sGcode *sgCode)
     // G91 ; Relative positioning
     bool absolute = cord->isAbsolute();
 
+    //coordinatus->setExtruder_mode(data->a);// false - relative, true-absolute
+    //M82: Set extruder to absolute mode
+    //M83: Set extruder to relative mode
+    bool extruderMode = cord->getExtruder_mode();
+
     bool ok = false;
 
     if(absolute == true){
@@ -302,6 +307,14 @@ GcodeWorker::tagG0_Do(sGcode *sgCode)
     }else{
     	valueTag.init();
     	valueTag.f = cord->getSpeedrate();
+    }
+
+    if(extruderMode == true){
+    	// absolute mode
+    	valueTag.e = cord->getNextValue(E_AXIS);
+    }else{
+    	//relative mode
+    	valueTag.e = 0.0;
     }
 
 
@@ -364,6 +377,16 @@ GcodeWorker::tagG0_Do(sGcode *sgCode)
     	vTag->set(&valueTag);
     else
     	vTag->add(&valueTag);
+
+    if(extruderMode == true){
+    	// absolute mode
+    	vTag->e = valueTag.e;
+    }else{
+    	//relative mode
+    	vTag->e += valueTag.e;
+    }
+
+
 //    syncXYZ(valueTag.x, valueTag.y, valueTag.z, valueTag.e);
     syncXYZ(vTag->x, vTag->y, vTag->z, vTag->e);
 
@@ -396,12 +419,6 @@ GcodeWorker::tagG1_Do(sGcode *sgCode)
     	valueTag.init();
     	valueTag.f = cord->getSpeedrate();
     }
-
-    //TODO
-//    double_t move = 0.0;//50.0;
-
-//    char buf[20];
-//    memset(buf,0,sizeof (buf));
 
     for(int i=0;i<sgCode->param_number;i++)
     {

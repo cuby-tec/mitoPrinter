@@ -24,7 +24,7 @@ struct sMover: NumberedTag{
     	x += src->x;
     	y += src->y;
     	z += src->z;
-    	e += src->e;
+//    	e += src->e;
     }
     void init(){
     	x = 0.0;
@@ -48,7 +48,7 @@ struct sG0_t : sMover {
         x = src->x;
         y = src->y;
         z = src->z;
-        e = src->e;
+//        e = src->e;
         f = src->f;
         s = src->s;
         n = src->n;
