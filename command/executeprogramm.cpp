@@ -35,6 +35,7 @@ void ExecuteProgramm::execute(QFile &stream)
     comdata = new ComData();
 //    connect(comdata, SIGNAL(sg_executeComplite()), this, SLOT(finished()));
     producer->setGcodeWorker(gcodeworker);
+    producer->setController(comdata->getController());
     producer->start();
     comdata->run(gcodeworker);
 
@@ -59,3 +60,8 @@ uint ExecuteProgramm::numaction;
 QQueue<mito::Action_t> ExecuteProgramm::actionQueue;
 
 mito::Action_t ExecuteProgramm::action;
+
+void Producer::setController(Controller *value)
+{
+    controller = value;
+}

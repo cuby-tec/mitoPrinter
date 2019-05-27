@@ -102,6 +102,12 @@ public:
         tag_action.index = 0;
         cord = Coordinatus::instance();
 //        optimization = new Optimization;
+//        if(parent != nullptr){
+//            ExecuteProgramm* exec = static_cast<ExecuteProgramm*>(parent);
+//            controller = exec->getComdata()->getController();
+//        }else {
+//            controller = nullptr;
+//        }
     }
 
     ~Producer() override
@@ -148,10 +154,11 @@ public:
                      }while(current_index == action->index);
 
                     //TODO optimization tag_action & controlblocks
-//                    optimization = new Optimization;
+                    optimization = new Optimization(controller);
+                    optimization->smooth(tag_action,controlblocks);
 //                    optimization->calc(tag_action, controlblocks);
 
-//                    delete  optimization;
+                    delete  optimization;
 
                     controlblocks.clear();
                     actionQueue->enqueue(tag_action);
@@ -199,6 +206,9 @@ public:
     void setActionQueue(QQueue<mito::Action_t>* value){actionQueue = value;}
     void setGcodeWorker(GcodeWorker* value){gcodeWorker = value;}
 
+
+    void setController(Controller *value);
+
 private:
     QQueue<mito::Action_t>* actionQueue;
     GcodeWorker* gcodeWorker;
@@ -214,6 +224,7 @@ private:
     sControlBlocks blocks;
     Coordinatus* cord;// = Coordinatus::instance();
     Optimization* optimization;
+    Controller* controller;
 
 
 };

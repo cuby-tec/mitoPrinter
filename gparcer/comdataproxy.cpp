@@ -46,7 +46,6 @@ mito::Action_t*
 ComdataProxy::sendG0Line(sG0_t *data)
 {
 
-    //TODO
     mito::Action_t *action = new mito::Action_t;
     line_counter++;
 #if DEBUGLEVEL==2
@@ -78,6 +77,7 @@ ComdataProxy::sendG0Line(sG0_t *data)
         ComDataReq_t* req = factory->build(data->n);
 //        req->requestNumber = line_counter;
         _setMicrosteps(req);
+
         action->queue.enqueue(*req);
         delete req;
 

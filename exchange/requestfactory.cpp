@@ -122,7 +122,8 @@ RequestFactory::build(ComDataReq_t *comdata, eOrder order, void* data )
 //        comdata->requestNumber = ++MyGlobal::requestIndex;
         comdata->instruments = N_AXIS;
         comdata->command.order = eoProfile;
-        sendRequest(comdata); // Get request in Controller. */
+        sendRequest(comdata); // Get request in Controller.
+*/
         break;
 
     case eoSegment:
@@ -140,6 +141,9 @@ RequestFactory::build(ComDataReq_t *comdata, eOrder order, void* data )
     	break;
     }
 
+    comdata->instruments = 0;
+    comdata->instruments = MyGlobal::Crc8( reinterpret_cast<uint8_t*>(comdata),comdata->size );
+
 }
 
 ComDataReq_t*
@@ -156,7 +160,8 @@ RequestFactory::build(uint linenumber)
 
         memset(req,0,sizeof(ComDataReq_t));
 
-        req->instruments = 1;   // TODO
+        req->instruments = 0;//1;   // field for CRC
+        req->size = sizeof (ComDataReq_t);
         req->command.order = eoSegment;
         req->command.instrument = 1;
         req->command.reserved = 0;
@@ -205,7 +210,7 @@ RequestFactory::build(uint linenumber)
             control->nominal_rate = bstate->nominal_rate;
             control->final_speedLevel = static_cast<uint8_t>( bstate->final_speedLevel);
 
-            control->speedLevel = static_cast<uint8_t>( bstate->accelerate_until);// TODO Attention
+            control->speedLevel = static_cast<uint16_t>( bstate->accelerate_until);// TODO Attention
 
             control->microsteps = bstate->microstep;
 

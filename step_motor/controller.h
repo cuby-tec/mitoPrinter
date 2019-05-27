@@ -72,6 +72,8 @@ public:
         return motor;
     }
 
+    uint32_t calcAxisRate(uint32_t axis, double_t angular_velocity);
+
     double_t get_MMperStep(uint axis, Coordinatus *cord);
 
 private:

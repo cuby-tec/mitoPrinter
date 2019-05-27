@@ -12,6 +12,7 @@
 #include <QDebug>
 #include <math.h>
 #include <stdbool.h>
+#include <float.h>
 #include <assert.h>
 
 #include "profiles/profile.h"
@@ -199,6 +200,13 @@ void Controller::uploadMotorData() {
     SET_SPEEDRATE(Z_AXIS);
     SET_SPEEDRATE(E_AXIS);
 
+    Coordinatus* cord = Coordinatus::instance();
+
+    for(int32_t i=0;i<N_AXIS;++i){
+    	//uint32_t microstep = cord->getMicrostep(i);
+    	uint32_t step = cord->getMicrostep(i);
+    	motor[i]->setMicrostep(step,i);
+    }
 }
 
 #define TARGETVERSION 1
@@ -364,7 +372,13 @@ Controller::buildBlock(Coordinatus* cord) {
         // double_t cnt = sqrt(2*motor[i]->getAlfa(i)/accel[i])*frequency;
         uint32_t cnt = static_cast<uint32_t>( frequency * sqrt(2.0 * motor[i]->getAlfa(i)/racc ) );
         // nominal_rate
-        uint32_t nominal_rate = static_cast<uint32_t>(frequency * motor[i]->getAlfa(i)/G4 );
+        uint32_t nominal_rate;
+
+//        nominal_rate = static_cast<uint32_t>(frequency * motor[i]->getAlfa(i)/G4 );
+        if(G4 > DBL_EPSILON)
+        	nominal_rate = calcAxisRate(i,G4);
+        else
+        	nominal_rate = 0xfffffe;
 
         if(nominal_rate > 16777214){ // 0xfffffe
             nominal_rate = 0xfffffe;
@@ -1118,6 +1132,17 @@ Controller::selectFeedrate( double_t cord_feedrate ) {
 
 	return result;
 }
+
+/**
+ * Calculate rate counter for angular velocity.
+ */
+uint32_t Controller::calcAxisRate(uint32_t axis, double_t angular_velocity) {
+	//uint32_t nominal_rate = static_cast<uint32_t>(frequency * motor[i]->getAlfa(i)/G4 );
+	//uint32_t cnt = static_cast<uint32_t>( frequency * sqrt(2.0 * motor[i]->getAlfa(i)/racc ) );
+	assert(angular_velocity!=0);
+	return static_cast<uint32_t>(frequency * motor[axis]->getAlfa(axis)/angular_velocity );
+}
+
 #endif
 
 

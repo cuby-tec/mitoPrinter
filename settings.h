@@ -2,7 +2,7 @@
 #define SSETTINGS_H
 
 // comdata.cpp
-#define TRY_COUNTER 2000 //500
+#define TRY_COUNTER 2000*50 //500
 #define MDELAY      70
 
 // @icommand.cpp

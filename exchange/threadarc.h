@@ -12,6 +12,8 @@
 #include "myglobal.h"
 #include "links/ComDataReq_t.h"
 
+#include <QTime>
+
 #define MAX_TRY_COUNTER     20
 #define DEFAULT_DELAY       100
 
@@ -63,6 +65,8 @@ private:
     QMutex mutex;
     QWaitCondition condition;
     UsbExchange* exch;
+
+    QTime timer;
 
 };
 

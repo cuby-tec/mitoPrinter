@@ -138,3 +138,20 @@ MyGlobal::crc32(unsigned char* buf, size_t len )
     return crc ^ 0xFFFFFFFFUL;
 }
 
+uint8_t
+MyGlobal::Crc8(uint8_t *pcBlock, uint32_t len)
+{
+    uint8_t crc = 0xFF;
+    unsigned int i;
+
+    while (len--)
+    {
+        crc ^= *pcBlock++;
+
+        for (i = 0; i < 8; i++)
+            crc = crc & 0x80 ? (crc << 1) ^ 0x31 : crc << 1;
+    }
+
+    return crc;
+}
+

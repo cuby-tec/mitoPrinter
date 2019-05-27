@@ -22,7 +22,7 @@ struct sControl{
 //    uint32_t    linenumber;
     uint8_t     microsteps;         // 2
     uint8_t     initial_speedLevel; // 0
-    uint8_t     speedLevel;         // 3
+    uint8_t     reseved2;         // 3 speedLevel
     uint32_t    steps;              //10
     uint32_t    accelerate_until;   // 3
     uint32_t    decelerate_after;   // 7
@@ -46,7 +46,7 @@ struct sControl{
 //    enum eDirections        direction:CHAR_BIT; // uint8_t forward
     uint8_t     direction;
     uint8_t     reseved1;
-    uint16_t    reseved2;
+    uint16_t    speedLevel; // reseved2
 };
 
 /*

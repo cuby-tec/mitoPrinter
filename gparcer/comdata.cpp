@@ -438,6 +438,13 @@ void ComData::buildComData(sGcode *sgcode, bool checkBox_immediately)
             while (!action->queue.isEmpty()){
                 ComDataReq_t req = action->queue.dequeue();
                 req.requestNumber = ++MyGlobal::requestIndex;
+
+                //TODOH CRC
+
+                req.instruments = 0;
+                uint8_t crc8 = MyGlobal::Crc8( reinterpret_cast<uint8_t*>(&req),req.size);
+                req.instruments = crc8;
+
                 queueSize = threadarc.putInArray(&req);
             }
             threadarc.setMdelay(500);
@@ -653,6 +660,13 @@ _run1:
                 while (!action->queue.isEmpty()){
                     ComDataReq_t req = action->queue.dequeue();
                     req.requestNumber = ++MyGlobal::requestIndex;
+
+                    //CRC
+                    req.instruments = 0;
+                    uint8_t crc8 = MyGlobal::Crc8( reinterpret_cast<uint8_t*>(&req),req.size);
+                    req.instruments = crc8;
+
+
 #if DEBUG_LEVEL==1
                     cout<<req.payload.instrument1_parameter.axis[X_AXIS].steps<<"\taccel:"<<req.payload.instrument1_parameter.axis[X_AXIS].accelerate_until<<"\tnuber:"<<req.requestNumber;
 #endif

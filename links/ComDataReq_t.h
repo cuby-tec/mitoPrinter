@@ -39,8 +39,8 @@ struct sControlCommand_t {
 
 struct ComDataReq_t{
     uint32_t    requestNumber;  // Номер запроса порядковый.
-    uint8_t     size;           // Разме сообщения.
-    uint8_t     instruments;    // Количество инструментов в запросе.
+    uint8_t     size;           // Размер сообщения.
+    uint8_t     instruments;    // CRC | Количество инструментов в запросе.
     struct sControlCommand_t    command;        // Команда управления контроллером
     //-------- payload
     union {

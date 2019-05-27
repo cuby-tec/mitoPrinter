@@ -161,7 +161,8 @@ GcodeWorker::buildAction(sGcode *src)
 //        action = (this->*callTagRef[etag])(src); //tagG0_Do
 //        break;
     case eG1:
-        action = (this->*callTagRef[eG0])(src); //tagG1_Do
+//        action = (this->*callTagRef[eG0])(src); //tagG1_Do
+        action = tagG0_Do(src);
         break;
     case eG2:
         action = (this->*callTagRef[etag])(src); //tagG2_Do

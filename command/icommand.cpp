@@ -68,6 +68,11 @@ ICommand::executeGCommand(QString command)
         ComDataReq_t req = action->queue.dequeue();
         req.requestNumber = ++MyGlobal::requestIndex;
 
+        //CRC
+        req.instruments = 0;
+        uint8_t crc8 = MyGlobal::Crc8( reinterpret_cast<uint8_t*>(&req),req.size);
+        req.instruments = crc8;
+
         //2. Send request.
         UsbExchange* exch = new UsbExchange;
         int result_exch;

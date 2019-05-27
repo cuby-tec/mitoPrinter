@@ -4,7 +4,7 @@
 #include <assert.h>
 #include <math.h>
 #include <LinearMath/Vector3.h>
-
+#include <float.h>
 
 //-------------- defs
 
@@ -28,19 +28,186 @@ struct accDecSteps{
     int dec;   // decelerate steps
 };
 
+struct accCompriseOf {
+    int32_t change;    // sum of dec and acc
+    int32_t dec;   //decceleration
+    int32_t acc;   //acceleration
+    uint32_t speedlevel;
+};
+
 //---------- function
 
-Optimization::Optimization()
+Optimization::Optimization(Controller *control)
 {
 	coefficien = 1.0;
     //	step = 0.0;
     recalc = false;
+    this->controller = control;
 }
 
 Optimization::~Optimization()
 {
     free(opti_BI);
     cout<<"Exit optimization.";
+}
+
+static uint32_t rowcounter = 0;
+/**
+ * @brief Optimization::smooth
+ * @param action
+ * @param blocks
+ *                  TODO
+ */
+void Optimization::smooth(mito::Action_t &action, QQueue<sControlBlocks> &blocks)
+{
+    QList<sControlBlocks>::iterator bIterator;// block iterator.
+    QList<sControlBlocks>::iterator agIterator;
+
+    volatile uint32_t size_sControl = sizeof (svSegment);
+
+    QList<ComDataReq_t>::iterator   rIterator;// request iterator.
+
+    bIterator = blocks.begin(); // current block
+
+    agIterator = blocks.begin();
+    agIterator++;                  // next block
+
+    rIterator = action.queue.begin();   // destination.
+
+    struct accCompriseOf acco[N_AXIS]; // vector acceleration/deceleration
+
+    // Main circle analize optimizaation
+    while(agIterator != blocks.end()){
+
+
+        sControlBlocks sc = *bIterator;//  source data:current block
+        sControlBlocks nc = *agIterator;    // next data: next block
+
+        svSegment* segment = &rIterator->payload.instrument1_parameter;// destination data
+
+        //For every axis calculate steps to change speed.
+        // axis circle.
+        for(uint32_t i=0;i<N_AXIS;i++){
+//            cout<<"i:"<<i<<"\tsteps:"<<sc.bb[i].steps;
+            if(sc.bb[i].steps == 0 && nc.bb[i].steps == 0)
+                continue;
+//            double_t currBlockSpeed = sc.bb[i].nominal_speed;
+//            double_t nextBlockSpeed = nc.bb[i].nominal_speed;
+            double_t currBlockSpeed = 0;
+            if(sc.bb[i].steps > 1 )
+                currBlockSpeed =  sqrt( sc.bb[i].alfa*2.0*sc.bb[i].acceleration*sc.bb[i].accelerate_until );
+            else if (sc.bb[i].steps == 1) {
+                currBlockSpeed =  sqrt( sc.bb[i].alfa*2.0*sc.bb[i].acceleration* 1.0 );
+            }
+
+            if(sc.bb[i].steps == 0){
+                sc.bb[i].speedLevel = 0;
+            }else if (sc.bb[i].steps < 4 ) {
+                sc.bb[i].speedLevel = 1;
+            }
+
+            if(nc.bb[i].steps == 0){
+                nc.bb[i].speedLevel = 0;
+            }else if (nc.bb[i].steps < 4 ) {
+                nc.bb[i].speedLevel = 1;
+            }
+
+
+
+            // Calculate changeLevel
+            double_t nextBlockSpeed = 0;
+//            double_t changLevel = 0;
+            int32_t changLevel = 0;
+
+            if(nc.bb[i].steps > 1)
+                    nextBlockSpeed = sqrt( nc.bb[i].alfa*2.0*nc.bb[i].acceleration*nc.bb[i].accelerate_until );
+            else if (nc.bb[i].steps == 1) {
+                nextBlockSpeed = sqrt( nc.bb[i].alfa*2.0*nc.bb[i].acceleration * 1.0 );
+            }
+
+            uint32_t scSteps = sc.bb[i].steps, ncSteps = nc.bb[i].steps;
+
+            if(scSteps <= 1 && ncSteps <= 1 )
+            {
+                if((scSteps == 1 && ncSteps == 1 )||(scSteps == 0 && ncSteps == 0) )
+                    changLevel = 0;
+                else if (scSteps == 0 && ncSteps == 1  ) {
+                    changLevel = 1;
+                }else {
+                    changLevel = -1;
+                }
+            }else{
+//                changLevel = (pow(nextBlockSpeed,2.0) - pow(currBlockSpeed,2.0))/(sc.bb[i].alfa*2.0*sc.bb[i].acceleration);
+                changLevel =  static_cast<int32_t>(nc.bb[i].speedLevel) - static_cast<int32_t>(sc.bb[i].speedLevel);
+            }
+
+            acco[i].change = changLevel;
+            acco[i].speedlevel = sc.bb[i].speedLevel;
+
+            if(abs(acco[i].change) < static_cast<int32_t>( scSteps )){
+                acco[i].acc = 0;
+                acco[i].dec = acco[i].change;
+            }else {
+                double_t k = scSteps/(scSteps+ncSteps);
+                if(changLevel >= 0){     //if positive
+                    acco[i].dec =  static_cast<int32_t>( ceil(acco[i].change*k ));
+                }else { // negative
+                    acco[i].dec =  static_cast<int32_t>( round(acco[i].change*k ));
+                }
+                acco[i].acc = acco[i].change - acco[i].dec;
+            }
+
+             uint32_t cnt;
+            if(nextBlockSpeed >= DBL_EPSILON)// if(nextBlockSpeed != 0)
+                uint32_t cnt = controller->calcAxisRate(i,nextBlockSpeed);
+            else {
+                 cnt = 0xfffffe;
+            }
+
+
+#if DEBUG_LEVEL == 0
+//            if(i==1)
+//      cout<<"axis:"<<i<<"  changLevel:" << changLevel<<"("<<sc.bb[i].speedLevel<<")"<<"\tsteps:"<<sc.bb[i].steps<<"\tspeed:"<<currBlockSpeed<<"("<<nextBlockSpeed<<")";// <<"\tcnt:"<<cnt;
+//            cout<<"axis:"<<i<<"  changLevel:" << changLevel<<"("<<sc.bb[i].speedLevel<<")"
+//               <<"\tsteps:"<<sc.bb[i].steps<<"["<<sc.bb[i].accelerate_until<<":"<< sc.bb[i].decelerate_after<<"]"
+//               <<sc.bb[i].schem[0]<<":"<<sc.bb[i].schem[1]<<":"<<sc.bb[i].schem[2];
+
+            cout<<"axis:"<<i <<"  speedLevel:" << acco[i].speedlevel
+               <<" steps:"<<sc.bb[i].steps
+              << acco[i].change<<"["<<acco[i].dec<<":"<<acco[i].acc<<"]"
+              <<" rate:"<< segment->axis[i].nominal_rate <<" level:"<<segment->axis[i].speedLevel
+              <<"row:"<<rowcounter;
+
+#endif
+
+
+        }
+
+        rowcounter++;// debug value
+        agIterator++;
+        bIterator++;
+        rIterator++;
+    }
+
+    bIterator = blocks.end();
+    --bIterator;
+    sControlBlocks sc = *bIterator ; //*agIterator;
+
+    rIterator = action.queue.end();   // destination.
+    --rIterator;
+    svSegment* segment = &rIterator->payload.instrument1_parameter;// destination data
+
+    // last row in queue
+    for(uint32_t i=0;i<N_AXIS;i++){
+        cout<<"axis:"<<i <<"  speedLevel:" << sc.bb[i].speedLevel
+           <<"\tsteps:"<<sc.bb[i].steps
+          << acco[i].change<<"["<<acco[i].acc<<":"<<"none]"
+          << acco[i].change<<"["<<acco[i].dec<<":"<<acco[i].acc<<"]"
+          <<" rate:"<< segment->axis[i].nominal_rate <<" level:"<<segment->axis[i].speedLevel
+          <<"row:"<<rowcounter;
+    }
+
+
 }
 
 

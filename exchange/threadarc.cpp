@@ -1,6 +1,11 @@
 #include "threadarc.h"
 #include <QDebug>
 
+#define QTIMER
+#define  THREAD_TIMOUT  (1000*60*5)   // 5 min
+
+
+
 #define cout	qDebug()<<__FILE__<<__LINE__
 
 ThreadArc::ThreadArc()
@@ -47,6 +52,8 @@ void ThreadArc::run()
                 buffer = queue.dequeue();
 //            }
 
+                timer.restart();
+
 //volatile uint32_t line = request->payload.instrument1_parameter.head.linenumber;
 //            request->requestNumber = ++MyGlobal::requestIndex;
             try_counter = 0;
@@ -85,12 +92,20 @@ void ThreadArc::run()
 #endif
                     msleep(mdelay);
                 }
+#ifndef QTIMER
                 if(try_counter>=max_tryCounter){
 #if LEVEL==1
                     cout<<"number:"<<status.frameNumber <<"\tqueue:"<<status.freeSegments;
 #endif
                     break;
                 }
+#else
+                if(timer.elapsed() > THREAD_TIMOUT)
+                {
+                    break;
+                }
+
+#endif
 
             }while(!(status.modelState.reserved1&COMMAND_ACKNOWLEDGED));
 

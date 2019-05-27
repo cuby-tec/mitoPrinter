@@ -5,6 +5,8 @@
 #include "gparcer/mitoaction.h"
 #include <math.h>
 
+#include "step_motor/controller.h"
+
 struct sAccPathParam{
 	double_t	radSpeed;
 	double_t	radAccel;
@@ -30,9 +32,12 @@ struct sParamOptim{
 class Optimization
 {
 public:
-    Optimization();
+    Optimization(Controller* control);
 
     ~Optimization();
+
+
+    void smooth(mito::Action_t &action, QQueue<sControlBlocks>& blocks);
 
 //QQueue<sControlBlocks> controlblocks;
     void calc(mito::Action_t &action, QQueue<sControlBlocks>& blocks);
@@ -79,6 +84,8 @@ public:
     double_t calcAngle(sControlBlocks& curr, sControlBlocks& next);
 
     bool recalc; // need recalc - true,
+
+    Controller* controller;
 
 };
 
