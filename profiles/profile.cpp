@@ -1221,6 +1221,8 @@ Profile::saveProfileDocument()
 {
     QString str = PROFILE_PATH + getProfileFileName(profileIndex);
 
+    QDir::setCurrent(MyGlobal::profilefileDir);
+
     QFile file(str);
     if(file.open(QFile::WriteOnly))
     {

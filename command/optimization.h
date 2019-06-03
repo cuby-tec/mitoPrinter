@@ -134,6 +134,9 @@ public:
 private:
     block_state_t* _block;
 
+    void fillSegment(block_state_t* bs, sControl& sg);
+
+
 };
 
 #endif // OPTIMIZATION_H
