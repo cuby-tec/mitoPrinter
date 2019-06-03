@@ -16,6 +16,26 @@
 // 0xFFFFFE
 #define MAX_COUNTER_VALUE	16777214
 
+//-------defs
+
+#define ACCELERATION    1
+#define FLATMOTION      2
+#define DECCELERATION   3
+#define SCH(A,B,C) A|(B<<2)|(C<<4)
+
+// "/-\"
+#define SCHEMSTATE_1    SCH(ACCELERATION,FLATMOTION,DECCELERATION)
+//"---"
+#define SCHEMSTATE_2    SCH(FLATMOTION,FLATMOTION,FLATMOTION)
+//"\_/"
+#define SCHEMSTATE_3    SCH(DECCELERATION,FLATMOTION,ACCELERATION)
+// " /\"
+#define SCHEMSTATE_4    SCH(ACCELERATION,DECCELERATION,DECCELERATION)
+
+//----------functions
+
+
+
 class Controller
 {
 public:
@@ -73,6 +93,10 @@ public:
     }
 
     uint32_t calcAxisRate(uint32_t axis, double_t angular_velocity);
+
+    // calculate C0 - initital speed rate
+    // racc - radial acceleration
+    uint32_t calcInitRate(uint32_t axis, double_t racc);
 
     double_t get_MMperStep(uint axis, Coordinatus *cord);
 

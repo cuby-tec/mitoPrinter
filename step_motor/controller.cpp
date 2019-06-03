@@ -23,20 +23,8 @@
 
 #define BUILDBLOCKVERSION   3
 
-#define ACCELERATION    1
-#define FLATMOTION      2
-#define DECCELERATION   3
-#define SCH(A,B,C) A|(B<<2)|(C<<4)
 
-// "/-\"
-#define SCHEMSTATE_1    SCH(ACCELERATION,FLATMOTION,DECCELERATION)
-//"---"
-#define SCHEMSTATE_2    SCH(FLATMOTION,FLATMOTION,FLATMOTION)
-//"\_/"
-#define SCHEMSTATE_3    SCH(DECCELERATION,FLATMOTION,ACCELERATION)
-// " /\"
-#define SCHEMSTATE_4    SCH(ACCELERATION,DECCELERATION,DECCELERATION)
-
+#define REPORT_LEVEL	0
 
 
 
@@ -281,7 +269,9 @@ Controller::buildBlock(Coordinatus* cord) {
             if(_feedrate > profileData->speedrate[i])
             {
                 _feedrate = profileData->speedrate[i];
+#if REPORT_LEVEL == 1
                 cout<<"Reduction feedrate to value:"<<_feedrate<<" from :"<<cord->getSpeedrate()<<" axis:"<<i;
+#endif
             }
         }
     }
@@ -332,7 +322,8 @@ Controller::buildBlock(Coordinatus* cord) {
         double_t acs = pow(G4,2.0)/(2.0*block->alfa*racc);
 
         //accel_lim
-        double_t acl = maxvector[i] * rdcc/(racc + rdcc);
+//        double_t acl = maxvector[i] * rdcc/(racc + rdcc);
+        double_t acl = block->steps * rdcc/(racc + rdcc);
 
         //accel_path
         uint32_t accpath =  static_cast<uint32_t>( MIN(acs,acl) );
@@ -340,8 +331,22 @@ Controller::buildBlock(Coordinatus* cord) {
         //deccel_path
         uint32_t dccpath =  static_cast<uint32_t>( MIN(acs,acl) * racc/rdcc );
 
+        //TODO recalculate G4
+
+        if(accpath == 0)
+        	accpath = 1;
+        if(dccpath == 0)
+        	dccpath = 1;
+
+
+        if((accpath != acs)&&(block->steps>0) ){
+//        	sqrt( sc.bb[i].alfa*2.0*sc.bb[i].acceleration * acco[i].speedlevel );
+        	G4 = sqrt(2.0*block->alfa * block->acceleration * accpath);
+        }
+
         //speed_path
-        uint32_t speed_path = maxvector[i] - (accpath + dccpath);
+//        uint32_t speed_path = maxvector[i] - (accpath + dccpath);
+        uint32_t speed_path = block->steps - (accpath + dccpath);
 
         //schem
         if(accpath == 0){
@@ -370,9 +375,9 @@ Controller::buildBlock(Coordinatus* cord) {
 
         //C0
         // double_t cnt = sqrt(2*motor[i]->getAlfa(i)/accel[i])*frequency;
-        uint32_t cnt = static_cast<uint32_t>( frequency * sqrt(2.0 * motor[i]->getAlfa(i)/racc ) );
+        uint64_t cnt = static_cast<uint32_t>( frequency * sqrt(2.0 * motor[i]->getAlfa(i)/racc ) );
         // nominal_rate
-        uint32_t nominal_rate;
+        uint64_t nominal_rate;
 
 //        nominal_rate = static_cast<uint32_t>(frequency * motor[i]->getAlfa(i)/G4 );
         if(G4 > DBL_EPSILON)
@@ -382,24 +387,26 @@ Controller::buildBlock(Coordinatus* cord) {
 
         if(nominal_rate > 16777214){ // 0xfffffe
             nominal_rate = 0xfffffe;
+#if REPORT_LEVEL==1
             cout<<"NOMINAL RATE OUT OF RANGE, ASYNCRONOUS:"<<nominal_rate;
-            qWarning("NOMINAL RATE OUT OF RANGE:%d",nominal_rate);
+            qWarning("NOMINAL RATE OUT OF RANGE:%d",static_cast<uint32_t>(nominal_rate));
+#endif
         }
 
         switch (schemState) {
         case SCHEMSTATE_1:
-            block->initial_rate = cnt;
-            block->final_rate = cnt;
-            block->nominal_rate = nominal_rate;
+            block->initial_rate = static_cast<uint32_t>(cnt);
+            block->final_rate = static_cast<uint32_t>(cnt);
+            block->nominal_rate = static_cast<uint32_t>(nominal_rate);
 
             block->decelerate_after = block->steps - dccpath;
 
             break;
 
         case SCHEMSTATE_2:
-            block->initial_rate = nominal_rate;
-            block->final_rate = nominal_rate;
-            block->nominal_rate = nominal_rate;
+            block->initial_rate = static_cast<uint32_t>(nominal_rate);
+            block->final_rate = static_cast<uint32_t>(nominal_rate);
+            block->nominal_rate = static_cast<uint32_t>(nominal_rate);
 
             block->decelerate_after = block->steps + 1;
 
@@ -407,24 +414,24 @@ Controller::buildBlock(Coordinatus* cord) {
 
         case SCHEMSTATE_3:
 //TODO acceleration scheme
-            block->initial_rate = cnt;
-            block->final_rate = cnt;
-            block->nominal_rate = nominal_rate;
+            block->initial_rate =  static_cast<uint32_t>(cnt);
+            block->final_rate = static_cast<uint32_t>(cnt);
+            block->nominal_rate = static_cast<uint32_t>(nominal_rate);
             block->decelerate_after = block->steps - dccpath;
             break;
 
         case SCHEMSTATE_4:
-            block->initial_rate = cnt;
-            block->final_rate = cnt;
-            block->nominal_rate = nominal_rate;
+            block->initial_rate = static_cast<uint32_t>(cnt);
+            block->final_rate = static_cast<uint32_t>(cnt);
+            block->nominal_rate = static_cast<uint32_t>(nominal_rate);
             block->decelerate_after = block->steps - dccpath;
 
             break;
 
         default:
-            block->initial_rate = cnt;
-            block->final_rate = cnt;
-            block->nominal_rate = nominal_rate;
+            block->initial_rate = static_cast<uint32_t>(cnt);
+            block->final_rate = static_cast<uint32_t>(cnt);
+            block->nominal_rate = static_cast<uint32_t>(nominal_rate);
             block->decelerate_after = block->steps - dccpath;
             break;
 
@@ -1136,12 +1143,20 @@ Controller::selectFeedrate( double_t cord_feedrate ) {
 /**
  * Calculate rate counter for angular velocity.
  */
-uint32_t Controller::calcAxisRate(uint32_t axis, double_t angular_velocity) {
+uint32_t Controller::calcAxisRate(uint32_t axis, double_t angular_velocity)
+{
 	//uint32_t nominal_rate = static_cast<uint32_t>(frequency * motor[i]->getAlfa(i)/G4 );
 	//uint32_t cnt = static_cast<uint32_t>( frequency * sqrt(2.0 * motor[i]->getAlfa(i)/racc ) );
 	assert(angular_velocity!=0);
 	return static_cast<uint32_t>(frequency * motor[axis]->getAlfa(axis)/angular_velocity );
 }
+
+uint32_t Controller::calcInitRate(uint32_t axis, double_t racc)
+{
+	//uint64_t cnt = static_cast<uint32_t>( frequency * sqrt(2.0 * motor[i]->getAlfa(i)/racc ) );
+	return static_cast<uint32_t>( frequency * sqrt(2.0 * motor[axis]->getAlfa(axis)/racc ) );
+}
+
 
 #endif
 

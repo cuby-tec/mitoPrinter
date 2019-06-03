@@ -29,6 +29,47 @@ struct sParamOptim{
 
 //using namespace tf;
 
+
+//-------defs
+
+struct segmentDescription{
+    int enterLevel; 		// enter speedLevel in current segment.
+    int Acc;		// changing speed level in start part of current segment.
+    int nominalLevel; 	// level in current segment.
+    int Dec;		// changing speed in final part of current segment.
+    int finalLevel; 		// level at the end of current segment.
+    int steps;			// steps in current segment
+
+};
+
+
+struct accCompriseOf {
+    int32_t change;   		// sum of dec and acc.
+    int32_t dec;   			// deceleration in current segment.
+    int32_t acc;   			// acceleration in next segment.
+    uint32_t speedlevel;
+/*
+    int a_enterLevel; 		// enter speedLevel in current segment.
+    int a_Acc;		// changing speed level in start part of current segment.
+    int a_nominalLevel; 	// level in current segment.
+    int a_Dec;		// changing speed in final part of current segment.
+    int a_finalLevel; 		// level at the end of current segment.
+    int a_steps;			// steps in current segment
+
+    int b_enterLevel; 		// enter speedLevel in next segment.
+    int b_Acc;		// changing speed level in start part of next segment.
+    int b_nominalLevel; 	// level in next segment.
+    int b_Dec;		// changing speed in final part of next segment.
+    int b_finalLevel; 		// level at the end of next segment.
+    int b_steps;			// steps in next segment
+*/
+    struct segmentDescription a;
+    struct segmentDescription b;
+};
+
+//-------- function
+
+
 class Optimization
 {
 public:
@@ -83,9 +124,15 @@ public:
 
     double_t calcAngle(sControlBlocks& curr, sControlBlocks& next);
 
+    void _calcLevel(accCompriseOf data[N_AXIS],size_t i, bool isNoMoveNext, bool isNoMoveCurrent);
+
+
     bool recalc; // need recalc - true,
 
     Controller* controller;
+
+private:
+    block_state_t* _block;
 
 };
 

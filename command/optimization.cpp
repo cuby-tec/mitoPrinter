@@ -8,12 +8,16 @@
 
 //-------------- defs
 
+#define CHANGELEVEL_VERSION 3//2
+
+#define REPORT_LEVEL    4
+
 #define cout    qDebug()<<__FILE__<<__LINE__
 #define MIN(A,B) A<B?A:B
 
 #define BJ  acs_change_x
 #define BK  acs_change_y
-#define G4 bIterator->bb[X_AXIS].nominal_speed
+//#define G4 bIterator->bb[X_AXIS].nominal_speed
 #define block   bIterator
 #define RAD_SPEED    opti_BI[counter].rad_speed
 #define OPTI_K		opti_BI[counter].k
@@ -23,32 +27,255 @@
 
 
 struct accDecSteps{
-    int acc;   // accelerate steps
-    int flat;  // flat steps
-    int dec;   // decelerate steps
-};
-
-struct accCompriseOf {
-    int32_t change;    // sum of dec and acc
-    int32_t dec;   //decceleration
-    int32_t acc;   //acceleration
-    uint32_t speedlevel;
+    int acc;   // accelerate steps in next segment.
+    int flat;  // flat steps in current segment.
+    int dec;   // decelerate steps in current segment.
 };
 
 //---------- function
 
 Optimization::Optimization(Controller *control)
 {
-	coefficien = 1.0;
+    coefficien = 1.0;
     //	step = 0.0;
     recalc = false;
     this->controller = control;
+    opti_BI = nullptr;
+    _block = nullptr;
 }
 
 Optimization::~Optimization()
 {
-    free(opti_BI);
+    if(opti_BI != nullptr)
+        free(opti_BI);
     cout<<"Exit optimization.";
+}
+
+
+enum stateTable{
+    P17=(1+(1<<4))       // a.steps > 1 & b.steps > 1
+    , P33 = (1+(2<<4))   // a.steps > 1 & b.steps == 1
+    , P49=(1+(3<<4))     // a.steps > 1 & b.steps == 0
+    , P18 = (2+(1<<4))   // a.steps == 1 & b.steps > 1
+    , P34=(2+(2<<4))     // a.steps == 1 & b.steps == 1
+    , P50=(2+(3<<4))     // a.steps == 1 & b.steps == 0
+    , P19= (3+(1<<4))    // a.steps == 0 & b.steps > 1
+    , P35=(3+(2<<4))     // a.steps == 0 & b.steps == 1
+    , P51=((3+(3<<4)))   // a.steps == 0 & b.steps == 0
+};
+
+
+
+void Optimization::_calcLevel(accCompriseOf data[N_AXIS],size_t i, bool isNoMoveNext, bool isNoMoveCurrent)
+{
+    accCompriseOf* couple = &data[i];
+//    if(data[i].a.steps == 0)
+//        return;
+
+    uint16_t state;	// Состояние автомата
+//    stateTable state;
+
+    uint16_t S1,S2;
+
+    int a,b,c;
+
+    if(couple->a.steps > 1)
+        S1 = 1;
+    else if(couple->a.steps == 1){
+        S1 = 2;
+    }
+    else {
+        S1 = 3;
+    }
+
+    if(couple->b.steps > 1){
+        S2 = 1;
+    }else if(couple->b.steps == 1){
+        S2 = 2;
+    }else{
+        S2 = 3;
+    }
+
+    state = S1 + (S2<<4);
+    double_t k ;// = scSteps/(scSteps+ncSteps);
+    int32_t dec;
+    switch (state)
+    {
+    case P17: // a.steps > 1 & b.steps > 1
+    	if(i != E_AXIS){
+            couple->change = couple->b.nominalLevel - couple->a.nominalLevel;
+            k = static_cast<double_t>(couple->a.steps)/static_cast<double_t>(couple->a.steps+couple->b.steps);
+    		if(couple->change >= 0)
+    			dec =  static_cast<int32_t>( ceil(couple->change * k ));
+    		else
+    			dec = static_cast<int32_t>(round(couple->change * k));
+
+            couple->a.Dec = dec;
+            couple->b.Acc = couple->change - dec;
+//    		couple->b.enterLevel = couple->b.nominalLevel - couple->b.Acc;
+
+    	}else{
+    		if(isNoMoveNext || isNoMoveCurrent){
+
+                couple->change = -couple->a.nominalLevel;
+    			dec = couple->change;
+                couple->a.Dec = dec;
+                couple->b.Acc = couple->b.nominalLevel;
+//                couple->b.enterLevel = couple->b.nominalLevel - couple->b.Acc;
+
+    		}else{
+    			// usual calculation
+                couple->change = couple->b.nominalLevel - couple->a.nominalLevel;
+                k = static_cast<double_t>(couple->a.steps)/static_cast<double_t>(couple->a.steps+couple->b.steps);
+        		if(couple->change >= 0)
+        			dec =  static_cast<int32_t>( ceil(couple->change * k ));
+        		else
+        			dec = static_cast<int32_t>(round(couple->change * k));
+
+                couple->a.Dec = dec;
+                couple->b.Acc = couple->change - dec;
+//        		couple->b.enterLevel = couple->b.nominalLevel - couple->b.Acc;
+
+    		}
+    	}
+        couple->b.enterLevel = couple->b.nominalLevel - couple->b.Acc;
+        break;
+
+
+    case P33: // a.steps > 1 & b.steps == 1
+        couple->change = couple->b.nominalLevel - couple->a.nominalLevel;
+    	dec = couple->change;
+        couple->a.Dec = dec;
+        couple->b.Acc = 0;
+        couple->b.enterLevel = couple->b.nominalLevel - couple->b.Acc;
+        break;
+
+    case P34: // a.steps == 1 & b.steps == 1
+    	couple->change = couple->b.nominalLevel - couple->a.nominalLevel;
+    	dec = couple->change;
+    	couple->a.Dec = dec;//0
+    	couple->b.Acc = 0;
+    	couple->b.enterLevel = couple->b.nominalLevel - couple->b.Acc;
+    	break;
+
+    case P49: // a.steps > 1 & b.steps == 0
+        couple->change = -couple->a.nominalLevel;
+    	dec = couple->change;
+        couple->a.Dec = dec;
+        couple->b.Acc = 0;
+        couple->b.enterLevel = couple->b.nominalLevel - couple->b.Acc;
+   	    break;
+
+    case P18: // a.steps == 1 & b.steps > 1
+        couple->change = couple->b.nominalLevel - couple->a.nominalLevel;
+    	dec = couple->change;
+        couple->a.Dec = 0;
+        couple->b.Acc = dec;
+        couple->b.enterLevel = couple->b.nominalLevel - couple->b.Acc;
+    	break;
+
+    case P19: // a.steps == 0 & b.steps > 1  move starting in next segment
+        couple->a.enterLevel = 0;
+        couple->change = couple->b.nominalLevel - couple->a.nominalLevel;
+        couple->b.Acc = couple->change;
+        couple->b.enterLevel = couple->b.nominalLevel - couple->b.Acc;
+    	break;
+
+
+    case P50: // a.steps == 1 & b.steps == 0
+    	couple->change = - couple->a.nominalLevel;
+        couple->a.Dec = 0;
+
+
+    	break;
+
+    case P51: // a.steps == 0 & b.steps == 0
+    	couple->change = 0;
+        couple->a.Acc = 0;
+        couple->a.Dec = 0;
+        couple->b.enterLevel = 0;
+    	break;
+
+    }// switch
+
+    //=========
+
+    if(couple->a.steps >0 )
+    {
+    	//G4 = sqrt(2.0*block->alfa * block->acceleration * accpath);
+
+    	volatile double_t G4;
+//    	volatile uint32_t nominal_rate;
+    	uint32_t rate;
+
+        couple->a.finalLevel = couple->a.nominalLevel + couple->a.Dec;
+
+    	_block->speedLevel = couple->a.nominalLevel;
+        if(couple->a.nominalLevel != 0){
+            G4 = sqrt(2.0 *_block->alfa * _block->acceleration * _block->speedLevel);// couple->a.Acc);
+    		rate = static_cast<uint32_t> (controller->calcAxisRate(i,G4));
+    	}else{
+    		rate = controller->calcInitRate(i,_block->acceleration);
+    	}
+
+        if(rate > 16777214){ // 0xfffffe
+        	rate = 0xfffffe;
+        }
+
+//        if(nominal_rate == _block->nominal_rate)
+    	_block->nominal_rate = rate;
+
+        if(couple->a.enterLevel == 0){
+    		rate = controller->calcInitRate(i,_block->acceleration);
+    	}else{
+            G4 = sqrt(2.0 *_block->alfa * _block->acceleration * couple->a.enterLevel);
+    		rate = controller->calcAxisRate(i,G4);
+    	}
+        //        if(initRate == _block->initial_rate)
+        if(rate > 16777214){ // 0xfffffe
+        	rate = 0xfffffe;
+        }
+
+    	_block->initial_rate = rate;
+
+
+        _block->initial_speedLevel = static_cast<uint32_t>(couple->a.enterLevel);
+        _block->accelerate_until = static_cast<uint32_t>(abs(couple->a.Acc));
+        _block->decelerate_after = static_cast<u_int32_t>( couple->a.steps - abs(couple->a.Dec) );
+
+        assert(_block->accelerate_until<=_block->decelerate_after);
+
+        _block->final_speedLevel = static_cast<u_int32_t>(couple->a.finalLevel); //( couple->a.nominalLevel + couple->a.Dec );
+
+        if(_block->final_speedLevel != 0)
+        {
+        	double_t dcc = sqrt(2.0 *_block->alfa * _block->acceleration * _block->final_speedLevel);
+        	rate = controller->calcAxisRate(i,dcc);
+        }else {
+            rate = _block->initial_rate;
+        }
+
+        if(rate > 16777214){ // 0xfffffe
+        	rate = 0xfffffe;
+        }
+
+        _block->final_rate = rate;
+
+
+    }// end if(couple->a.steps >0 )
+#if REPORT_LEVEL == 3
+    cout<<"axis:"<<i
+       <<"steps:"<<_block->steps
+       <<"enter:"<<_block->initial_speedLevel
+      <<"acc:"<<_block->accelerate_until
+    <<"speedLevel:"<<_block->speedLevel
+     <<"dec:"<<_block->decelerate_after
+	 <<"fLevel:" << _block->final_speedLevel
+	<<"iniRate:"<< _block->initial_rate
+	<<"rate:" << _block->nominal_rate
+	<<"fRate:" << _block->final_rate
+          ;
+#endif
 }
 
 static uint32_t rowcounter = 0;
@@ -60,12 +287,17 @@ static uint32_t rowcounter = 0;
  */
 void Optimization::smooth(mito::Action_t &action, QQueue<sControlBlocks> &blocks)
 {
+
+
+    assert(action.queue.size() == blocks.size());
+
     QList<sControlBlocks>::iterator bIterator;// block iterator.
     QList<sControlBlocks>::iterator agIterator;
 
     volatile uint32_t size_sControl = sizeof (svSegment);
 
     QList<ComDataReq_t>::iterator   rIterator;// request iterator.
+    QList<ComDataReq_t>::iterator   nrIterator;// request iterator.
 
     bIterator = blocks.begin(); // current block
 
@@ -73,10 +305,53 @@ void Optimization::smooth(mito::Action_t &action, QQueue<sControlBlocks> &blocks
     agIterator++;                  // next block
 
     rIterator = action.queue.begin();   // destination.
+    nrIterator = action.queue.begin();   // next destination.
+    ++nrIterator;
 
     struct accCompriseOf acco[N_AXIS]; // vector acceleration/deceleration
 
-    // Main circle analize optimizaation
+    // set initial speed level
+    for(size_t i=0;i<N_AXIS;++i){
+        sControlBlocks sc = *bIterator;
+        acco[i].a.steps = sc.bb[i].steps;
+        if(acco[i].a.steps != 0){
+            acco[i].a.enterLevel = static_cast<int>(sc.bb[i].initial_speedLevel);
+            acco[i].a.nominalLevel = static_cast<int>(sc.bb[i].speedLevel);
+            acco[i].a.Acc = acco[i].a.nominalLevel - acco[i].a.enterLevel;
+            acco[i].a.finalLevel = static_cast<int>(sc.bb[i].final_speedLevel);
+            acco[i].a.Dec = acco[i].a.nominalLevel-acco[i].a.finalLevel;
+        }else {
+            acco[i].a.enterLevel = 0;
+            acco[i].a.nominalLevel = 0;
+            acco[i].a.Acc = 0;
+            acco[i].a.finalLevel = 0;
+            acco[i].a.Dec = 0;
+
+        }
+    }
+
+//    for(size_t i=1;i<N_AXIS;++i){
+//         sControlBlocks sc = *bIterator;
+//         acco[i].a.steps = sc.bb[i].steps;
+//         if(acco[i].b.steps != 0){
+//             acco[i].b.enterLevel = static_cast<int>(sc.bb[i].initial_speedLevel);
+//             acco[i].b.nominalLevel = static_cast<int>(sc.bb[i].speedLevel);
+//             acco[i].b.Acc = acco[i].b.nominalLevel - acco[i].b.enterLevel;
+//             acco[i].b.finalLevel = static_cast<int>(sc.bb[i].final_speedLevel);
+//             acco[i].b.Dec = acco[i].b.nominalLevel-acco[i].b.finalLevel;
+//         }else {
+//             acco[i].b.enterLevel = 0;
+//             acco[i].b.nominalLevel = 0;
+//             acco[i].b.Acc = 0;
+//             acco[i].b.finalLevel = 0;
+//             acco[i].b.Dec = 0;
+
+//         }
+//     }
+    bool isNoMoveNext;
+    bool isNoMoveCurrent;
+
+   // Main circle analize optimizaation
     while(agIterator != blocks.end()){
 
 
@@ -84,10 +359,55 @@ void Optimization::smooth(mito::Action_t &action, QQueue<sControlBlocks> &blocks
         sControlBlocks nc = *agIterator;    // next data: next block
 
         svSegment* segment = &rIterator->payload.instrument1_parameter;// destination data
+        svSegment* nsegment = &nrIterator->payload.instrument1_parameter;// destination data
+        uint32_t segnum = segment->head.linenumber;
+
+
+        // load steps in axis  PART 2
+//        for(size_t i=0;i<N_AXIS;++i)
+//        {
+//            acco[i].a.steps = sc.bb[i].steps;
+//            acco[i].b.steps = nc.bb[i].steps;
+
+//        }
+#if REPORT_LEVEL == 4
+        cout<<"segnum:" <<segnum;
+#endif
+
+        for(size_t i=0;i<N_AXIS;++i){
+//             sControlBlocks sc = *bIterator;
+             acco[i].b.steps = nc.bb[i].steps;
+             if(acco[i].b.steps != 0){
+                 acco[i].b.enterLevel = static_cast<int>(nc.bb[i].initial_speedLevel);
+                 acco[i].b.nominalLevel = static_cast<int>(nc.bb[i].speedLevel);
+                 acco[i].b.Acc = acco[i].b.nominalLevel - acco[i].b.enterLevel;
+                 acco[i].b.finalLevel = static_cast<int>(nc.bb[i].final_speedLevel);
+                 acco[i].b.Dec = acco[i].b.nominalLevel-acco[i].b.finalLevel;
+             }else {
+                 acco[i].b.enterLevel = 0;
+                 acco[i].b.nominalLevel = 0;
+                 acco[i].b.Acc = 0;
+                 acco[i].b.finalLevel = 0;
+                 acco[i].b.Dec = 0;
+
+             }
+         }
+
+
+
+        // Если нет перемещения инструмента, то и материал не оптимизируется.
+        isNoMoveNext = (acco[X_AXIS].b.steps == 0) && (acco[Y_AXIS].b.steps == 0)&& (acco[Z_AXIS].b.steps == 0);
+        isNoMoveCurrent = (acco[X_AXIS].a.steps == 0) && (acco[Y_AXIS].a.steps == 0)&& (acco[Z_AXIS].a.steps == 0);
+
+        //-------------- PART 2 end
+
+
 
         //For every axis calculate steps to change speed.
-        // axis circle.
+        // axis loop.
         for(uint32_t i=0;i<N_AXIS;i++){
+        	_block = &sc.bb[i];
+#if CHANGELEVEL_VERSION == 2
 //            cout<<"i:"<<i<<"\tsteps:"<<sc.bb[i].steps;
             if(sc.bb[i].steps == 0 && nc.bb[i].steps == 0)
                 continue;
@@ -112,20 +432,20 @@ void Optimization::smooth(mito::Action_t &action, QQueue<sControlBlocks> &blocks
                 nc.bb[i].speedLevel = 1;
             }
 
-
-
             // Calculate changeLevel
+            int32_t changLevel = 0;
+            uint32_t scSteps = (sc.bb[i].steps);
+            uint32_t ncSteps = (nc.bb[i].steps);
+#endif
+#if CHANGELEVEL_VERSION == 1
             double_t nextBlockSpeed = 0;
 //            double_t changLevel = 0;
-            int32_t changLevel = 0;
 
             if(nc.bb[i].steps > 1)
                     nextBlockSpeed = sqrt( nc.bb[i].alfa*2.0*nc.bb[i].acceleration*nc.bb[i].accelerate_until );
             else if (nc.bb[i].steps == 1) {
                 nextBlockSpeed = sqrt( nc.bb[i].alfa*2.0*nc.bb[i].acceleration * 1.0 );
             }
-
-            uint32_t scSteps = sc.bb[i].steps, ncSteps = nc.bb[i].steps;
 
             if(scSteps <= 1 && ncSteps <= 1 )
             {
@@ -140,6 +460,9 @@ void Optimization::smooth(mito::Action_t &action, QQueue<sControlBlocks> &blocks
 //                changLevel = (pow(nextBlockSpeed,2.0) - pow(currBlockSpeed,2.0))/(sc.bb[i].alfa*2.0*sc.bb[i].acceleration);
                 changLevel =  static_cast<int32_t>(nc.bb[i].speedLevel) - static_cast<int32_t>(sc.bb[i].speedLevel);
             }
+#endif
+#if CHANGELEVEL_VERSION == 2
+            changLevel =  static_cast<int32_t>(nc.bb[i].speedLevel) -  static_cast<int32_t>(sc.bb[i].speedLevel);
 
             acco[i].change = changLevel;
             acco[i].speedlevel = sc.bb[i].speedLevel;
@@ -157,15 +480,134 @@ void Optimization::smooth(mito::Action_t &action, QQueue<sControlBlocks> &blocks
                 acco[i].acc = acco[i].change - acco[i].dec;
             }
 
-             uint32_t cnt;
+            // part 2
+#endif
+//            acco[i].a.steps = sc.bb[i].steps;
+//            acco[i].b.steps = nc.bb[i].steps;
+//
+#if CHANGELEVEL_VERSION == 3
+            if(acco[i].a.steps !=0){
+                acco[i].a.nominalLevel = static_cast<int>(sc.bb[i].speedLevel);
+                acco[i].a.Acc = acco[i].a.nominalLevel - acco[i].a.enterLevel;
+                acco[i].a.finalLevel = static_cast<int>(sc.bb[i].final_speedLevel);
+                acco[i].a.Dec = acco[i].a.finalLevel-acco[i].a.nominalLevel;
+                acco[i].a.steps = static_cast<int> (sc.bb[i].steps);
+            }
+
+            if(acco[i].b.steps != 0){
+                acco[i].b.nominalLevel = static_cast<int>(nc.bb[i].speedLevel);
+                acco[i].b.Acc = acco[i].b.nominalLevel - acco[i].b.enterLevel;
+                acco[i].b.finalLevel = static_cast<int>(nc.bb[i].final_speedLevel);
+                acco[i].b.Dec = acco[i].b.finalLevel-acco[i].b.nominalLevel;
+                acco[i].b.steps = static_cast<int> (nc.bb[i].steps);
+            }
+
+//            // Если нет перемещения инструмента, то и материал не оптимизируется.
+//            bool isNoMoveNext = (acco[X_AXIS].b.steps == 0) && (acco[Y_AXIS].b.steps == 0)&& (acco[Z_AXIS].b.steps == 0);
+//            bool isNoMoveCurrent = (acco[X_AXIS].a.steps == 0) && (acco[Y_AXIS].a.steps == 0)&& (acco[Z_AXIS].a.steps == 0);
+
+            _calcLevel(acco,i,isNoMoveNext, isNoMoveCurrent);
+
+//            int changeL = acco[i].change;
+//            if(abs(changeL) < static_cast<int32_t>( scSteps )){
+
+//            }
+
+#endif
+
+            uint64_t cnt;
+#if CHANGELEVEL_VERSION == 1
             if(nextBlockSpeed >= DBL_EPSILON)// if(nextBlockSpeed != 0)
-                uint32_t cnt = controller->calcAxisRate(i,nextBlockSpeed);
+                cnt = controller->calcAxisRate(i,nextBlockSpeed);
             else {
                  cnt = 0xfffffe;
             }
+#endif
+
+#if CHANGELEVEL_VERSION == 2
+            uint32_t finalRate = sc.bb[i].final_rate;
+//            uint32_t finalSpeedlevel = sc.bb[i].final_speedLevel;
+            // final rate in acco.dec
+            double_t blockSpeed = 0;
+            blockSpeed = sqrt( sc.bb[i].alfa*2.0*sc.bb[i].acceleration * (static_cast<int32_t>(acco[i].speedlevel) + acco[i].dec ));
+            if(blockSpeed >= DBL_EPSILON){
+                cnt = controller->calcAxisRate(i,blockSpeed);
+            }else{
+                cnt = 0xfffffe;
+            }
+
+            if(cnt > 16777214){ // 0xfffffe
+                cnt = 0xfffffe;
+            }
+
+            //schem
+            uint8_t schem0 = 0, schem1, schem2;
+            if(acco[i].dec > 0){
+                schem2 = ACCELERATION;
+            }else if (acco[i].dec < 0) {
+                schem2 = DECCELERATION;
+            }else {
+                schem2 = FLATMOTION;
+            }
+
+            int32_t flatSegment;
+
+            if(segment->axis[i].steps > 1)
+                flatSegment = static_cast<int32_t> (segment->axis[i].steps) - static_cast<int32_t>(segment->axis[i].accelerate_until) - abs(acco[i].dec);
+            else
+                flatSegment = 0;
+#if REPORT_LEVEL == 1
+            cout<<"row:"<<rowcounter;
+#endif
+
+            if(flatSegment < 0 )
+            {
+                cout<<"steps:"<< segment->axis[i].steps<<" acc:" <<segment->axis[i].accelerate_until<<" dcc:"<<acco[i].dec<<" chang:"<<acco[i].change<<" num:"<<segment->head.linenumber;
+            }
+
+            assert(flatSegment>=0);
+
+            if(flatSegment > 0){
+                schem1 = FLATMOTION;
+            }else{
+                schem1 = schem2;
+            }
+
+            segment->axis[i].schem[1] = schem1;
+            segment->axis[i].schem[2] = schem2;
+            segment->axis[i].final_rate = static_cast<uint32_t>(cnt);
+            segment->axis[i].decelerate_after = segment->axis[i].steps - static_cast<uint32_t>(abs(acco[i].dec));
+
+            // next segment
+
+//            segment = &rIterator->payload.instrument1_parameter;// destination data
+            blockSpeed = sqrt( nc.bb[i].alfa*2.0*nc.bb[i].acceleration * (static_cast<int32_t>(acco[i].speedlevel) + acco[i].acc ));
+            if(blockSpeed >= DBL_EPSILON){
+                cnt = controller->calcAxisRate(i,blockSpeed);
+            }else{
+                cnt = 0xfffffe;
+            }
+
+            if(cnt > 16777214){ // 0xfffffe
+                cnt = 0xfffffe;
+            }
+            //schem
+            if(acco[i].acc > 0){
+                schem0 = ACCELERATION;
+            }else if (acco[i].acc < 0) {
+                schem0 = DECCELERATION;
+            }else {
+                schem0 = FLATMOTION;
+            }
+
+            nsegment->axis[i].schem[0] = schem0;
+            nsegment->axis[i].initial_rate = static_cast<uint32_t>(cnt);
+            nsegment->axis[i].accelerate_until = static_cast<uint32_t>(acco[i].acc);
 
 
-#if DEBUG_LEVEL == 0
+#endif
+            // Report
+#if REPORT_LEVEL == 0
 //            if(i==1)
 //      cout<<"axis:"<<i<<"  changLevel:" << changLevel<<"("<<sc.bb[i].speedLevel<<")"<<"\tsteps:"<<sc.bb[i].steps<<"\tspeed:"<<currBlockSpeed<<"("<<nextBlockSpeed<<")";// <<"\tcnt:"<<cnt;
 //            cout<<"axis:"<<i<<"  changLevel:" << changLevel<<"("<<sc.bb[i].speedLevel<<")"
@@ -175,7 +617,10 @@ void Optimization::smooth(mito::Action_t &action, QQueue<sControlBlocks> &blocks
             cout<<"axis:"<<i <<"  speedLevel:" << acco[i].speedlevel
                <<" steps:"<<sc.bb[i].steps
               << acco[i].change<<"["<<acco[i].dec<<":"<<acco[i].acc<<"]"
-              <<" rate:"<< segment->axis[i].nominal_rate <<" level:"<<segment->axis[i].speedLevel
+              <<" rate:"<< segment->axis[i].nominal_rate
+             <<"final:"<<finalRate
+            <<"init:"<<sc.bb[i].initial_rate
+            <<"   "<<cnt
               <<"row:"<<rowcounter;
 
 #endif
@@ -183,10 +628,16 @@ void Optimization::smooth(mito::Action_t &action, QQueue<sControlBlocks> &blocks
 
         }
 
+        // next data block.
+
+        for(size_t i=0;i<N_AXIS;i++)
+        	memcpy(&acco[i].a,&acco[i].b,sizeof(segmentDescription));
+
         rowcounter++;// debug value
-        agIterator++;
-        bIterator++;
-        rIterator++;
+        ++agIterator;
+        ++bIterator;
+        ++rIterator;
+        ++nrIterator;
     }
 
     bIterator = blocks.end();
@@ -197,16 +648,66 @@ void Optimization::smooth(mito::Action_t &action, QQueue<sControlBlocks> &blocks
     --rIterator;
     svSegment* segment = &rIterator->payload.instrument1_parameter;// destination data
 
+
+
     // last row in queue
+#if REPORT_LEVEL==0
+    cout<<"axis:"<<i <<"  speedLevel:" << sc.bb[i].speedLevel
+    		<<"\tsteps:"<<sc.bb[i].steps
+			<< acco[i].change<<"["<<acco[i].acc<<":"<<"none]"
+			//          << acco[i].change<<"["<<acco[i].dec<<":"<<acco[i].acc<<"]"
+			<<" rate:"<< segment->axis[i].nominal_rate
+			//         <<" level:"<<segment->axis[i].speedLevel
+			<<"final:"<<finalRate
+			<<"init:"<<sc.bb[i].initial_rate
+			<<"row:"<<rowcounter;
+#endif
+
+
+
+    // load steps in axis  PART 2
+    for(size_t i=0;i<N_AXIS;++i)
+    {
+        acco[i].b.steps =0;
+        acco[i].b.enterLevel = 0;
+        acco[i].b.nominalLevel = 0;
+        acco[i].b.Acc = 0;
+        acco[i].b.finalLevel = 0;
+        acco[i].b.Dec = 0;
+    }
+    // Если нет перемещения инструмента, то и материал не оптимизируется.
+    isNoMoveNext = (acco[X_AXIS].b.steps == 0) && (acco[Y_AXIS].b.steps == 0)&& (acco[Z_AXIS].b.steps == 0);
+    isNoMoveCurrent = (acco[X_AXIS].a.steps == 0) && (acco[Y_AXIS].a.steps == 0)&& (acco[Z_AXIS].a.steps == 0);
+
     for(uint32_t i=0;i<N_AXIS;i++){
-        cout<<"axis:"<<i <<"  speedLevel:" << sc.bb[i].speedLevel
-           <<"\tsteps:"<<sc.bb[i].steps
-          << acco[i].change<<"["<<acco[i].acc<<":"<<"none]"
-          << acco[i].change<<"["<<acco[i].dec<<":"<<acco[i].acc<<"]"
-          <<" rate:"<< segment->axis[i].nominal_rate <<" level:"<<segment->axis[i].speedLevel
-          <<"row:"<<rowcounter;
+    	_block = &sc.bb[i];
+        _calcLevel(acco,i,isNoMoveNext, isNoMoveCurrent);
+    }
+#if REPORT_LEVEL == 1
+    rIterator = action.queue.begin();   // destination.
+
+    while(rIterator != action.queue.end()){
+
+        svSegment* segment = &rIterator->payload.instrument1_parameter;// destination data
+
+        for(uint32_t i=0;i<N_AXIS;i++){
+            cout<<" axis:"<<i
+               <<" acc:"<<segment->axis[i].initial_rate
+               <<" flat:"<<segment->axis[i].nominal_rate
+              <<" dcc:"<<segment->axis[i].final_rate
+             <<"sch:"<<segment->axis[i].schem[0]<<":"<<segment->axis[i].schem[1]<<":"<<segment->axis[i].schem[2]
+            <<"steps:" <<segment->axis[i].steps
+            <<"acstep:"<<segment->axis[i].accelerate_until
+            <<"flat:"<<segment->axis[i].decelerate_after - segment->axis[i].accelerate_until
+            <<"decstep:"<<segment->axis[i].steps-segment->axis[i].decelerate_after
+            <<" speedLevel:" << segment->axis[i].speedLevel
+              ;
+        }
+        ++rIterator;
     }
 
+
+#endif
 
 }
 
@@ -283,7 +784,7 @@ void Optimization::calc(mito::Action_t &action, QQueue<sControlBlocks> &blocks)
 //START
     opti_start: // //////////////////////////
 
-	counter = static_cast<size_t>( blocks.size());
+    counter = static_cast<size_t>( blocks.size());
 
     recalc = false;
 
@@ -464,7 +965,7 @@ double_t Optimization::stepsTransition(uint axis, double_t enterSpeed, double_t 
 /*
 double_t
 Optimization::accPath(sAccPathParam* params, double_t coef) {
-	return ( pow( (coef * params->radSpeed) ,2.0)/(2.0*params->alfa*params->radAccel) );
+    return ( pow( (coef * params->radSpeed) ,2.0)/(2.0*params->alfa*params->radAccel) );
 }
 */
 /**
@@ -481,7 +982,7 @@ Optimization::stepsChandSpeed(int axis, double_t coef)
     double_t path = 0.0;
 #if OPTI_V==1
     pathA = accPath(&params[CURRENTPARAM], coef);//19
-	pathB = accPath(&params[PREVPARAM],coefficien);//18
+    pathB = accPath(&params[PREVPARAM],coefficien);//18
 #endif
     switch (axis) {
     case X_AXIS:
@@ -642,14 +1143,14 @@ double_t Optimization::opt(double_t X0) {
         }
     }
 
-	return Xnext;
+    return Xnext;
 }
 
 double_t Optimization::fn(int axis, double_t X) {
     double_t chang = stepsChandSpeed(axis, X);
 //    double_t chang = aStepsChangeSpeed(X_AXIS);
     double_t step = 0.0;
-	double_t result;
+    double_t result;
     switch (axis) {
     case X_AXIS:
         step = aParamOptim[CURRENTPARAM].para_x.steps;
@@ -669,7 +1170,7 @@ double_t Optimization::fn(int axis, double_t X) {
     }
 
 
-	result = chang>0?(chang - step):(chang+step);
+    result = chang>0?(chang - step):(chang+step);
     return result;
 }
 
@@ -838,20 +1339,20 @@ bool Optimization::hasSteps(int axis)
  * Вычисление угла между векторами.
  */
 double_t Optimization::calcAngle(sControlBlocks& curr, sControlBlocks& next) {
-	double_t result=0.0;
+    double_t result=0.0;
 
-	tf2::Vector3 vectorCur;
-	tf2::Vector3 vectorNext;
+    tf2::Vector3 vectorCur;
+    tf2::Vector3 vectorNext;
 
-	vectorCur.setX(curr.bb[X_AXIS].path);
-	vectorCur.setY(curr.bb[Y_AXIS].path);
-	vectorCur.setZ(curr.bb[Z_AXIS].path);
+    vectorCur.setX(curr.bb[X_AXIS].path);
+    vectorCur.setY(curr.bb[Y_AXIS].path);
+    vectorCur.setZ(curr.bb[Z_AXIS].path);
 
-	vectorNext.setX(next.bb[X_AXIS].path);
-	vectorNext.setY(next.bb[Y_AXIS].path);
-	vectorNext.setZ(next.bb[Z_AXIS].path);
+    vectorNext.setX(next.bb[X_AXIS].path);
+    vectorNext.setY(next.bb[Y_AXIS].path);
+    vectorNext.setZ(next.bb[Z_AXIS].path);
 
-	result = vectorCur.angle(vectorNext);
+    result = vectorCur.angle(vectorNext);
 
-	return result;
+    return result;
 }

@@ -6,7 +6,7 @@
 #include "gparcer/comdata.h"
 //#include "scontrolblocks.h"
 #include "optimization.h"
-
+#include <QString>
 #include <QTextStream>
 //#include <QObject>
 #include <QMutex>
@@ -51,7 +51,9 @@ public:
         exec_mutex.unlock();
 
         ExecuteProgramm::action = actionQueue.dequeue();
+#if REPORT_LEVEL==1
         qDebug()<<__FILE__<<__LINE__<<"\tnumaction:"<<numaction;
+#endif
         exec_mutex.lock();
          numaction--;
         exec_mutex.unlock();
@@ -101,6 +103,7 @@ public:
         current_index = 0;
         tag_action.index = 0;
         cord = Coordinatus::instance();
+        debug_counter = 0;
 //        optimization = new Optimization;
 //        if(parent != nullptr){
 //            ExecuteProgramm* exec = static_cast<ExecuteProgramm*>(parent);
@@ -125,6 +128,9 @@ public:
             {
                 producer_m1:
                 mito::Action_t* action;
+                ++debug_counter;
+                qDebug()<<__FILE__<<__LINE__<<"counter:"<<debug_counter;
+
                 do{
                     action = gcodeWorker->readCommandLine();
                 }while(action->a == eNext);
@@ -154,16 +160,21 @@ public:
                      }while(current_index == action->index);
 
                     //TODO optimization tag_action & controlblocks
-                    optimization = new Optimization(controller);
-                    optimization->smooth(tag_action,controlblocks);
-//                    optimization->calc(tag_action, controlblocks);
-
-                    delete  optimization;
+                    if(tag_action.queue.size() == controlblocks.size()){
+                        optimization = new Optimization(controller);
+                        optimization->smooth(tag_action,controlblocks);
+                        //                    optimization->calc(tag_action, controlblocks);
+                        delete  optimization;
+                    }else {
+                        qFatal("queue size not equal.");
+                    }
 
                     controlblocks.clear();
                     actionQueue->enqueue(tag_action);
                     current_index = action->index;
                     tag_action = *action;
+                    memcpy(blocks.bb,cord->nextBlocks,sizeof (sControlBlocks));
+                    controlblocks.enqueue(blocks);
                 }else{
                     controlblocks.clear();
                     actionQueue->enqueue(tag_action);
@@ -188,9 +199,9 @@ public:
                     break;
                 }
             }
-
+#if REPORT_LEVEL==1
             qDebug()<<__FILE__<<__LINE__<<"numaction:"<<ThreadViser::numaction;
-
+#endif
             ThreadViser::exec_mutex.lock();
             if(abort == false)
                 ThreadViser::queueNotFull.wait(&ThreadViser::exec_mutex);
@@ -215,6 +226,8 @@ private:
 
     bool abort;
     bool restart;
+
+    uint64_t debug_counter;
 
     uint current_index ;
     mito::Action_t tag_action;

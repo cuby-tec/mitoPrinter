@@ -288,7 +288,7 @@ void MainWindow::on_commandExecuteProgram()
 {
  //TODO
 
-    qDebug()<<__FILE__<<__LINE__;
+//    qDebug()<<__FILE__<<__LINE__;
     QAction *action = ui->actionRun;
     action->setEnabled(false);
 
@@ -314,8 +314,9 @@ void MainWindow::on_commandOpenFile()
         cout<<"File dosn't opened."<<info->absoluteFilePath();
         return;
     }
+#if REPORT_LEVEL==2
     cout<<"File opened:"<<info->absoluteFilePath();
-
+#endif
     lineLength = path_file.readLine(buf,255);
     if (lineLength != -1) {
         // the line is available in buf
@@ -337,11 +338,14 @@ void MainWindow::on_commandOpenFile()
         path_file.write(buf,filename.size());
         path_file.close();
         //--------
+#if REPORT_LEVEL==2
         cout<< "Open file with G-code file:"<<filename;
+#endif
         gcodeFile.setFileName(filename);
         if(gcodeFile.open(QIODevice::ReadOnly | QIODevice::Text)){
+#if REPORT_LEVEL==2
             cout<<"File opened:"<<filename;
-
+#endif
             QAction *actionRun = ui->actionRun;
             actionRun->setEnabled(true);
             //TODO Check file for errors.
@@ -418,7 +422,7 @@ void MainWindow::filamentUpReleased()
 void MainWindow::on_runProgramButton()
 {
     //TODO
-    cout<<"on_runProgramButton";
+//    cout<<"on_runProgramButton";
 
     on_commandExecuteProgram();
 }

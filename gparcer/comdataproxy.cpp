@@ -10,7 +10,7 @@
 #include <cmath>
 
 
-#define DEBUGLEVEL  1
+#define DEBUGLEVEL  0
 
 #define cout qDebug()<<__FILE__<<__LINE__
 //#define diff(M) coordinatus->getCurrentValue(M##_AXIS) - coordinatus->getNextValue(M##_AXIS)
