@@ -42,7 +42,7 @@ public slots:
 private:
     Ui::RightArea *ui;
 
-    QCheckBox * check1;
+//    QCheckBox * check1;
     QCheckBox * check2;
     QCheckBox * check3;
     QCheckBox * check4;

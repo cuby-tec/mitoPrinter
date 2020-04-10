@@ -94,6 +94,13 @@ private:
 
     PushFilamentDown* pushdown;
 
+    //------------------- Dock widgets
+    QDockWidget* doc_thermo;
+    void setupDocWidget();
+
+    QDockWidget* coordinatus_DW; // DockWidget
+
+
 };
 
 #endif // MAINWINDOW_H

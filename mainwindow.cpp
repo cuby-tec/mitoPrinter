@@ -62,12 +62,16 @@ MainWindow::MainWindow(QWidget *parent) :
     //sg_executeComplite
     connect(messager,SIGNAL(sg_executeComplite()),this, SLOT(on_gprogrammFinish()));
 
+    //---------- dockWidget
+    setupDocWidget();
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+
 
 void MainWindow::s_openFileDo()
 {
@@ -250,6 +254,33 @@ void MainWindow::setupMenu()
         stopProgramButton->setToolTip(QString("Stop program"));
         toolbar->addWidget(stopProgramButton);
         connect(stopProgramButton,SIGNAL(clicked()),this,SLOT(on_stopProgram())  );
+
+
+}
+
+void MainWindow::setupDocWidget()
+{
+//    doc_thermo = new QDockWidget(tr("Thermo"),this);
+//    doc_thermo->setGeometry(5,10,250,300);
+//    doc_thermo->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+//    addDockWidget(Qt::RightDockWidgetArea, doc_thermo);
+
+//    new ThermoPlot(wd);
+//    QWidget *wd = new QWidget(doc_thermo); //ui->widget_1;
+    doc_thermo = ui->thermo_dockWidget;
+    QWidget *wd = new QWidget(doc_thermo);
+    wd->setGeometry(5,30,290,240);
+    ThermoPlot* plotter = new ThermoPlot(wd);
+
+    doc_thermo->setWidget(plotter);
+    addDockWidget(Qt::RightDockWidgetArea,doc_thermo);
+
+    //--------- Coordinatus
+    coordinatus_DW = ui->coordinatus_dockWidget;
+    CoordinatusWidget* widCoordinatus = new CoordinatusWidget(coordinatus_DW);
+    widCoordinatus->setGeometry(5,190,280,250);
+//    coordinatus_DW->setGeometry(5,330,290,500);
+    coordinatus_DW->setWidget(widCoordinatus);
 
 
 }

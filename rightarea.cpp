@@ -9,12 +9,12 @@ RightArea::RightArea(QWidget *parent) : QWidget(parent)
     ui->setupUi(parent);
 
 
-    check1 = ui->checkBox_1;
+//    check1 = ui->checkBox_1;
     check2 = ui->checkBox_2;
     check3 = ui->checkBox_3;
     check4 = ui->checkBox_4;
 
-    connect(check1,SIGNAL(stateChanged(int)), this, SLOT(hide1(int)));
+//    connect(check1,SIGNAL(stateChanged(int)), this, SLOT(hide1(int)));
     connect(check2, SIGNAL(stateChanged(int)), this, SLOT(hide2(int)));
     connect(check3, SIGNAL(stateChanged(int)), this, SLOT(hide3(int)) );
     connect(check4, SIGNAL(stateChanged(int)), this, SLOT(hide4(int)) );
@@ -25,7 +25,7 @@ RightArea::RightArea(QWidget *parent) : QWidget(parent)
                                     "QCheckBox::indicator:checked "
                                     "{image: url(:/images/checkbox_checked.png); }"
                                     ;
-    check1->setStyleSheet(styleSheet);
+//    check1->setStyleSheet(styleSheet);
     check2->setStyleSheet(styleSheet);
     check3->setStyleSheet(styleSheet);
     check4->setStyleSheet(styleSheet);
@@ -36,12 +36,12 @@ RightArea::RightArea(QWidget *parent) : QWidget(parent)
 
     //----------- ThermoPlot
 
-    QWidget *wd = ui->widget_1;
-    plotter = new ThermoPlot(wd);
-    connect(plotter,SIGNAL(sg_statusChanged(const Status_t*)),this, SLOT(updateStatus(const Status_t*)) );
-    connect(plotter,SIGNAL(sg_statusFailed()), this,SLOT(failedStatus()) );
+//    QWidget *wd = ui->widget_1;
+//    plotter = new ThermoPlot(wd);
+//    connect(plotter,SIGNAL(sg_statusChanged(const Status_t*)),this, SLOT(updateStatus(const Status_t*)) );
+//    connect(plotter,SIGNAL(sg_statusFailed()), this,SLOT(failedStatus()) );
 
-    check1->setText("ThermoPlot");
+//    check1->setText("ThermoPlot");
 
 
     //--------- CoordinatusWidget
@@ -50,7 +50,7 @@ RightArea::RightArea(QWidget *parent) : QWidget(parent)
     check2->setText("Coordinatus");
     check2->setChecked(false);
 
-    connect(plotter,SIGNAL(sg_statusChanged(const Status_t*)),widCoordinatus,SLOT(updateStatus(const Status_t*)) );
+//    connect(plotter,SIGNAL(sg_statusChanged(const Status_t*)),widCoordinatus,SLOT(updateStatus(const Status_t*)) );
 
     Messager* message = Messager::instance();
     connect( message, SIGNAL(sg_statusChanged(const Status_t*)),widCoordinatus, SLOT(updateStatus(const Status_t*)) );
@@ -81,10 +81,10 @@ void RightArea::resizeEvent(QResizeEvent *event)
 
 void RightArea::hide1(int state)
 {
-    if(state == false)
-        ui->widget_1->hide();
-    else
-        ui->widget_1->show();
+//    if(state == false)
+//        ui->widget_1->hide();
+//    else
+//        ui->widget_1->show();
 }
 
 void RightArea::hide2(int state)
