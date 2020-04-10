@@ -8,7 +8,7 @@
 
 //-------------- defs
 
-#define CHANGELEVEL_VERSION 3//2
+#define CHANGELEVEL_VERSION 4//3//2
 
 #define REPORT_LEVEL    4
 
@@ -363,8 +363,8 @@ void Optimization::smooth(mito::Action_t &action, QQueue<sControlBlocks> &blocks
         if(acco[i].a.steps != 0){
             acco[i].a.enterLevel = static_cast<int>(sc.bb[i].initial_speedLevel);
             acco[i].a.nominalLevel = static_cast<int>(sc.bb[i].speedLevel);
-            acco[i].a.Acc = acco[i].a.nominalLevel - acco[i].a.enterLevel;
             acco[i].a.finalLevel = static_cast<int>(sc.bb[i].final_speedLevel);
+            acco[i].a.Acc = acco[i].a.nominalLevel - acco[i].a.enterLevel;
             acco[i].a.Dec = acco[i].a.nominalLevel-acco[i].a.finalLevel;
         }else {
             acco[i].a.enterLevel = 0;
@@ -379,7 +379,7 @@ void Optimization::smooth(mito::Action_t &action, QQueue<sControlBlocks> &blocks
     bool isNoMoveNext;
     bool isNoMoveCurrent;
 
-   // Main circle analize optimizaation
+  ///////////////////////////////// Main circle analyze optimization //////////////////
     while(agIterator != blocks.end()){
 
         sControlBlocks sc = *bIterator;//  source data:current block
@@ -400,14 +400,14 @@ void Optimization::smooth(mito::Action_t &action, QQueue<sControlBlocks> &blocks
              if(acco[i].b.steps != 0){
                  acco[i].b.enterLevel = static_cast<int>(nc.bb[i].initial_speedLevel);
                  acco[i].b.nominalLevel = static_cast<int>(nc.bb[i].speedLevel);
-                 acco[i].b.Acc = acco[i].b.nominalLevel - acco[i].b.enterLevel;
                  acco[i].b.finalLevel = static_cast<int>(nc.bb[i].final_speedLevel);
+                 acco[i].b.Acc = acco[i].b.nominalLevel - acco[i].b.enterLevel;
                  acco[i].b.Dec = acco[i].b.nominalLevel-acco[i].b.finalLevel;
              }else {
                  acco[i].b.enterLevel = 0;
                  acco[i].b.nominalLevel = 0;
-                 acco[i].b.Acc = 0;
                  acco[i].b.finalLevel = 0;
+                 acco[i].b.Acc = 0;
                  acco[i].b.Dec = 0;
 
              }
@@ -427,8 +427,8 @@ void Optimization::smooth(mito::Action_t &action, QQueue<sControlBlocks> &blocks
 #if CHANGELEVEL_VERSION == 3
             if(acco[i].a.steps !=0){
                 acco[i].a.nominalLevel = static_cast<int>(sc.bb[i].speedLevel);
-                acco[i].a.Acc = acco[i].a.nominalLevel - acco[i].a.enterLevel;
                 acco[i].a.finalLevel = static_cast<int>(sc.bb[i].final_speedLevel);
+                acco[i].a.Acc = acco[i].a.nominalLevel - acco[i].a.enterLevel;
                 acco[i].a.Dec = acco[i].a.finalLevel-acco[i].a.nominalLevel;
                 acco[i].a.steps = static_cast<int> (sc.bb[i].steps);
             }
@@ -445,6 +445,13 @@ void Optimization::smooth(mito::Action_t &action, QQueue<sControlBlocks> &blocks
 
             // fill segment
             fillSegment(_block, segment->axis[i]);
+#endif
+#if CHANGELEVEL_VERSION == 4
+            _calcLevel(acco,i,isNoMoveNext, isNoMoveCurrent);
+
+            // fill segment
+            fillSegment(_block, segment->axis[i]);
+
 #endif
 
         }
@@ -500,7 +507,7 @@ void Optimization::smooth(mito::Action_t &action, QQueue<sControlBlocks> &blocks
         _calcLevel(acco,i,isNoMoveNext, isNoMoveCurrent);
         fillSegment(_block, segment->axis[i]);
     }
-}
+}// END OF smoot()
 
 
 void Optimization::calc(mito::Action_t &action, QQueue<sControlBlocks> &blocks)

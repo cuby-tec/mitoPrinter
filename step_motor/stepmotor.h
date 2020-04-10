@@ -47,7 +47,7 @@
 
 #define PULLEY_DIAMETER	12.6//12.5//12.2//12.1 // pulley_diameter
 
-#define SHAFT_PITCH	1.25 // Шаг винта[mm]
+#define SHAFT_PITCH	1.240384615//1.25 // Шаг винта[mm]
 
 #define GEAR_LITTLE	10.0
 #define GEAR_LARGE	43.0

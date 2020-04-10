@@ -67,10 +67,11 @@ void ThreadArc::run()
                 if(result_exch != EXIT_SUCCESS)
                 {
                     status.frameNumber = 0;
-                    if (!restart)
-                        emit sg_failed_status();
-                    qDebug()<<__FILE__<<__LINE__<<"ThreadExchange[38]"<<" failed.";
-                    break;
+/*                    if (!restart)
+                        emit sg_failed_status(); 04/01/2020 */
+                    status.modelState.reserved1 = !COMMAND_ACKNOWLEDGED;
+                    qDebug()<<__FILE__<<__LINE__<<"result_exch="<<result_exch <<"try_counter="<<try_counter;
+/*                    break; 04/01/2020 */
                 }else{
                     //             status = exch->getStatus();
                     memcpy(&status,exch->getStatus(),sizeof(Status_t));
@@ -109,14 +110,27 @@ void ThreadArc::run()
 
             }while(!(status.modelState.reserved1&COMMAND_ACKNOWLEDGED));
 
+#ifndef QTIMER // 03/01/2020
             if(try_counter>=max_tryCounter){
                 break;
             }
+#else
+            if(timer.elapsed() > THREAD_TIMOUT)
+            {
+                break;
+            }
+
+#endif
             msleep(20);//debug delay 40
 
-        }// while()
+        }// while(!queue.isEmpty())
 
-        if(try_counter<max_tryCounter){
+#ifndef QTIMER // 03/01/2020
+        if(try_counter<max_tryCounter)
+#else
+        if(timer.elapsed() <= THREAD_TIMOUT)
+#endif
+        {
             if (!restart && (result_exch == EXIT_SUCCESS )){
                 emit sg_status_updated(&status);
 //                cout<<"restart:" <<restart<<"\tresult_exch:"<<result_exch;
