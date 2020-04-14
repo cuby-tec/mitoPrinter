@@ -23,6 +23,8 @@ enum eOrder{
     , bedTemperaure     // Температура стола.
     , eoG92			// G92: Set Position
 	, eoM84			//  M84: Stop idle hold
+    ,eoM320         // Activate autolevel
+    ,eoM321         // Deactivate autolevel
 };
 
 /**

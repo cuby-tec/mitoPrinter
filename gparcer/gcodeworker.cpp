@@ -148,6 +148,8 @@ GcodeWorker::buildAction(sGcode *src)
     else if (tag =="M109") etag = eM109;
     else if (tag == "M140") etag = eM140;
     else if (tag == "M190") etag = eM190;
+    else if (tag == "M320") etag = eM320;
+    else if (tag == "M321") etag = eM321;
     else if (tag == "M550") etag = eM550;
     else if (tag == "M82") etag = eM82;
     else if (tag == "M83") etag = eM83;
@@ -227,6 +229,12 @@ GcodeWorker::buildAction(sGcode *src)
         break;
     case eM190:
         action = (this->*callTagRef[etag])(src); // tagM190 TODO
+        break;
+    case eM320:             // tag M320
+        tagM320_Do(src);
+        break;
+    case eM321:             // tag M321
+        tagM321_Do(src);
         break;
     case eM550:
         break;
@@ -1665,7 +1673,65 @@ GcodeWorker::tagM190_Do(sGcode* sgCode){
         vTag->n = linecounter;
     action = comproxy->sendM190_Tag(vTag);
 
+    return action;
 }
+
+mito::Action_t*
+GcodeWorker::tagM320_Do(sGcode* sgCode)
+{
+    bool ok;
+    mito::Action_t * action = nullptr;
+    sM320_t tag;
+    sM320_t* vTag = &tag;
+
+    for(int i=0;i<sgCode->param_number;i++){
+        sGparam* gparam = &sgCode->param[i];
+        QString value(clearNumValue(gparam->value));
+        switch (gparam->group) {
+        case 'N':
+            uint number = QString(gparam->value).toUInt(&ok);
+            Q_ASSERT(ok);
+            if(ok) {vTag->n = number; }
+            break;
+        }
+    }// end of "for"
+
+    if(vTag->n == 0)
+        vTag->n = linecounter;
+
+    action = comproxy->sendM320_Tag(vTag);
+
+    return action;
+}
+
+mito::Action_t*
+GcodeWorker::tagM321_Do(sGcode* sgCode)
+{
+    bool ok;
+    mito::Action_t * action = nullptr;
+    sM321_t tag;
+    sM321_t* vTag = &tag;
+
+    for(int i=0;i<sgCode->param_number;i++){
+        sGparam* gparam = &sgCode->param[i];
+        QString value(clearNumValue(gparam->value));
+        switch (gparam->group) {
+        case 'N':
+            uint number = QString(gparam->value).toUInt(&ok);
+            Q_ASSERT(ok);
+            if(ok) {vTag->n = number; }
+            break;
+        }
+    }// end of "for"
+
+    if(vTag->n == 0)
+        vTag->n = linecounter;
+
+    action = comproxy->sendM321_Tag(vTag);
+
+    return action;
+}
+
 
 //M82: Set extruder to absolute mode
 mito::Action_t*

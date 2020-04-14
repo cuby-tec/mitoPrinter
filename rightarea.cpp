@@ -9,10 +9,10 @@ RightArea::RightArea(QWidget *parent) : QWidget(parent)
     ui->setupUi(parent);
 
 
-    check1 = ui->checkBox_1;
-    check2 = ui->checkBox_2;
-    check3 = ui->checkBox_3;
-    check4 = ui->checkBox_4;
+    check1 = ui->checkBox_1;    // Thermo
+    check2 = ui->checkBox_2;    //coordinatus
+    check3 = ui->checkBox_3;    // Console
+    check4 = ui->checkBox_4;    //model statistic
 
     connect(check1,SIGNAL(stateChanged(int)), this, SLOT(hide1(int)));
     connect(check2, SIGNAL(stateChanged(int)), this, SLOT(hide2(int)));
@@ -30,30 +30,28 @@ RightArea::RightArea(QWidget *parent) : QWidget(parent)
     check3->setStyleSheet(styleSheet);
     check4->setStyleSheet(styleSheet);
 
-    QVBoxLayout *layout = ui->verticalLayout;
-//    layout->setAlignment(check1,Qt::AlignTop);
-    layout->setAlignment(ui->line,Qt::AlignTop);
-
-    //----------- ThermoPlot
-
-    QWidget *wd = ui->widget_1;
-    plotter = new ThermoPlot(wd);
-    connect(plotter,SIGNAL(sg_statusChanged(const Status_t*)),this, SLOT(updateStatus(const Status_t*)) );
-    connect(plotter,SIGNAL(sg_statusFailed()), this,SLOT(failedStatus()) );
-
-    check1->setText("ThermoPlot");
+//    QVBoxLayout *layout = ui->verticalLayout;
+// ////    layout->setAlignment(check1,Qt::AlignTop);
+//    layout->setAlignment(ui->line,Qt::AlignTop);
+    QVBoxLayout * layout = ui->verticalLayout_2;
+    layout->setAlignment(check2,Qt::AlignTop);
+//    layout->setAlignment(layout,Qt::AlignTop);
 
 
     //--------- CoordinatusWidget
     QWidget *wd2 = ui->widget_2;
     widCoordinatus = new CoordinatusWidget(wd2);
     check2->setText("Coordinatus");
-    check2->setChecked(false);
+//    check2->setChecked(false);
+//    layout->setAlignment(wd2,Qt::AlignTop);
+//    layout->setAlignment(layout,Qt::AlignTop);
 
-    connect(plotter,SIGNAL(sg_statusChanged(const Status_t*)),widCoordinatus,SLOT(updateStatus(const Status_t*)) );
-
-    Messager* message = Messager::instance();
-    connect( message, SIGNAL(sg_statusChanged(const Status_t*)),widCoordinatus, SLOT(updateStatus(const Status_t*)) );
+    //---------------- model statistic
+    QWidget *wd4 = ui->widget_4;
+    modelStatistic = new ModelStatistic(wd4);
+    check4->setText("Model statistic");
+    check4->setChecked(false);
+    layout->setAlignment(Qt::AlignTop);
 
     //------------- Gcosole
     QWidget *wd3 = ui->widget_3;
@@ -61,12 +59,23 @@ RightArea::RightArea(QWidget *parent) : QWidget(parent)
     check3->setText("GConsole");
 
 
-    //---------------- model statistic
 
-    QWidget *wd4 = ui->widget_4;
-    modelStatistic = new ModelStatistic(wd4);
-    check4->setText("Model statistic");
-    check4->setChecked(false);
+    //----------- ThermoPlot
+    QWidget *wd = ui->widget_1;
+    plotter = new ThermoPlot(wd);
+    connect(plotter,SIGNAL(sg_statusChanged(const Status_t*)),this, SLOT(updateStatus(const Status_t*)) );
+    connect(plotter,SIGNAL(sg_statusFailed()), this,SLOT(failedStatus()) );
+    connect(plotter,SIGNAL(sg_statusChanged(const Status_t*)),widCoordinatus,SLOT(updateStatus(const Status_t*)) );
+    check1->setText("ThermoPlot");
+
+    layout = ui->verticalLayout_3;
+    layout->setAlignment(Qt::AlignTop);
+
+
+    Messager* message = Messager::instance();
+    connect( message, SIGNAL(sg_statusChanged(const Status_t*)),widCoordinatus, SLOT(updateStatus(const Status_t*)) );
+
+
 #if LEVEL==1
     qDebug()<<__FILE__<<__LINE__<<layout->count();
 #endif

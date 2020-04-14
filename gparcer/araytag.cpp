@@ -40,7 +40,7 @@ void *ArrayTag::getTagValue(eGCodeTag index)
         tag = &tags.G21;
         break;
     case eG28:
-        tag = &tags.G28;
+        tag = &tags.G28; break;
     case eG29_1:
         tag = &tags.G29_1;
         break;
@@ -76,6 +76,7 @@ void *ArrayTag::getTagValue(eGCodeTag index)
         break;
     case eM109:
         tag = &tags.M109;
+        break;
     case eM140:
         tag = &tags.M140;
         break;

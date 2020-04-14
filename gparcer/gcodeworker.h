@@ -100,6 +100,8 @@ private:
     mito::Action_t* tagM109_Do(sGcode * sgCode); //M109: Set Extruder Temperature and Wait
     mito::Action_t* tagM140_Do(sGcode* sgCode);//M140: Set Bed Temperature (Fast)
     mito::Action_t* tagM190_Do(sGcode* sgCode);//M190: Wait for bed temperature to reach target temp
+    mito::Action_t* tagM320_Do(sGcode* sgCode); // M320 Activate autolevel
+    mito::Action_t* tagM321_Do(sGcode* sgCode); // M321 Deactivate autolevel
     mito::Action_t* tagM82_Do(sGcode * sgCode); //M82: Set extruder to absolute mode
     mito::Action_t* tagM83_Do(sGcode * sgCode); //M83: Set extruder to relative mode
     mito::Action_t* tagM84_Do(sGcode * sgCode); //M84: Stop idle hold

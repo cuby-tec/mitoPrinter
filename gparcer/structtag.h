@@ -6,7 +6,9 @@
 
 enum eGCodeTag{
     eG0=0, eG1, eG2, eG3, eG4, eG6, eG10, eG20, eG21 , eG28, eG29_1, eG29_2, eG30, eG33
-    , eG90, eG91, eG92, eG92_1, eM82, eM83, eM84, eM104, eM106, eM107, eM109, eM140, eM190, eM550
+    , eG90, eG91, eG92, eG92_1, eM82, eM83, eM84, eM104, eM106, eM107, eM109, eM140, eM190
+    ,eM320, eM321   // Activate autolevel, Deactivate autolevel
+    , eM550
     , eF, eS, eT, eError
 };
 
@@ -506,6 +508,15 @@ struct sM140_t:NumberedTag {
 //Wait for bed temperature to reach target temp
 struct sM190_t:NumberedTag {
     double s;
+};
+
+
+struct sM320_t:NumberedTag {
+
+};
+
+struct sM321_t:NumberedTag{
+
 };
 
 //Set Name

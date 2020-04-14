@@ -648,6 +648,36 @@ ComdataProxy::sendM190_Tag(sM190_t* data)// comproxy->sendM190_Tag(vTag);
     return action;
 }
 
+mito::Action_t*
+ComdataProxy::sendM320_Tag(sM320_t *data)
+{
+    line_counter++;
+    mito::Action_t* action = new mito::Action_t;
+    ComDataReq_t* request = new ComDataReq_t;
+    request->size = sizeof(struct ComDataReq_t);
+    request->command.order = eoM320;
+
+    action->a = eSend;
+    action->queue.enqueue(*request);
+
+    return action;
+}
+
+mito::Action_t *
+ComdataProxy::sendM321_Tag(sM321_t *data)
+{
+    line_counter++;
+    mito::Action_t* action = new mito::Action_t;
+    ComDataReq_t* request = new ComDataReq_t;
+    request->size = sizeof(struct ComDataReq_t);
+    request->command.order = eoM321;
+
+    action->a = eSend;
+    action->queue.enqueue(*request);
+
+    return action;
+}
+
 //Set param
 mito::Action_t*
 ComdataProxy::sendM82_Tag(sM82_t *data)
