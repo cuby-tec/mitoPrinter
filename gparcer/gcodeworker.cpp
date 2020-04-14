@@ -231,10 +231,10 @@ GcodeWorker::buildAction(sGcode *src)
         action = (this->*callTagRef[etag])(src); // tagM190 TODO
         break;
     case eM320:             // tag M320
-        tagM320_Do(src);
+        action = tagM320_Do(src);
         break;
     case eM321:             // tag M321
-        tagM321_Do(src);
+        action = tagM321_Do(src);
         break;
     case eM550:
         break;

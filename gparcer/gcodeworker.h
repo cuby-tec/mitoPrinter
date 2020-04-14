@@ -111,7 +111,7 @@ private:
 
     typedef mito::Action_t* (GcodeWorker::*tag)(sGcode* ); // void
 
-    tag callTagRef[31];
+    tag callTagRef[35];
 
     uint errorCounter;
 #if VERSION==1
