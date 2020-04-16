@@ -34,7 +34,7 @@ enum eOrder{
 
 
 struct sControlCommand_t {
-    uint16_t order;      // Команда инструменту.
+    uint16_t order;      // Команда инструменту. enum eOrder.
     uint8_t reserved; //  EXECUTE_IMMIDIATELY | COMMAND_ACKNOWLEDGED
     uint8_t instrument; // Тип инструмента в запросе.
 };
@@ -43,6 +43,8 @@ struct ComDataReq_t{
     uint32_t    requestNumber;  // Номер запроса порядковый.
     uint8_t     size;           // Размер сообщения.
     uint8_t     instruments;    // CRC | Количество инструментов в запросе.
+    uint8_t		request_type;	// measure length, don't used
+    uint8_t		reserv10;		// measure length, don't used
     struct sControlCommand_t    command;        // Команда управления контроллером
     //-------- payload
     union {

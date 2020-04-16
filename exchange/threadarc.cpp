@@ -69,7 +69,7 @@ void ThreadArc::run()
                     status.frameNumber = 0;
 /*                    if (!restart)
                         emit sg_failed_status(); 04/01/2020 */
-                    status.modelState.reserved1 = !COMMAND_ACKNOWLEDGED;
+                    status.modelState.reserved1 &= !COMMAND_ACKNOWLEDGED;
                     qDebug()<<__FILE__<<__LINE__<<"result_exch="<<result_exch <<"try_counter="<<try_counter;
 /*                    break; 04/01/2020 */
                 }else{

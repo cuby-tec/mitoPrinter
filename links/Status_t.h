@@ -20,11 +20,12 @@ struct Status_t {
     int32_t    coordinatus[N_AXIS];
 //    enum eModelState    modelState;
 //    uint32_t    modelState;
-    struct sModelCompState modelState;
+    struct sModelCompState modelState;// sizeof(uint32_t)
     uint32_t    currentSegmentNumber;
     uint32_t    instrument2_parameter;// pid => dinput(derror)
     uint32_t    instrument3_parameter;// pid => ouput
-    uint32_t    instrument4_parameter;
+    uint32_t    instrument4_parameter;//pid->dintegral
+    int32_t     autolevel;
     // hotend section
     float       temperature;
     float       bed_temperature;
