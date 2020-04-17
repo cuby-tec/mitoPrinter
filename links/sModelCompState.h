@@ -27,7 +27,7 @@ enum eModelstate{
 
 #define COMMAND_ACKNOWLEDGED    (1<<0)
 #define ORDERLY_WAIT            (1<<1)
-#define COMMAND_AUTPLEVEL       (1<<2)
+#define COMMAND_AUTOLEVEL       (1<<2)
 #define DATA_CORRUPTED          (1<<3)
 
 struct sModelCompState{

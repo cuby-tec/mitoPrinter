@@ -14,7 +14,7 @@ CoordinatusWidget::CoordinatusWidget(QWidget *parent) : QWidget(parent)
     ui->setupUi(parent);
 
     coordinatus = Coordinatus::instance();
-    controller = new Controller;
+    controller = new Controller;// microstep in coordinatus dos't set yet.
 }
 
 #define M_CONC(A, B) M_CONC_(A, B)

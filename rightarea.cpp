@@ -2,6 +2,8 @@
 
 #include <QDebug>
 
+
+
 RightArea::RightArea(QWidget *parent) : QWidget(parent)
   , ui(new Ui::RightArea)
 {
@@ -13,11 +15,14 @@ RightArea::RightArea(QWidget *parent) : QWidget(parent)
     check2 = ui->checkBox_2;    //coordinatus
     check3 = ui->checkBox_3;    // Console
     check4 = ui->checkBox_4;    //model statistic
+    //====== autolevel
+    check5 = ui->checkBox_5;    //autolel
 
     connect(check1,SIGNAL(stateChanged(int)), this, SLOT(hide1(int)));
     connect(check2, SIGNAL(stateChanged(int)), this, SLOT(hide2(int)));
     connect(check3, SIGNAL(stateChanged(int)), this, SLOT(hide3(int)) );
     connect(check4, SIGNAL(stateChanged(int)), this, SLOT(hide4(int)) );
+    connect(check5, SIGNAL(stateChanged(int)), this, SLOT(hide5(int)) );
 
 
     QString styleSheet = "QCheckBox::indicator:unchecked "
@@ -29,6 +34,7 @@ RightArea::RightArea(QWidget *parent) : QWidget(parent)
     check2->setStyleSheet(styleSheet);
     check3->setStyleSheet(styleSheet);
     check4->setStyleSheet(styleSheet);
+    check5->setStyleSheet(styleSheet);
 
 //    QVBoxLayout *layout = ui->verticalLayout;
 // ////    layout->setAlignment(check1,Qt::AlignTop);
@@ -58,15 +64,20 @@ RightArea::RightArea(QWidget *parent) : QWidget(parent)
     gconsole = new GConsole(wd3);
     check3->setText("GConsole");
 
-
-
     //----------- ThermoPlot
     QWidget *wd = ui->widget_1;
     plotter = new ThermoPlot(wd);
     connect(plotter,SIGNAL(sg_statusChanged(const Status_t*)),this, SLOT(updateStatus(const Status_t*)) );
     connect(plotter,SIGNAL(sg_statusFailed()), this,SLOT(failedStatus()) );
-    connect(plotter,SIGNAL(sg_statusChanged(const Status_t*)),widCoordinatus,SLOT(updateStatus(const Status_t*)) );
+//    connect(plotter,SIGNAL(sg_statusChanged(const Status_t*)),widCoordinatus,SLOT(updateStatus(const Status_t*)) );
     check1->setText("ThermoPlot");
+
+    //------------- auyolevel
+    QWidget* auwd = ui->widget_5;
+    autolevel = new AutolevelWidget(auwd);
+
+
+
 
     layout = ui->verticalLayout_3;
     layout->setAlignment(Qt::AlignTop);
@@ -74,6 +85,8 @@ RightArea::RightArea(QWidget *parent) : QWidget(parent)
 
     Messager* message = Messager::instance();
     connect( message, SIGNAL(sg_statusChanged(const Status_t*)),widCoordinatus, SLOT(updateStatus(const Status_t*)) );
+    connect(message, SIGNAL(sg_statusChanged(const Status_t*)),autolevel, SLOT(updateStatus(const Status_t*)));
+    connect(plotter, SIGNAL(sg_statusChanged(const Status_t*)),message, SLOT(putStatus(const Status_t*)));
 
 
 #if LEVEL==1
@@ -118,6 +131,15 @@ void RightArea::hide4(int state)
         ui->widget_4->hide();
     else
         ui->widget_4->setHidden(false);
+}
+
+void RightArea::hide5(int state)
+{
+    if(state == 0)
+        ui->widget_5->hide();
+    else {
+        ui->widget_5->show();
+    }
 }
 
 

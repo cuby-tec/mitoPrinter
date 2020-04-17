@@ -7,6 +7,7 @@
 #include "coordinatuswidget.h"
 #include "gconsole.h"
 #include "modelstatistic.h"
+#include "autolevel.h"
 
 #include <QWidget>
 
@@ -34,6 +35,7 @@ public slots:
     void hide2(int state);
     void hide3(int state);
     void hide4(int state);
+    void hide5(int state);
     void updateStatus(const Status_t* status);
     void failedStatus();
 
@@ -46,6 +48,7 @@ private:
     QCheckBox * check2;
     QCheckBox * check3;
     QCheckBox * check4;
+    QCheckBox * check5; // Autolevel
 
     ThermoPlot *plotter;
 
@@ -55,6 +58,7 @@ private:
 
     ModelStatistic *modelStatistic;
 
+    AutolevelWidget* autolevel;
 };
 
 #endif // RIGHTAREA_H

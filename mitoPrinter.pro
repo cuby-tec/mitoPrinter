@@ -23,6 +23,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+    autolevel.cpp \
         main.cpp \
         mainwindow.cpp \
     myglobal.cpp \
@@ -77,6 +78,7 @@ SOURCES += \
 
 
 HEADERS += \
+    autolevel.h \
         mainwindow.h \
     myglobal.h \
     rightarea.h \
@@ -158,6 +160,7 @@ HEADERS += \
 
 
 FORMS += \
+    autolevel.ui \
         mainwindow.ui \
     rightArea.ui \
     aboutwindow.ui \
