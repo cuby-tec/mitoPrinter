@@ -835,6 +835,15 @@ Profile::get_MICROSTEP()
     return result;
 }
 
+QString Profile::get_AutolevelValue()
+{
+    QString result;
+    QJsonObject obj;
+    QJsonObject generic_obj;
+    GENERIC_GET_VALUE("generic","AUTOLEVEL_VALUE");
+    return result;
+}
+
 //=================== getter helper ============
 
 void
@@ -1210,6 +1219,12 @@ Profile::setMICROSTEP(QString num)
     QJsonObject obj;
 
     SET_FILED_VALUE(MICROSTEP);
+}
+
+void Profile::setAutolevelValue(QString num)
+{
+    QJsonObject obj;
+    SET_FILED_VALUE("AUTOLEVEL_VALUE");
 }
 
 

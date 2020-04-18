@@ -102,6 +102,8 @@ private slots:
 
     void on_lineEdit_microstep_textEdited(const QString &arg1);
 
+    void on_AutolevelValue_lineEdit_textEdited(const QString &arg1);
+
 private:
     Ui::ProfileDialog *uia;
 

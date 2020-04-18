@@ -139,6 +139,9 @@ void ProfileDialog::fillProfilePage()
     //E_ACCELERATION
     uia->lineEdit_E_ACCELERATION->setText(profile->getE_ACCELERATION());
     uia->lineEdit_microstep->setText(profile->get_MICROSTEP());
+
+    //--------- Page 4 Machanic
+    uia->AutolevelValue_lineEdit->setText(profile->get_AutolevelValue());
 }
 
 void  ProfileDialog::setupProfile(QWidget * tab)
@@ -523,6 +526,12 @@ void ProfileDialog::on_profileFile_Edit_textEdited(const QString &arg1)
     indicate_ProfileSaved();
 }
 
+void ProfileDialog::on_AutolevelValue_lineEdit_textEdited(const QString &arg1)
+{
+    profile->setAutolevelValue(arg1);
+    profile->profileSaved = false;
+    indicate_ProfileSaved();
+}
 
 
 
@@ -541,5 +550,6 @@ void ProfileDialog::on_pushButton_3_clicked()
 
 
 //-------------- temperature
+
 
 

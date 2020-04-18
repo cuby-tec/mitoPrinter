@@ -200,7 +200,11 @@ public:
 
     QString get_BED_DERIVATIVE();
 
+    // microstep
     QString get_MICROSTEP();
+
+    //Autolevel
+    QString get_AutolevelValue(); // Калибровочное значение датчика уровня по оси Z.
 
 //---------------------------------- setters
     //DEFAULT_X_STEPS_PER_MM
@@ -299,7 +303,12 @@ public:
 
     QString set_BED_DERIVATIVE(QString num);
 
+    // Microstep
     void setMICROSTEP(QString num);
+
+    // Autolevel Z
+    void setAutolevelValue(QString num);
+
 
     void saveProfileDocument();
 
