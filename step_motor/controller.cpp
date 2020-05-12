@@ -24,7 +24,7 @@
 #define BUILDBLOCKVERSION   3
 
 
-#define REPORT_LEVEL	3
+#define REPORT_LEVEL	1
 
 
 
@@ -326,7 +326,11 @@ Controller::buildBlock(Coordinatus* cord) {
         double_t acl = block->steps * rdcc/(racc + rdcc);
 
         //accel_path
-        uint32_t accpath =  static_cast<uint32_t>( MIN(acs,acl) );
+//        uint32_t accpath =  static_cast<uint32_t>( MIN(acs,acl) );
+        double_t accpath_min_d =  MIN(acs,acl);
+        uint32_t accpath = static_cast<uint32_t>(ceil(accpath_min_d));
+        uint32_t acs_uint = static_cast<uint32_t>(ceil(acs));
+
 
         //deccel_path
         uint32_t dccpath =  static_cast<uint32_t>( MIN(acs,acl) * racc/rdcc );
@@ -339,7 +343,7 @@ Controller::buildBlock(Coordinatus* cord) {
         	dccpath = 1;
 
 
-        if((accpath != acs)&&(block->steps>0) ){
+        if((accpath != acs_uint)&&(block->steps>0) ){
 //        	sqrt( sc.bb[i].alfa*2.0*sc.bb[i].acceleration * acco[i].speedlevel );
         	G4 = sqrt(2.0*block->alfa * block->acceleration * accpath);
         }
