@@ -79,6 +79,9 @@ private:
    static mito::Action_t action;
 
 };
+
+#define USE_OPTIMIZATION  1
+
 /*
 typedef block_state_t _controlBlocks[N_AXIS];
 struct sControlBlocks{
@@ -162,7 +165,9 @@ public:
                     //TODO optimization tag_action & controlblocks
                     if(tag_action.queue.size() == controlblocks.size()){
                         optimization = new Optimization(controller);
+#if USE_OPTIMIZATION == 1
                         optimization->smooth(tag_action,controlblocks);
+#endif
                         //                    optimization->calc(tag_action, controlblocks);
                         delete  optimization;
                     }else {

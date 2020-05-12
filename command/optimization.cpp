@@ -10,7 +10,7 @@
 
 #define CHANGELEVEL_VERSION 4//3//2
 
-#define REPORT_LEVEL    4
+#define REPORT_LEVEL    5
 
 #define cout    qDebug()<<__FILE__<<__LINE__
 #define MIN(A,B) A<B?A:B

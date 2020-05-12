@@ -838,10 +838,10 @@
              </size>
             </property>
             <property name="inputMask">
-             <string>000.00</string>
+             <string>000.0000</string>
             </property>
             <property name="text">
-             <string>4.0</string>
+             <string>1.338</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

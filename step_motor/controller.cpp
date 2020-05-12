@@ -24,7 +24,7 @@
 #define BUILDBLOCKVERSION   3
 
 
-#define REPORT_LEVEL	0
+#define REPORT_LEVEL	3
 
 
 
@@ -270,11 +270,11 @@ Controller::buildBlock(Coordinatus* cord) {
             {
                 _feedrate = profileData->speedrate[i];
 #if REPORT_LEVEL == 1
-                cout<<"Reduction feedrate to value:"<<_feedrate<<" from :"<<cord->getSpeedrate()<<" axis:"<<i;
+                cout<<"Reduce max feedrate to value:"<<_feedrate<<" from :"<<cord->getSpeedrate()<<" axis:"<<i;
 #endif
             }
         }
-    }
+    }// enf of FOR circle
 
     // Наибольшая длина линии						C26
     uint32_t maxLenLine = *std::max_element(maxvector,maxvector+N_AXIS);
@@ -305,7 +305,7 @@ Controller::buildBlock(Coordinatus* cord) {
         double_t G4 = fabs(dircos[i])*angular_velocity;
         block->nominal_speed = G4;//dircos[i]*angular_velocity;
 
-#if LEVEL==1
+#if REPORT_LEVEL==2
         cout<<"G4:"<<G4;
 #endif
         //radian_accel
@@ -372,7 +372,7 @@ Controller::buildBlock(Coordinatus* cord) {
         schemState |= block->schem[0];
         schemState |=  static_cast<uint32_t>(block->schem[1])<<2;
         schemState |= static_cast<uint32_t>(block->schem[2])<<4;
-
+#define NOMINAL_RATE_MAX    (0xFFFFFFE) // 2^32-1 Для разрядности стуктуры кадра передачи - 32 разряда.
         //C0
         // double_t cnt = sqrt(2*motor[i]->getAlfa(i)/accel[i])*frequency;
         uint64_t cnt = static_cast<uint32_t>( frequency * sqrt(2.0 * motor[i]->getAlfa(i)/racc ) );
@@ -383,14 +383,14 @@ Controller::buildBlock(Coordinatus* cord) {
         if(G4 > DBL_EPSILON)
         	nominal_rate = calcAxisRate(i,G4);
         else
-        	nominal_rate = 0xfffffe;
+            nominal_rate = NOMINAL_RATE_MAX;
 
-        if(nominal_rate > 16777214){ // 0xfffffe
-            nominal_rate = 0xfffffe;
-#if REPORT_LEVEL==1
+        if(nominal_rate > NOMINAL_RATE_MAX){ // 0xfffffe
+#if REPORT_LEVEL==3
             cout<<"NOMINAL RATE OUT OF RANGE, ASYNCRONOUS:"<<nominal_rate;
-            qWarning("NOMINAL RATE OUT OF RANGE:%d",static_cast<uint32_t>(nominal_rate));
+            qWarning("NOMINAL RATE OUT OF RANGE:%ld",(nominal_rate));
 #endif
+            nominal_rate = NOMINAL_RATE_MAX;
         }
 
         switch (schemState) {

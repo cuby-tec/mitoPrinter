@@ -25,10 +25,19 @@ void AutolevelWidget::updateStatus(const Status_t *status)
 //        stepsAxis[i] = static_cast<double_t>(stepsTable[coordinatus->getMicrostep(i)]);
 //    }
 
-    ui->label_flagValue->setText((status->modelState.reserved2&(1<<6))?"active":"passiv");
-    ui->label_levelValue->setText(QString("%1 (%2)[%3](%4)").arg(controller->getPath_mm(Z_AXIS,status->autolevel))
+    //"active":"passiv"
+    ui->label_flagValue->setText((status->modelState.reserved2&(1<<6))?"passiv":"active");
+/*    ui->label_levelValue->setText(QString("%1 (%2)[%3](%4)").arg(controller->getPath_mm(Z_AXIS,status->autolevel))
                                   .arg(status->autolevel).arg(coordinatus->getNextValue(Z_AXIS))
                                   .arg(coordinatus->position[Z_AXIS]));
+*/
+    ui->label_levelValue->setText(QString("%1 [%2]")
+                                  .arg(controller->getPath_mm(Z_AXIS,status->autolevel))
+//                                  .arg(status->autolevel)
+                                  .arg(coordinatus->getNextValue(Z_AXIS)));
+//                                  .arg(coordinatus->position[Z_AXIS]));
+
+
 //    ui->label_levelValue->setText(QString("%1(%2)").arg(controller->getPath_mm(Z_AXIS,status->coordinatus[Z_AXIS]))
 //                                  .arg(status->coordinatus[Z_AXIS]));
 
