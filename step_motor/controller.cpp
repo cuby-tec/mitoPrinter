@@ -24,7 +24,7 @@
 #define BUILDBLOCKVERSION   3
 
 
-#define REPORT_LEVEL	1
+#define REPORT_LEVEL	5
 
 
 

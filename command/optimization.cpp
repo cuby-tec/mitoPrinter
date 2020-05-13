@@ -10,7 +10,7 @@
 
 #define CHANGELEVEL_VERSION 4//3//2
 
-#define REPORT_LEVEL    5
+#define REPORT_LEVEL    6//5
 
 #define cout    qDebug()<<__FILE__<<__LINE__
 #define MIN(A,B) A<B?A:B
@@ -48,7 +48,9 @@ Optimization::~Optimization()
 {
     if(opti_BI != nullptr)
         free(opti_BI);
+#if REPORT_LEVEL <= 3
     cout<<"Exit optimization.";
+#endif
 }
 
 
@@ -243,8 +245,10 @@ void Optimization::_calcLevel(accCompriseOf data[N_AXIS],size_t i, bool isNoMove
         _block->accelerate_until = static_cast<uint32_t>(abs(couple->a.Acc));
         _block->decelerate_after = static_cast<u_int32_t>( couple->a.steps - abs(couple->a.Dec) );
 
-        assert(_block->accelerate_until<=_block->decelerate_after);
-
+#if REPORT_LEVEL == 5
+//        assert(_block->accelerate_until<=_block->decelerate_after);
+        qWarning("_block->accelerate_until<=_block->decelerate_after");
+#endif
         _block->final_speedLevel = static_cast<u_int32_t>(couple->a.finalLevel); //( couple->a.nominalLevel + couple->a.Dec );
 
         if(_block->final_speedLevel != 0)
