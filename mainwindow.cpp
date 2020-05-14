@@ -18,7 +18,10 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
+    isGcodeFileOpened(false),
     executeProgramm(new ExecuteProgramm)
+   ,workTime(new QTime)
+
 {
     ui->setupUi(this);
 
@@ -53,6 +56,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QString style("background-color: rgb(203, 237, 191);");
     fileLabel->setStyleSheet(style);
     statusBar()->addPermanentWidget(fileLabel);
+
+    startTimerLabel = ui->startTimeLabel;
 
 //------------
     statusBar()->showMessage("Starting ..");
@@ -244,13 +249,20 @@ void MainWindow::setupMenu()
         toolbar->addWidget(runProgramButton);
         connect(runProgramButton,SIGNAL(clicked()),this, SLOT(on_runProgramButton()) );
 
-        // Stop program button
-        QToolButton* stopProgramButton = new QToolButton;
-        stopProgramButton->setIcon(QIcon(":images/stop_program.xpm"));
-        stopProgramButton->setToolTip(QString("Stop program"));
-        toolbar->addWidget(stopProgramButton);
-        connect(stopProgramButton,SIGNAL(clicked()),this,SLOT(on_stopProgram())  );
+        // Pause program button
+        pauseProgramButton = new QToolButton;
+        pauseProgramButton->setIcon(QIcon(":images/icon_pause.xpm"));//
+        pauseProgramButton->setToolTip(QString("Pause program"));//Stop program
+        pauseProgramButton->setEnabled(false);
+        pauseProgramAction = toolbar->addWidget(pauseProgramButton);
+        connect(pauseProgramButton,SIGNAL(clicked()),this,SLOT(on_stopProgram())  );
 
+        // Stop program button
+        abortProgramButton = new QToolButton;
+        abortProgramButton->setIcon(QIcon(":images/stop_program.xpm"));
+        abortProgramButton->setToolTip("Abort program");
+        abortProgramButton->setEnabled(false);
+        stopProgramAction = toolbar->addWidget(abortProgramButton);
 
 }
 
@@ -294,6 +306,26 @@ void MainWindow::on_commandExecuteProgram()
 
     action = ui->actionOpen_GCode;
     action->setEnabled(false);
+
+
+//    QTime currentTime = QTime::currentTime();
+    workTime->start();
+
+    startTimerLabel->setText(workTime->toString("hh:mm"));
+    QFont* sl = new QFont("Noto Sans",12,75,false);
+//    QFont* sl = new QFont();
+//    sl->setBold(75);
+    startTimerLabel->setFont(*sl);
+
+    pauseProgramAction->setEnabled(true);
+
+    stopProgramAction->setEnabled(true);
+
+    pauseProgramButton->setEnabled(true);
+
+    abortProgramButton->setEnabled(true);
+
+
 //    QTextStream stream(&gcodeFile);
     statusBar()->showMessage("Program executing ...");
     executeProgramm->execute(gcodeFile);
@@ -324,7 +356,7 @@ void MainWindow::on_commandOpenFile()
     }
     //----------
 
-    QString filename = QFileDialog::getOpenFileName(this, tr("Open G-Code file"),path,tr("Gcode (*.gcode *.ngx);;All (*.*)"));//,nullptr,QFileDialog::DontUseNativeDialog
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open G-Code file"),path,tr("Gcode (*.gcode *.GCODE *.ngx);;All (*.*)"));//,nullptr,QFileDialog::DontUseNativeDialog
 
     if(filename.isNull())
     {
@@ -342,7 +374,8 @@ void MainWindow::on_commandOpenFile()
         cout<< "Open file with G-code file:"<<filename;
 #endif
         gcodeFile.setFileName(filename);
-        if(gcodeFile.open(QIODevice::ReadOnly | QIODevice::Text)){
+        isGcodeFileOpened = gcodeFile.open(QIODevice::ReadOnly | QIODevice::Text);
+        if(isGcodeFileOpened){
 #if REPORT_LEVEL==2
             cout<<"File opened:"<<filename;
 #endif
@@ -439,6 +472,11 @@ void MainWindow::on_stopProgram()
     executeProgramm->getComdata()->stop();
     statusBar()->showMessage("Program stoped.");
 
+}
+
+void MainWindow::on_abortProgram()
+{
+    //gcodeFile
 }
 
 

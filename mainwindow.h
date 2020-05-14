@@ -46,6 +46,7 @@ public slots:
     void filamentUpReleased();
     void on_runProgramButton();
     void on_stopProgram();
+    void on_abortProgram();
 
 protected:
     void resizeEvent(QResizeEvent *event);
@@ -63,12 +64,16 @@ private:
 
     QFile gcodeFile;
 
+    bool isGcodeFileOpened;
+
     ExecuteProgramm* executeProgramm;
 
     // -------- Status
     QLabel *fileLabel;
 
     Messager *messager;
+
+    QLabel* startTimerLabel;
 
 //----------- Menu
     QMenu* menuFile;
@@ -85,6 +90,15 @@ private:
     QAction* actConfig;
 
     QAction* pidParams;
+
+    QAction* pauseProgramAction;
+    QAction* stopProgramAction;
+
+    QToolButton* pauseProgramButton;
+
+    QToolButton* abortProgramButton;
+
+    QTime* workTime;
 
     QMenu * menuHelp;
 

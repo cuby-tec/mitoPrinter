@@ -15,5 +15,6 @@
         <file>images/program_run.xpm</file>
         <file>images/program_run_non.xpm</file>
         <file>images/stop_program.xpm</file>
+        <file>images/icon_pause.xpm</file>
     </qresource>
 </RCC>

@@ -266,10 +266,11 @@ Controller::buildBlock(Coordinatus* cord) {
             block->direction_bits = edBackward;
         // Check feedrate @ maximum value.
         if(block->steps > 0){
-            if(_feedrate > profileData->speedrate[i])
+            double_t _dircos_i = fabs(dircos[i]);
+            if((_feedrate * _dircos_i) > profileData->speedrate[i])
             {
-                _feedrate = profileData->speedrate[i];
-#if REPORT_LEVEL == 1
+                _feedrate = floor( profileData->speedrate[i]/_dircos_i);
+#if REPORT_LEVEL == 5
                 cout<<"Reduce max feedrate to value:"<<_feedrate<<" from :"<<cord->getSpeedrate()<<" axis:"<<i;
 #endif
             }
@@ -390,7 +391,7 @@ Controller::buildBlock(Coordinatus* cord) {
             nominal_rate = NOMINAL_RATE_MAX;
 
         if(nominal_rate > NOMINAL_RATE_MAX){ // 0xfffffe
-#if REPORT_LEVEL==3
+#if REPORT_LEVEL==5
             cout<<"NOMINAL RATE OUT OF RANGE, ASYNCRONOUS:"<<nominal_rate;
             qWarning("NOMINAL RATE OUT OF RANGE:%ld",(nominal_rate));
 #endif
