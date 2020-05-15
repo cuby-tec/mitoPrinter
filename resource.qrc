@@ -16,5 +16,7 @@
         <file>images/program_run_non.xpm</file>
         <file>images/stop_program.xpm</file>
         <file>images/icon_pause.xpm</file>
+        <file>images/print.svg</file>
+        <file>images/drilling.svg</file>
     </qresource>
 </RCC>

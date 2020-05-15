@@ -48,6 +48,10 @@ public slots:
     void on_stopProgram();
     void on_abortProgram();
 
+    //--------- Machine set
+    void machinePrinter_onclick();
+    void machineDrilling_onclick();
+
 protected:
     void resizeEvent(QResizeEvent *event);
 
@@ -107,6 +111,9 @@ private:
     void setupMenu();
 
     PushFilamentDown* pushdown;
+
+//-----------
+    void setupMachineToolBar();
 
 };
 

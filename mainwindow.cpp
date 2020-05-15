@@ -67,6 +67,8 @@ MainWindow::MainWindow(QWidget *parent) :
     //sg_executeComplite
     connect(messager,SIGNAL(sg_executeComplite()),this, SLOT(on_gprogrammFinish()));
 
+
+    setupMachineToolBar();
 }
 
 MainWindow::~MainWindow()
@@ -264,6 +266,25 @@ void MainWindow::setupMenu()
         abortProgramButton->setEnabled(false);
         stopProgramAction = toolbar->addWidget(abortProgramButton);
 
+}
+
+
+void MainWindow::setupMachineToolBar()
+{
+    QToolBar* machineToolBar = addToolBar(tr("Machine"));
+    // 3D printer selected
+    const QIcon print3dIcon = QIcon::fromTheme("3d Machine",QIcon(":/images/print.svg"));
+    QAction* print3dAct = new QAction(print3dIcon,tr("3D printer"),this);
+    print3dAct->setStatusTip(tr("set 3d printer"));
+    connect(print3dAct, &QAction::triggered, this, &MainWindow::machinePrinter_onclick  );
+    machineToolBar->addAction(print3dAct);
+
+    //Drilling selected
+    const QIcon drillIcon = QIcon::fromTheme(tr("Drilling"),QIcon(":/images/drilling.svg"));
+    QAction* drillingAct = new QAction(drillIcon,tr("Drilling"));
+    drillingAct->setToolTip(tr("set Drilling"));
+    connect(drillingAct, &QAction::triggered, this, &MainWindow::machineDrilling_onclick);
+    machineToolBar->addAction(drillingAct);
 }
 
 void
@@ -479,6 +500,27 @@ void MainWindow::on_abortProgram()
     //gcodeFile
 }
 
+
+//slot
+// Select 3d printer machine
+void MainWindow::machinePrinter_onclick()
+{
+    //TODO
+    cout<<"3D printer selected.";
+    //rWidget
+    //    rightArea = new RightArea(ui->rightWidget); // rWidget
+    //    connect(rightArea,SIGNAL(sg_statusChanged(const Status_t*)),statusLabel,SLOT(updateStatus(const Status_t*)) );
+    //    connect(rightArea,SIGNAL(sg_statusFailed()),statusLabel,SLOT(statusFailed()) );
+
+}
+
+
+//slot
+void MainWindow::machineDrilling_onclick()
+{
+    //TODO
+    cout<<"Drilling selected.";
+}
 
 void MainWindow::on_gprogrammFinish()
 {
