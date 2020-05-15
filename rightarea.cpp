@@ -7,8 +7,9 @@
 RightArea::RightArea(QWidget *parent) : QWidget(parent)
   , ui(new Ui::RightArea)
 {
-    Q_ASSERT(parent);
-    ui->setupUi(parent);
+//    Q_ASSERT(parent);
+//    ui->setupUi(parent);
+    ui->setupUi(this);
 
 
     check1 = ui->checkBox_1;    // Thermo

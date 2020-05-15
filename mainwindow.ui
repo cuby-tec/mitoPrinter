@@ -14,7 +14,7 @@
    <string>mitoPrinter</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="resource.qrc">
+   <iconset>
     <normaloff>:/images/ico1.png</normaloff>:/images/ico1.png</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
@@ -39,12 +39,12 @@
       <property name="minimumSize">
        <size>
         <width>300</width>
-        <height>0</height>
+        <height>300</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
-        <width>300</width>
+        <width>16000</width>
         <height>16777215</height>
        </size>
       </property>
@@ -216,8 +216,6 @@
    <header>opengl/graphicsview.h</header>
   </customwidget>
  </customwidgets>
- <resources>
-  <include location="resource.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

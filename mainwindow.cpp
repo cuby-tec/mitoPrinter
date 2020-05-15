@@ -27,13 +27,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
 //------------------
     //rWidget
-    rightArea = new RightArea(ui->rightWidget); // rWidget
+//    rightArea = new RightArea(ui->rightWidget); // rWidget
+    rightArea = nullptr;
 //------------------
 //    QLabel* statusl = ui->statusLabel;
     statusLabel = new StatusLabel(ui->statusLabel);
 
-    connect(rightArea,SIGNAL(sg_statusChanged(const Status_t*)),statusLabel,SLOT(updateStatus(const Status_t*)) );
-    connect(rightArea,SIGNAL(sg_statusFailed()),statusLabel,SLOT(statusFailed()) );
+//    connect(rightArea,SIGNAL(sg_statusChanged(const Status_t*)),statusLabel,SLOT(updateStatus(const Status_t*)) );
+//    connect(rightArea,SIGNAL(sg_statusFailed()),statusLabel,SLOT(statusFailed()) );
 
 //--------- openGL
     view = ui->graphicsView;
@@ -508,7 +509,19 @@ void MainWindow::machinePrinter_onclick()
     //TODO
     cout<<"3D printer selected.";
     //rWidget
-    //    rightArea = new RightArea(ui->rightWidget); // rWidget
+//        rightArea = new RightArea(ui->rightWidget); // rWidget
+
+    rightArea = new RightArea;
+    QWidget* rw = ui->rightWidget;
+
+    rightArea->setParent(rw);
+    rightArea->show();
+//    QPushButton* button = new QPushButton("childWidget",rw);
+//    button->show();
+//    rightArea = new RightArea(rw);
+//    rightArea->show();
+
+
     //    connect(rightArea,SIGNAL(sg_statusChanged(const Status_t*)),statusLabel,SLOT(updateStatus(const Status_t*)) );
     //    connect(rightArea,SIGNAL(sg_statusFailed()),statusLabel,SLOT(statusFailed()) );
 

@@ -216,4 +216,5 @@ DISTFILES += \
     images/arrowup.xpm
 
 RESOURCES += \
-    resource.qrc
+    resource.qrc \
+    resources.qrc
