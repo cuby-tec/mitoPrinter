@@ -38,8 +38,8 @@
      <widget class="QWidget" name="rightWidget" native="true">
       <property name="minimumSize">
        <size>
-        <width>633</width>
-        <height>300</height>
+        <width>0</width>
+        <height>0</height>
        </size>
       </property>
       <property name="maximumSize">

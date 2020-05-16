@@ -536,8 +536,8 @@ void MainWindow::machinePrinter_onclick()
 //    rightArea->show();
 
 
-    //    connect(rightArea,SIGNAL(sg_statusChanged(const Status_t*)),statusLabel,SLOT(updateStatus(const Status_t*)) );
-    //    connect(rightArea,SIGNAL(sg_statusFailed()),statusLabel,SLOT(statusFailed()) );
+        connect(rightArea,SIGNAL(sg_statusChanged(const Status_t*)),statusLabel,SLOT(updateStatus(const Status_t*)) );
+        connect(rightArea,SIGNAL(sg_statusFailed()),statusLabel,SLOT(statusFailed()) );
 
 }
 

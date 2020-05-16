@@ -8,16 +8,16 @@
 RightArea::RightArea(const char* title , QWidget *parent ):QWidget(parent)
   , ui(new Ui::RightArea)
 {
-    if(parent == nullptr)
-        ui->setupUi(this);
-    else{
+    ui->setupUi(this);
+
+    if(parent != nullptr)
+    {
 //        ui->setupUi(parent);
-        ui->setupUi(this);
+        parent->setStyleSheet(nullptr);
     }
 
-    volatile QString st = parent->styleSheet();
+//    volatile QString st = parent->styleSheet();
 //    parent->setStyle(QApplication::style());
-    parent->setStyleSheet(nullptr);
 
     init();
 
@@ -25,6 +25,9 @@ RightArea::RightArea(const char* title , QWidget *parent ):QWidget(parent)
         QString ttl = QString(title);
         setWindowTitle(title);
     }
+
+    parent->setMinimumWidth(this->width());
+
 }
 
 
@@ -38,8 +41,13 @@ RightArea::RightArea(QWidget *parent) : QWidget(parent)
     else{
 //        ui->setupUi(parent);
         ui->setupUi(this);
+        parent->setStyleSheet(nullptr);
     }
+
+
     init();
+
+    parent->setMinimumWidth(this->width());
 }
 
 void
