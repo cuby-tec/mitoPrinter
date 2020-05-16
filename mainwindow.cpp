@@ -499,6 +499,7 @@ void MainWindow::on_stopProgram()
 void MainWindow::on_abortProgram()
 {
     //gcodeFile
+
 }
 
 
@@ -510,11 +511,13 @@ void MainWindow::machinePrinter_onclick()
     cout<<"3D printer selected.";
     //rWidget
 //        rightArea = new RightArea(ui->rightWidget); // rWidget
+    if(rightArea != nullptr)
+        delete rightArea;
 
-    rightArea = new RightArea;
     QWidget* rw = ui->rightWidget;
+    rightArea = new RightArea(rw);
 
-    rightArea->setParent(rw);
+//    rightArea->setParent(rw);
     rightArea->show();
 //    QPushButton* button = new QPushButton("childWidget",rw);
 //    button->show();
@@ -533,6 +536,13 @@ void MainWindow::machineDrilling_onclick()
 {
     //TODO
     cout<<"Drilling selected.";
+//    if(rightArea != nullptr)
+        delete rightArea;
+//        rightArea->hide();
+     QWidget* rw = ui->rightWidget;
+     QPushButton* button = new QPushButton("childWidget",rw);
+     button->show();
+
 }
 
 void MainWindow::on_gprogrammFinish()
