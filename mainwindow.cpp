@@ -75,6 +75,11 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+    if(rightArea != nullptr)
+    {
+        delete  rightArea;//TODO
+    }
+
 }
 
 void MainWindow::s_openFileDo()
@@ -511,11 +516,17 @@ void MainWindow::machinePrinter_onclick()
     cout<<"3D printer selected.";
     //rWidget
 //        rightArea = new RightArea(ui->rightWidget); // rWidget
-    if(rightArea != nullptr)
+    if(rightArea != nullptr){
         delete rightArea;
+        rightArea = nullptr;
+
+    }
 
     QWidget* rw = ui->rightWidget;
-    rightArea = new RightArea(rw);
+//    rightArea = new RightArea(rw);
+//    rightArea = new RightArea();
+//    rightArea = new RightArea("3D printer",nullptr);
+    rightArea = new RightArea("3D printer",rw);
 
 //    rightArea->setParent(rw);
     rightArea->show();
@@ -538,9 +549,10 @@ void MainWindow::machineDrilling_onclick()
     cout<<"Drilling selected.";
 //    if(rightArea != nullptr)
         delete rightArea;
+    rightArea = nullptr;
 //        rightArea->hide();
      QWidget* rw = ui->rightWidget;
-     QPushButton* button = new QPushButton("childWidget",rw);
+     QPushButton* button = new QPushButton("childWidget",nullptr);
      button->show();
 
 }

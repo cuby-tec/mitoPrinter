@@ -20,6 +20,9 @@ class RightArea : public QWidget
     Q_OBJECT
 public:
     explicit RightArea(QWidget *parent = nullptr);
+
+    explicit RightArea(const char* title , QWidget *parent = nullptr );
+
     void resizeEvent(QResizeEvent *event) override;
 
     CoordinatusWidget *getWidCoordinatus() const;
@@ -59,6 +62,10 @@ private:
     ModelStatistic *modelStatistic;
 
     AutolevelWidget* autolevel;
+
+    //-------- function
+    void init();
+
 };
 
 #endif // RIGHTAREA_H

@@ -4,13 +4,39 @@
 
 
 
+
+RightArea::RightArea(const char* title , QWidget *parent ):QWidget(parent)
+  , ui(new Ui::RightArea)
+{
+    if(parent == nullptr)
+        ui->setupUi(this);
+    else
+        ui->setupUi(parent);
+
+    init();
+
+    if(title != nullptr){
+        QString ttl = QString(title);
+        setWindowTitle(title);
+    }
+}
+
+
 RightArea::RightArea(QWidget *parent) : QWidget(parent)
   , ui(new Ui::RightArea)
 {
-    Q_ASSERT(parent);
-    ui->setupUi(parent);
-    ui->setupUi(this);
+//    Q_ASSERT(parent);
+//    ui->setupUi(parent);
+    if(parent == nullptr)
+        ui->setupUi(this);
+    else
+        ui->setupUi(parent);
+    init();
+}
 
+void
+RightArea::init()
+{
 
     check1 = ui->checkBox_1;    // Thermo
     check2 = ui->checkBox_2;    //coordinatus
