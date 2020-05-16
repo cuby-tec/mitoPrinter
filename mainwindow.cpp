@@ -525,8 +525,9 @@ void MainWindow::machinePrinter_onclick()
     QWidget* rw = ui->rightWidget;
 //    rightArea = new RightArea(rw);
 //    rightArea = new RightArea();
-//    rightArea = new RightArea("3D printer",nullptr);
-    rightArea = new RightArea("3D printer",rw);
+    rightArea = new RightArea("3D printer",nullptr);
+//    rightArea = new RightArea("3D printer",rw);
+    rightArea->setWindowOpacity(0.8);
 
 //    rightArea->setParent(rw);
     rightArea->show();
@@ -552,7 +553,8 @@ void MainWindow::machineDrilling_onclick()
     rightArea = nullptr;
 //        rightArea->hide();
      QWidget* rw = ui->rightWidget;
-     QPushButton* button = new QPushButton("childWidget",nullptr);
+//     QPushButton* button = new QPushButton("childWidget",nullptr);
+     QPushButton* button = new QPushButton("childWidget",rw);
      button->show();
 
 }
