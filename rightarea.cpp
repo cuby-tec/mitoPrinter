@@ -10,8 +10,14 @@ RightArea::RightArea(const char* title , QWidget *parent ):QWidget(parent)
 {
     if(parent == nullptr)
         ui->setupUi(this);
-    else
-        ui->setupUi(parent);
+    else{
+//        ui->setupUi(parent);
+        ui->setupUi(this);
+    }
+
+    volatile QString st = parent->styleSheet();
+//    parent->setStyle(QApplication::style());
+    parent->setStyleSheet(nullptr);
 
     init();
 
@@ -29,8 +35,10 @@ RightArea::RightArea(QWidget *parent) : QWidget(parent)
 //    ui->setupUi(parent);
     if(parent == nullptr)
         ui->setupUi(this);
-    else
-        ui->setupUi(parent);
+    else{
+//        ui->setupUi(parent);
+        ui->setupUi(this);
+    }
     init();
 }
 
