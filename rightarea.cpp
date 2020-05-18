@@ -13,8 +13,8 @@ RightArea::RightArea(const char* title , QWidget *parent ):QWidget(parent)
     if(parent != nullptr)
     {
 //        ui->setupUi(parent);
-        parent->setStyleSheet(nullptr);
-        parent->setMinimumWidth(this->width());
+//        parent->setStyleSheet(nullptr);
+//        parent->setMinimumWidth(this->width());
 
     }
 
@@ -27,8 +27,6 @@ RightArea::RightArea(const char* title , QWidget *parent ):QWidget(parent)
         QString ttl = QString(title);
         setWindowTitle(title);
     }
-
-//    parent->setMinimumWidth(this->width());
 
 }
 
@@ -43,8 +41,8 @@ RightArea::RightArea(QWidget *parent) : QWidget(parent)
     else{
 //        ui->setupUi(parent);
         ui->setupUi(this);
-        parent->setStyleSheet(nullptr);
-        parent->setMinimumWidth(this->width());
+//        parent->setStyleSheet(nullptr);
+//        parent->setMinimumWidth(this->width());
 
     }
 
@@ -119,7 +117,7 @@ RightArea::init()
 //    connect(plotter,SIGNAL(sg_statusChanged(const Status_t*)),widCoordinatus,SLOT(updateStatus(const Status_t*)) );
     check1->setText("ThermoPlot");
 
-    //------------- auyolevel
+    //------------- autolevel
     QWidget* auwd = ui->widget_5;
     autolevel = new AutolevelWidget(auwd);
 
@@ -195,9 +193,13 @@ void RightArea::hide5(int state)
 void RightArea::updateStatus(const Status_t *status)
 {
     emit sg_statusChanged(status);
+    StatusLabel* sl = ui->statusWidget;
+    sl->updateStatus(status);
 }
 
 void RightArea::failedStatus()
 {
     emit sg_statusFailed();
+    StatusLabel* sl = ui->statusWidget;
+    sl->statusFailed();
 }

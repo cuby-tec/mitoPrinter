@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>633</width>
-    <height>645</height>
+    <width>600</width>
+    <height>700</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -40,13 +40,49 @@ padding-left:6px;
 }
 background-color: rgb(196, 160, 0);</string>
   </property>
-  <widget class="QWidget" name="horizontalLayoutWidget">
+  <widget class="QFrame" name="horizontalFrame">
    <property name="geometry">
     <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>626</width>
-     <height>729</height>
+     <x>18</x>
+     <y>600</y>
+     <width>30</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>16777215</width>
+     <height>50</height>
+    </size>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::Box</enum>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <property name="leftMargin">
+     <number>5</number>
+    </property>
+    <property name="topMargin">
+     <number>5</number>
+    </property>
+    <property name="rightMargin">
+     <number>5</number>
+    </property>
+    <property name="bottomMargin">
+     <number>5</number>
+    </property>
+    <item>
+     <widget class="StatusLabel" name="statusWidget" native="true"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>9</x>
+     <y>9</y>
+     <width>615</width>
+     <height>711</height>
     </rect>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
@@ -272,6 +308,14 @@ padding-left:6px;
    </layout>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>StatusLabel</class>
+   <extends>QWidget</extends>
+   <header>statuslabel.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

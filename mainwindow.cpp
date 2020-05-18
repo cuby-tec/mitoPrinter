@@ -522,15 +522,27 @@ void MainWindow::machinePrinter_onclick()
 
     }
 
-    QWidget* rw = ui->rightWidget;
+//    QWidget* rw = ui->rightWidget;
+//    QWidget* cw = this->centralWidget();
+    QDockWidget* rw = new QDockWidget(tr("3D printer"),this);
+    rw->setAllowedAreas(Qt::LeftDockWidgetArea |
+                                      Qt::RightDockWidgetArea);
+
+
+
 //    rightArea = new RightArea(rw);
 //    rightArea = new RightArea();
-    rightArea = new RightArea("3D printer",nullptr);
-//    rightArea = new RightArea("3D printer",rw);
-    rightArea->setWindowOpacity(0.8);
+//    rightArea = new RightArea("3D printer",nullptr);
+    rightArea = new RightArea("3D printer",rw);
+    rw->setWidget(rightArea);
+    rw->setWindowOpacity(0.9);
+    rw->setGeometry(30,50,rightArea->width(),rightArea->height());
+    rw->setFloating(true);
 
 //    rightArea->setParent(rw);
-    rightArea->show();
+//    rightArea->show();
+//    rw->show();
+    addDockWidget(Qt::LeftDockWidgetArea, rw);
 //    QPushButton* button = new QPushButton("childWidget",rw);
 //    button->show();
 //    rightArea = new RightArea(rw);
