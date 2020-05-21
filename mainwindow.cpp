@@ -31,7 +31,7 @@ MainWindow::MainWindow(QWidget *parent) :
     rightArea = nullptr;
 //------------------
 //    QLabel* statusl = ui->statusLabel;
-    statusLabel = new StatusLabel(ui->statusLabel);
+//    statusLabel = new StatusLabel(ui->statusLabel); //removed
 
 //    connect(rightArea,SIGNAL(sg_statusChanged(const Status_t*)),statusLabel,SLOT(updateStatus(const Status_t*)) );
 //    connect(rightArea,SIGNAL(sg_statusFailed()),statusLabel,SLOT(statusFailed()) );
@@ -542,15 +542,19 @@ void MainWindow::machinePrinter_onclick()
 //    rightArea->setParent(rw);
 //    rightArea->show();
 //    rw->show();
-    addDockWidget(Qt::LeftDockWidgetArea, rw);
+
+//    addDockWidget(Qt::LeftDockWidgetArea, rw);
+    addDockWidget(Qt::RightDockWidgetArea,rw);
+
+
 //    QPushButton* button = new QPushButton("childWidget",rw);
 //    button->show();
 //    rightArea = new RightArea(rw);
 //    rightArea->show();
 
 
-        connect(rightArea,SIGNAL(sg_statusChanged(const Status_t*)),statusLabel,SLOT(updateStatus(const Status_t*)) );
-        connect(rightArea,SIGNAL(sg_statusFailed()),statusLabel,SLOT(statusFailed()) );
+//        connect(rightArea,SIGNAL(sg_statusChanged(const Status_t*)),statusLabel,SLOT(updateStatus(const Status_t*)) );
+//        connect(rightArea,SIGNAL(sg_statusFailed()),statusLabel,SLOT(statusFailed()) );
 
 }
 

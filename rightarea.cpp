@@ -121,9 +121,6 @@ RightArea::init()
     QWidget* auwd = ui->widget_5;
     autolevel = new AutolevelWidget(auwd);
 
-
-
-
     layout = ui->verticalLayout_3;
     layout->setAlignment(Qt::AlignTop);
 
@@ -179,7 +176,7 @@ void RightArea::hide4(int state)
 }
 
 void RightArea::hide5(int state)
-{
+{// autolevel
     if(state == 0)
         ui->widget_5->hide();
     else {

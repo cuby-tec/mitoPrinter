@@ -60,7 +60,7 @@ private:
 
     RightArea *rightArea;
 
-    StatusLabel* statusLabel;
+//    StatusLabel* statusLabel;
 
     GraphicsView *view;
 
