@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>617</width>
-    <height>700</height>
+    <width>633</width>
+    <height>839</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -40,66 +40,30 @@ padding-left:6px;
 }
 background-color: rgb(196, 160, 0);</string>
   </property>
-  <widget class="QFrame" name="horizontalFrame">
+  <widget class="QWidget" name="verticalLayoutWidget">
    <property name="geometry">
     <rect>
-     <x>18</x>
-     <y>600</y>
-     <width>30</width>
-     <height>20</height>
+     <x>10</x>
+     <y>0</y>
+     <width>626</width>
+     <height>852</height>
     </rect>
    </property>
-   <property name="maximumSize">
-    <size>
-     <width>16777215</width>
-     <height>50</height>
-    </size>
-   </property>
-   <property name="frameShape">
-    <enum>QFrame::Box</enum>
-   </property>
-   <layout class="QHBoxLayout" name="horizontalLayout_2">
+   <layout class="QVBoxLayout" name="verticalLayout_4">
     <property name="leftMargin">
-     <number>5</number>
+     <number>10</number>
     </property>
     <property name="topMargin">
-     <number>5</number>
+     <number>10</number>
     </property>
     <property name="rightMargin">
-     <number>5</number>
+     <number>10</number>
     </property>
     <property name="bottomMargin">
-     <number>5</number>
+     <number>10</number>
     </property>
     <item>
-     <widget class="StatusLabel" name="statusWidget" native="true"/>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QWidget" name="layoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>9</x>
-     <y>9</y>
-     <width>615</width>
-     <height>711</height>
-    </rect>
-   </property>
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <property name="leftMargin">
-     <number>5</number>
-    </property>
-    <property name="topMargin">
-     <number>5</number>
-    </property>
-    <property name="rightMargin">
-     <number>5</number>
-    </property>
-    <property name="bottomMargin">
-     <number>5</number>
-    </property>
-    <item>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
+     <layout class="QHBoxLayout" name="horizontalLayout">
       <property name="leftMargin">
        <number>5</number>
       </property>
@@ -113,69 +77,95 @@ background-color: rgb(196, 160, 0);</string>
        <number>5</number>
       </property>
       <item>
-       <widget class="QCheckBox" name="checkBox_2">
-        <property name="text">
-         <string>CheckBox</string>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <property name="leftMargin">
+         <number>5</number>
         </property>
-        <property name="checked">
-         <bool>true</bool>
+        <property name="topMargin">
+         <number>5</number>
         </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QWidget" name="widget_2" native="true">
-        <property name="minimumSize">
-         <size>
-          <width>280</width>
-          <height>364</height>
-         </size>
+        <property name="rightMargin">
+         <number>5</number>
         </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>400</height>
-         </size>
+        <property name="bottomMargin">
+         <number>5</number>
         </property>
-        <property name="baseSize">
-         <size>
-          <width>280</width>
-          <height>347</height>
-         </size>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">background-color: rgb(114, 159, 207);</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="checkBox_4">
-        <property name="text">
-         <string>model staatstic</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QWidget" name="widget_4" native="true">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>120</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>150</height>
-         </size>
-        </property>
-        <property name="toolTip">
-         <string>model statistic</string>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">#widget_4{
+        <item>
+         <widget class="QCheckBox" name="checkBox_2">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>CheckBox</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QWidget" name="widget_2" native="true">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="baseSize">
+           <size>
+            <width>280</width>
+            <height>400</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(114, 159, 207);</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkBox_4">
+          <property name="text">
+           <string>model staatstic</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QWidget" name="widget_4" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>120</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>150</height>
+           </size>
+          </property>
+          <property name="toolTip">
+           <string>model statistic</string>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">#widget_4{
 background-color: rgb(211, 215, 207);
 border-color: rgb(239, 41, 41);
 selection-color: rgb(153, 255, 0);
@@ -184,29 +174,29 @@ border: 1px solid gray;
 border-radius: 8px;
 padding-left:6px;
 }</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="checkBox_5">
-        <property name="text">
-         <string>Autolevel</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QWidget" name="widget_5" native="true">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>100</height>
-         </size>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">#widget_5{
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkBox_5">
+          <property name="text">
+           <string>Autolevel</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QWidget" name="widget_5" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>100</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">#widget_5{
 background-color: rgb(211, 215, 207);
 border-color: rgb(239, 41, 41);
 selection-color: rgb(153, 255, 0);
@@ -215,83 +205,83 @@ border: 1px solid gray;
 border-radius: 8px;
 padding-left:6px;
 }</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <layout class="QVBoxLayout" name="verticalLayout_3">
-      <property name="leftMargin">
-       <number>10</number>
-      </property>
-      <property name="topMargin">
-       <number>10</number>
-      </property>
-      <property name="rightMargin">
-       <number>10</number>
-      </property>
-      <property name="bottomMargin">
-       <number>10</number>
-      </property>
-      <item>
-       <widget class="QCheckBox" name="checkBox_1">
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>CheckBox</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
       <item>
-       <widget class="QWidget" name="widget_1" native="true">
-        <property name="minimumSize">
-         <size>
-          <width>280</width>
-          <height>200</height>
-         </size>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <property name="leftMargin">
+         <number>5</number>
         </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>200</height>
-         </size>
+        <property name="topMargin">
+         <number>5</number>
         </property>
-        <property name="baseSize">
-         <size>
-          <width>280</width>
-          <height>200</height>
-         </size>
+        <property name="rightMargin">
+         <number>5</number>
         </property>
-        <property name="styleSheet">
-         <string notr="true">background-color: rgb(252, 233, 79);</string>
+        <property name="bottomMargin">
+         <number>5</number>
         </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="checkBox_3">
-        <property name="text">
-         <string>CheckBox</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QWidget" name="widget_3" native="true">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>280</height>
-         </size>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">#widget_3{
+        <item>
+         <widget class="QCheckBox" name="checkBox_1">
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+          <property name="text">
+           <string>CheckBox</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QWidget" name="widget_1" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>280</width>
+            <height>200</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>200</height>
+           </size>
+          </property>
+          <property name="baseSize">
+           <size>
+            <width>280</width>
+            <height>200</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(252, 233, 79);</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkBox_3">
+          <property name="text">
+           <string>CheckBox</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QWidget" name="widget_3" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>280</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">#widget_3{
 background-color: rgb(211, 215, 207);
 border-color: rgb(239, 41, 41);
 selection-color: rgb(153, 255, 0);
@@ -300,22 +290,16 @@ border: 1px solid gray;
 border-radius: 8px;
 padding-left:6px;
 }</string>
-        </property>
-       </widget>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </item>
    </layout>
   </widget>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>StatusLabel</class>
-   <extends>QWidget</extends>
-   <header>statuslabel.h</header>
-   <container>1</container>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

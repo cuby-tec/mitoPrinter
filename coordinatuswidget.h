@@ -25,6 +25,7 @@ signals:
 
 public slots:
     void updateStatus(const Status_t *status);
+    void failedStatus();
 
 private:
     Ui::CoordinatusWidget *ui;

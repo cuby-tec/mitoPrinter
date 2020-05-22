@@ -28,6 +28,7 @@ SOURCES += \
         mainwindow.cpp \
     myglobal.cpp \
     rightarea.cpp \
+    taskstatus.cpp \
     thermoplot.cpp \
     exchange/cnccommand.cpp \
     exchange/exchange.cpp \
@@ -82,6 +83,7 @@ HEADERS += \
         mainwindow.h \
     myglobal.h \
     rightarea.h \
+    taskstatus.h \
     thermoplot.h \
     exchange/cnccommand.h \
     exchange/exchange.h \
@@ -166,6 +168,7 @@ FORMS += \
     aboutwindow.ui \
     profiles/profiledialog.ui \
     profiles/thermopiddialog.ui \
+    taskstatus.ui \
     thermolog/thermologdialog.ui \
     profiles/profiledialog.ui \
     profiles/thermopiddialog.ui \

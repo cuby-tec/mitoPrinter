@@ -92,6 +92,12 @@ RightArea::init()
     //--------- CoordinatusWidget
     QWidget *wd2 = ui->widget_2;
     widCoordinatus = new CoordinatusWidget(wd2);
+//    wd2->adjustSize();
+//    widCoordinatus->show();
+//    wd2->show();
+    wd2->setMinimumSize(widCoordinatus->size());
+
+
     check2->setText("Coordinatus");
 //    check2->setChecked(false);
 //    layout->setAlignment(wd2,Qt::AlignTop);
@@ -124,9 +130,45 @@ RightArea::init()
     layout = ui->verticalLayout_3;
     layout->setAlignment(Qt::AlignTop);
 
+    check5->setChecked(false);
+
+
+    //----------- Task status init
+    QWidget* taskwidget = new QWidget();
+    taskwidget->setGeometry(0,0,230,300);
+    QVBoxLayout* taskWidgetLayout = new QVBoxLayout;
+    taskwidget->setLayout(taskWidgetLayout);
+
+    QLabel* taskLabel = new QLabel(taskwidget);
+    taskLabel->setText(QString("Task status."));
+
+    taskWidgetLayout->addWidget(taskLabel);
+
+//    QPushButton *button1 = new QPushButton("One");
+//    taskWidgetLayout->addWidget(button1);
+
+//    taskstatus = new TaskStatus(taskwidget);//verticalLayout_2
+    taskstatus = new TaskStatus;
+
+    QVBoxLayout * layout_2 = ui->verticalLayout_2;
+//    layout_2->addWidget(taskwidget);
+//    layout_2->addWidget(taskstatus); //debug TODO
+
+    layout_2->setAlignment(Qt::AlignTop);
+//    layout_2->addWidget(button1);
+//    taskwidget->show();
+    layout_2->addStretch();
+
+//    QHBoxLayout* hl =ui->horizontalLayout;
+//    hl->addStretch();
+    //--------------------
 
     Messager* message = Messager::instance();
+
     connect( message, SIGNAL(sg_statusChanged(const Status_t*)),widCoordinatus, SLOT(updateStatus(const Status_t*)) );
+//    connect(message, SIGNAL(sg_statusFailed(const Status_t*)),widCoordinatus, SLOT(failedStatus(const Status_t*)));
+
+
     connect(message, SIGNAL(sg_statusChanged(const Status_t*)),autolevel, SLOT(updateStatus(const Status_t*)));
     connect(plotter, SIGNAL(sg_statusChanged(const Status_t*)),message, SLOT(putStatus(const Status_t*)));
 
@@ -190,13 +232,14 @@ void RightArea::hide5(int state)
 void RightArea::updateStatus(const Status_t *status)
 {
     emit sg_statusChanged(status);
-    StatusLabel* sl = ui->statusWidget;
-    sl->updateStatus(status);
+//    StatusLabel* sl = ui->statusWidget;
+//    sl->updateStatus(status);
 }
 
 void RightArea::failedStatus()
 {
     emit sg_statusFailed();
-    StatusLabel* sl = ui->statusWidget;
-    sl->statusFailed();
+//    StatusLabel* sl = ui->statusWidget;
+//    sl->statusFailed();
+    widCoordinatus->failedStatus();
 }

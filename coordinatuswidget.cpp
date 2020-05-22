@@ -13,6 +13,14 @@ CoordinatusWidget::CoordinatusWidget(QWidget *parent) : QWidget(parent)
 {
     ui->setupUi(parent);
 
+    //layout_2->setAlignment(Qt::AlignTop);
+    QVBoxLayout* l = ui->verticalLayout;
+    l->setAlignment(Qt::AlignTop);
+
+//    setGeometry(ui->verticalLayoutWidget->geometry());
+    QWidget::setGeometry(ui->verticalLayoutWidget->geometry());
+    QWidget::setMinimumHeight(ui->verticalLayoutWidget->height());
+
     coordinatus = Coordinatus::instance();
     controller = new Controller;// microstep in coordinatus dos't set yet.
 }
@@ -126,5 +134,18 @@ void CoordinatusWidget::updateStatus(const Status_t *status)
                                             );
 
 
+    QLabel* label_connection = ui->c_label_connection_value;
+    QPixmap pixmap(":/images/connection_connected.xpm");
+    label_connection->setPixmap(pixmap);
+    label_connection->setFrameShape(QFrame::NoFrame);
 
 }
+
+void CoordinatusWidget::failedStatus()
+{
+    QLabel* label_connection = ui->c_label_connection_value;
+    QPixmap pixmap(":/images/connection_disconnected.xpm");
+    label_connection->setPixmap(pixmap);
+    label_connection->setToolTip(QString("disconnected now"));
+    label_connection->setFrameShape(QFrame::Box);
+}// end of updateStatus

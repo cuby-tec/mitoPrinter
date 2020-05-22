@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>297</width>
-    <height>364</height>
+    <height>418</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
      <x>0</x>
      <y>0</y>
      <width>291</width>
-     <height>359</height>
+     <height>411</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -156,7 +156,7 @@
         </property>
        </widget>
       </item>
-      <item row="7" column="1">
+      <item row="8" column="1">
        <widget class="QLabel" name="c_label_positioning_value">
         <property name="text">
          <string>Abs</string>
@@ -166,7 +166,7 @@
         </property>
        </widget>
       </item>
-      <item row="7" column="0">
+      <item row="8" column="0">
        <widget class="QLabel" name="label_positioning">
         <property name="text">
          <string>Positioning</string>
@@ -224,7 +224,7 @@
         </property>
        </widget>
       </item>
-      <item row="8" column="0">
+      <item row="9" column="0">
        <widget class="QLabel" name="c_label_contiCnt">
         <property name="toolTip">
          <string>currentSegmentNumber</string>
@@ -234,7 +234,7 @@
         </property>
        </widget>
       </item>
-      <item row="8" column="1">
+      <item row="9" column="1">
        <widget class="QLabel" name="label_contiCnt">
         <property name="text">
          <string>0</string>
@@ -244,14 +244,14 @@
         </property>
        </widget>
       </item>
-      <item row="9" column="0">
+      <item row="10" column="0">
        <widget class="QLabel" name="c_label_regulator">
         <property name="text">
          <string>regulator</string>
         </property>
        </widget>
       </item>
-      <item row="9" column="1">
+      <item row="10" column="1">
        <widget class="QLabel" name="c_label_regulator_value">
         <property name="text">
          <string>0</string>
@@ -261,20 +261,46 @@
         </property>
        </widget>
       </item>
-      <item row="10" column="0">
+      <item row="11" column="0">
        <widget class="QLabel" name="c_label_microstep">
         <property name="text">
          <string>microsteps</string>
         </property>
        </widget>
       </item>
-      <item row="10" column="1">
+      <item row="11" column="1">
        <widget class="QLabel" name="c_label_microstep_value">
         <property name="text">
          <string>none</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="0">
+       <widget class="QLabel" name="c_label_connection">
+        <property name="text">
+         <string>Connection</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="1">
+       <widget class="QLabel" name="c_label_connection_value">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>17</height>
+         </size>
+        </property>
+        <property name="toolTip">
+         <string>disconnected</string>
+        </property>
+        <property name="pixmap">
+         <pixmap resource="resource.qrc">:/images/connection_disconnected.xpm</pixmap>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
         </property>
        </widget>
       </item>
@@ -299,6 +325,12 @@
       </property>
       <item row="2" column="0">
        <widget class="QLabel" name="label_ender_yrow">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>17</height>
+         </size>
+        </property>
         <property name="text">
          <string>Y_AXIS</string>
         </property>
@@ -316,6 +348,12 @@
       </item>
       <item row="0" column="0">
        <widget class="QLabel" name="label_ender_head_axis">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>17</height>
+         </size>
+        </property>
         <property name="text">
          <string>Axis/Ender</string>
         </property>
@@ -343,6 +381,12 @@
       </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label_ender_xrow">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>17</height>
+         </size>
+        </property>
         <property name="text">
          <string>X_AXIS</string>
         </property>
@@ -380,6 +424,12 @@
       </item>
       <item row="3" column="0">
        <widget class="QLabel" name="label_ender_zrow">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>17</height>
+         </size>
+        </property>
         <property name="text">
          <string>Z_AXIS</string>
         </property>
@@ -410,6 +460,8 @@
    </layout>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="resource.qrc"/>
+ </resources>
  <connections/>
 </ui>

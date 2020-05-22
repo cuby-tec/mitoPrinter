@@ -8,6 +8,7 @@
 #include "gconsole.h"
 #include "modelstatistic.h"
 #include "autolevel.h"
+#include "taskstatus.h"
 
 #include <QWidget>
 
@@ -62,6 +63,8 @@ private:
     ModelStatistic *modelStatistic;
 
     AutolevelWidget* autolevel;
+
+    TaskStatus * taskstatus;
 
     //-------- function
     void init();
