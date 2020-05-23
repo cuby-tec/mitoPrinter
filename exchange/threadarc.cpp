@@ -1,6 +1,8 @@
 #include "threadarc.h"
 #include <QDebug>
 
+#include "settings.h"
+
 #define QTIMER
 #define  THREAD_TIMOUT  (1000*60*5)   // 5 min
 
@@ -58,6 +60,7 @@ void ThreadArc::run()
 //            request->requestNumber = ++MyGlobal::requestIndex;
             try_counter = 0;
             //
+#ifndef DEBUG_EXECUTEPROGRAM
             do{
 //cout<<"Lock."<<queue.count();
                 thermo_gmutex.lock();
@@ -109,6 +112,10 @@ void ThreadArc::run()
 #endif
 
             }while(!(status.modelState.reserved1&COMMAND_ACKNOWLEDGED));
+#else
+            status.modelState.reserved1 |= COMMAND_ACKNOWLEDGED;
+            status.freeSegments = SEGMENT_QUEE_SIZE-1;
+#endif //DEBUG_EXECUTEPROGRAM
 
 #ifndef QTIMER // 03/01/2020
             if(try_counter>=max_tryCounter){
@@ -145,6 +152,7 @@ void ThreadArc::run()
 //        mutex.lock();
 //        thermo_gmutex.lock();
 //        if (!restart){
+        restart = false;
             condition.wait(&mutex);// thermo_gmutex
 //            cout;
 //        }
@@ -153,6 +161,11 @@ void ThreadArc::run()
 //        thermo_gmutex.unlock();
 
     }// forever
+}
+
+bool ThreadArc::getRestart() const
+{
+    return restart;
 }
 
 size_t ThreadArc::getMdelay() const

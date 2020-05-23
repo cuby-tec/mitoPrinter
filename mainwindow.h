@@ -45,7 +45,8 @@ public slots:
     void filamentUpPressed();
     void filamentUpReleased();
     void on_runProgramButton();
-    void on_stopProgram();
+    void on_stopProgram();// Pause program
+    void on_continueProgram();
     void on_abortProgram();
 
     //--------- Machine set
@@ -97,8 +98,11 @@ private:
 
     QAction* pauseProgramAction;
     QAction* stopProgramAction;
+    QAction* continueProgramAction;
 
     QToolButton* pauseProgramButton;
+
+    QToolButton* continueProgramButton;
 
     QToolButton* abortProgramButton;
 

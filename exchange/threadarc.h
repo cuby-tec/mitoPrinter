@@ -39,6 +39,8 @@ public:
     size_t getMdelay() const;
     void setMdelay(const size_t &value);
 
+    bool getRestart() const;
+
 signals:
     void sg_status_updated(const Status_t* status);
     void sg_failed_status();

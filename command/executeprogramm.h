@@ -120,7 +120,7 @@ public:
     {
         abort = true;
 //        QThread::~QThread();
-        delete optimization;
+//        delete optimization;
     }
 
     void run() override {
@@ -200,6 +200,7 @@ public:
                 ThreadViser::queueNotEmpty.wakeAll();
                 ThreadViser::exec_mutex.unlock();
                 if(action->a == eEOF){
+                    actionQueue->enqueue(tag_action);
                     abort = true;
                     break;
                 }

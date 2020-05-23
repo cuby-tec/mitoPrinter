@@ -58,7 +58,11 @@ Controller::Controller()
 
 Controller::~Controller()
 {
-        free(pcountertime);
+//        free(pcountertime);
+    delete motor[X_AXIS];
+    delete motor[Y_AXIS];
+    delete motor[Z_AXIS];
+    delete motor[E_AXIS];
 }
 
 

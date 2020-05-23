@@ -17,6 +17,10 @@
 
 #include <cmath>
 
+//DEBUG
+//#define DEBUG_EXECUTEPROGRAM >> in settings.h
+
+
 #define cout qDebug()<<__FILE__<<__LINE__
 
 #define FSMDEBUG  1
@@ -58,6 +62,24 @@ ComData::ComData(QObject *parent) : QObject(parent)
     _action = nullptr;
 
     setupThread();
+
+}
+
+ComData::~ComData()
+{
+    try {
+        delete controller;
+        threadarc.quit();
+        threadarc.wait(100);
+        threadarc.terminate();
+
+
+    } catch (std::exception &e) {
+        qFatal("Error ");
+
+    }    catch (...) {
+        qFatal("Error ");
+    }
 
 }
 
@@ -604,22 +626,43 @@ void ComData::run(GcodeWorker* gworker)
 //    runState = ersWaitParamTemperature; // DEBUG
 /*    delete request;
     delete factory;*/
-
+#ifndef DEBUG_EXECUTEPROGRAM__
     waitParam();
     //wait answer ...
+#else
+    Status_t *sta;
+    sta = new Status_t;
+    sta->modelState.reserved1 |= COMMAND_ACKNOWLEDGED;  //status.modelState.reserved1&COMMAND_ACKNOWLEDGED
+//    emit(sg_updateStatus(sta));
+    updateStatus(sta);
+#endif
 
 //    gworker->readCommandLine();
 //    connect(gworker, SIGNAL(sg_executeComplite()),this, SLOT(slot_fileComplite()));
 
 }
 
+// Pause program
 void ComData::stop()
 {
     runState = ersStop;
 }
 
+// Continue after Pause
+void ComData::continue_prg()
+{
+    runState = ersRunning;
+    _run();
+}
+
+
 void ComData::_run()
 {
+#ifdef    DEBUG_EXECUTEPROGRAM
+//    Status_t *sta;
+    QThread* thread;// = new QThread;
+#endif
+
     //    cout<<"run:"<<gworker->isFileOpened();
     mito::Action_t* action;
     int queueSize;
@@ -629,7 +672,7 @@ void ComData::_run()
 
     case ersStop:
         cout<<"Soft Stop.";
-        emit sg_executeComplite();
+        emit sg_executionPause();
 //        return;
         break;
 
@@ -675,7 +718,19 @@ _run1:
                 }
                 threadarc.setMdelay(MDELAY);
                 threadarc.set_tryCounter(TRY_COUNTER);
+#ifndef DEBUG_EXECUTEPROGRAM
                 threadarc.process();
+#else
+//                thread = new QThread;
+                while(threadarc.getRestart())
+                {
+//                    thread->sleep(50);
+                }
+//                delete thread;
+//                usleep(50);
+                threadarc.process();
+#endif
+
 #if LEVEL == 1
                 cout<<"process==========<<"<<MyGlobal::requestIndex<<"\tqueeSize:"<<queueSize;
 #endif
@@ -683,6 +738,7 @@ _run1:
 
             case eWaitSend:
             	//TODO eWaitSend
+#ifndef DEBUG_EXECUTEPROGRAM
                 waitsendAction = new WaitSendAction(this,action);
 //                waitsendAction->setSegment_number()
                 connect(waitsendAction,SIGNAL(sg_commandDone()),this, SLOT(waitsendDone()));
@@ -695,6 +751,15 @@ _run1:
                 _action = new mito::Action_t;
                 _action->queue.enqueue(action->queue.head());
                 waitsendAction->execute();
+#else
+                while(threadarc.getRestart())
+                {
+//                    thread->sleep(50);
+                }
+//                delete thread;
+//                usleep(50);
+                threadarc.process();
+#endif
             	break;
 
             case eSendWait:
@@ -728,6 +793,7 @@ _run1:
 
             case eEOF:
                 runState = ersEOF;
+                emit sg_executeComplite();
                 cout<<"eEOF";
                 break;
             }

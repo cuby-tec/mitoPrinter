@@ -6,6 +6,10 @@ ExecuteProgramm::ExecuteProgramm(QObject *parent) : QObject(parent)
 {
     producer = new Producer(this);
     producer->setActionQueue(&ExecuteProgramm::actionQueue);
+    gcodeworker = nullptr;
+    comdata = nullptr;
+    numaction = 0;
+    queueSize = 10;
 }
 
 ExecuteProgramm::~ExecuteProgramm()
@@ -26,14 +30,37 @@ void ExecuteProgramm::execute()
 
 void ExecuteProgramm::execute(QFile &stream)
 {
-    gcodeworker = new GcodeWorker();
+    //--------- QFile check
+    bool rd;
+    QString line;
+    char buf[1024];
+    qint64 lineLength = stream.readLine(buf, sizeof(buf));
+    volatile QString ln;
 
-    connect(gcodeworker, SIGNAL(sg_executeComplite()), this, SLOT(finished()) );
+    if (lineLength != -1) {
+        // the line is available in buf
+        QString lnp = QString(buf);
+    }
+
+    rd = stream.seek(0);
+    if(rd)
+    {
+        line = stream.readLine();
+    }
+
+
+     numaction = 0;
+
+    if(gcodeworker == nullptr)
+        gcodeworker = new GcodeWorker();
+
+//    connect(gcodeworker, SIGNAL(sg_executeComplite()), this, SLOT(finished()) );
     gcodeworker->setFileExecute(stream);
 
+    if(comdata == nullptr)
+        comdata = new ComData();
 
-    comdata = new ComData();
-//    connect(comdata, SIGNAL(sg_executeComplite()), this, SLOT(finished()));
+    connect(comdata, SIGNAL(sg_executeComplite()), this, SLOT(finished()));
     producer->setGcodeWorker(gcodeworker);
     producer->setController(comdata->getController());
     producer->start();
@@ -43,10 +70,27 @@ void ExecuteProgramm::execute(QFile &stream)
 
 void ExecuteProgramm::finished()
 {
-    cout<<"finished";
-    emit sg_executionFinished();
+    try {
+        cout<<"finished";
+        emit sg_executionFinished();
+//        delete comdata;
+//        delete gcodeworker;
+    } catch (std::exception &e) {
+        qFatal("Error ");
+
+    }    catch (...) {
+        qFatal("Error ");
+    }
+
+
 }
 
+void Producer::setController(Controller *value)
+{
+    controller = value;
+}
+
+//---------- vars
 QMutex ExecuteProgramm::exec_mutex;
 
 QWaitCondition ExecuteProgramm::queueNotFull;
@@ -61,7 +105,3 @@ QQueue<mito::Action_t> ExecuteProgramm::actionQueue;
 
 mito::Action_t ExecuteProgramm::action;
 
-void Producer::setController(Controller *value)
-{
-    controller = value;
-}

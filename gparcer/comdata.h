@@ -84,6 +84,8 @@ class ComData : public QObject
 public:
     explicit ComData(QObject *parent = nullptr);
 
+     ~ComData();
+
     ComDataReq_t* getRequest()
     {
         return &request;
@@ -108,11 +110,16 @@ public:
 
     void run(GcodeWorker *gworker);
 
+    // Pause
     void stop();
+
+    // continue after Pause;
+    void continue_prg();
 
 signals:
     void sg_updateStatus(const Status_t* status);
     void sg_executeComplite();
+    void sg_executionPause();
 
 
 public slots:

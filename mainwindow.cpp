@@ -19,8 +19,9 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     isGcodeFileOpened(false),
-    executeProgramm(new ExecuteProgramm)
-   ,workTime(new QTime)
+//    executeProgramm(new ExecuteProgramm),
+    executeProgramm(nullptr),
+    workTime(new QTime)
 
 {
     ui->setupUi(this);
@@ -219,7 +220,8 @@ void MainWindow::setupMenu()
         menuHelp->addAction(aboutAction);
 //        connect(aboutAction,&QAction::triggered,w,&MainWindow::aboutWindowDo);
         connect(aboutAction,SIGNAL(triggered()),this,SLOT(aboutWindowDo()));
-// --------- Execute menu
+
+        // --------- Execute menu
 
         QAction *executeProgramAction = ui->actionRun;
         executeProgramAction->setEnabled(false);
@@ -265,7 +267,15 @@ void MainWindow::setupMenu()
         pauseProgramAction = toolbar->addWidget(pauseProgramButton);
         connect(pauseProgramButton,SIGNAL(clicked()),this,SLOT(on_stopProgram())  );
 
-        // Stop program button
+        continueProgramButton = new QToolButton;
+        continueProgramButton->setIcon(QIcon(":images/continue_program.xpm"));
+        continueProgramButton->setToolTip(QString("continue program"));
+        continueProgramButton->setEnabled(false);
+        continueProgramAction = toolbar->addWidget(continueProgramButton);
+        connect(continueProgramButton,SIGNAL(clicked()),this,SLOT(on_continueProgram()));
+
+
+        // Abort program button
         abortProgramButton = new QToolButton;
         abortProgramButton->setIcon(QIcon(":images/stop_program.xpm"));
         abortProgramButton->setToolTip("Abort program");
@@ -355,6 +365,11 @@ void MainWindow::on_commandExecuteProgram()
 
 //    QTextStream stream(&gcodeFile);
     statusBar()->showMessage("Program executing ...");
+
+    executeProgramm = new ExecuteProgramm;
+
+    connect(executeProgramm, SIGNAL(sg_executionFinished()),this,SLOT(on_gprogrammFinish()));
+
     executeProgramm->execute(gcodeFile);
 }
 
@@ -490,16 +505,24 @@ void MainWindow::on_runProgramButton()
 void MainWindow::on_stopProgram()
 {
 
-    QAction *action = ui->actionRun;
-    action->setEnabled(true);
+//    QAction *action = ui->actionRun;
+//    action->setEnabled(true);
 
-    action = ui->actionOpen_GCode;
-    action->setEnabled(true);
-
-    executeProgramm->getComdata()->stop();
-    statusBar()->showMessage("Program stoped.");
+//    action = ui->actionOpen_GCode;
+//    action->setEnabled(true);
+    if(executeProgramm != nullptr)
+        executeProgramm->getComdata()->stop();
+    statusBar()->showMessage("Program paused.");
 
 }
+
+void MainWindow::on_continueProgram()
+{
+    if(executeProgramm != nullptr)
+        executeProgramm->getComdata()->continue_prg();
+    statusBar()->showMessage("Program continue to work.");
+}
+
 
 void MainWindow::on_abortProgram()
 {
@@ -582,6 +605,7 @@ void MainWindow::on_gprogrammFinish()
     actionRun->setEnabled(true);
     QAction* action = ui->actionOpen_GCode;
     action->setEnabled(true);
+    delete executeProgramm;
 }
 
 void MainWindow::on_message(QString msg)

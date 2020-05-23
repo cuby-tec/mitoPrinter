@@ -67,6 +67,8 @@ void CoordinatusWidget::updateStatus(const Status_t *status)
 
     ms_state = status->modelState.modelState;
 
+    if(ms_state>sizeof (state))
+        ms_state = 0;
     t_state = state[ms_state];
 //    switch (ms_state) {
 //    case ehIdle:
