@@ -238,7 +238,7 @@ void MainWindow::setupMenu()
         pushdown = nullptr;
 #endif
         QToolBar* toolbar = ui->mainToolBar;
-        QToolButton* tbutton = new QToolButton;
+        tbutton = new QToolButton;
 //        tbutton->setArrowType(Qt::DownArrow);
         tbutton->setIcon(QIcon(":images/arrowdown.xpm"));
         tbutton->setToolTip(QString("Push filament down."));
@@ -246,16 +246,17 @@ void MainWindow::setupMenu()
         connect(tbutton,SIGNAL(pressed()),this, SLOT(filamentDownPressed()));
         connect(tbutton,SIGNAL(released()),this, SLOT(filamentDownReleased()));
 
-        QToolButton* tbuttonup = new QToolButton;
+        tbuttonup = new QToolButton;
         tbuttonup->setIcon(QIcon(":images/arrowup.xpm"));
         tbuttonup->setToolTip(QString("Push filament backward."));
         toolbar->addWidget(tbuttonup);
         connect(tbuttonup,SIGNAL(pressed()),this, SLOT(filamentUpPressed()));
         connect(tbuttonup,SIGNAL(released()),this,SLOT(filamentUpReleased()));
 
-        QToolButton* runProgramButton = new QToolButton;
+        runProgramButton = new QToolButton;
         runProgramButton->setIcon(QIcon(":images/program_run.xpm"));
         runProgramButton->setToolTip(QString("Run program."));
+        runProgramButton->setEnabled(false);
         toolbar->addWidget(runProgramButton);
         connect(runProgramButton,SIGNAL(clicked()),this, SLOT(on_runProgramButton()) );
 
@@ -362,6 +363,10 @@ void MainWindow::on_commandExecuteProgram()
 
     abortProgramButton->setEnabled(true);
 
+    runProgramButton->setEnabled(false);
+    tbutton->setEnabled(false);
+    tbuttonup->setEnabled(false);
+
 
 //    QTextStream stream(&gcodeFile);
     statusBar()->showMessage("Program executing ...");
@@ -423,6 +428,7 @@ void MainWindow::on_commandOpenFile()
 #endif
             QAction *actionRun = ui->actionRun;
             actionRun->setEnabled(true);
+            runProgramButton->setEnabled(true);
             //TODO Check file for errors.
 //            statusBar()->showMessage(QString("Opened: %1").arg(gcodeFile.fileName()));
             fileLabel->setText(gcodeFile.fileName());
@@ -560,7 +566,7 @@ void MainWindow::machinePrinter_onclick()
     rw->setWidget(rightArea);
     rw->setWindowOpacity(0.9);
     rw->setGeometry(30,50,rightArea->width(),rightArea->height());
-    rw->setFloating(true);
+    rw->setFloating(false);//true
 
 //    rightArea->setParent(rw);
 //    rightArea->show();
@@ -601,11 +607,22 @@ void MainWindow::machineDrilling_onclick()
 void MainWindow::on_gprogrammFinish()
 {
     statusBar()->showMessage("Programm finished.");
+    delete executeProgramm;
+
     QAction *actionRun = ui->actionRun;
     actionRun->setEnabled(true);
     QAction* action = ui->actionOpen_GCode;
     action->setEnabled(true);
-    delete executeProgramm;
+
+    pauseProgramAction->setEnabled(false);
+    stopProgramAction->setEnabled(false);
+    pauseProgramButton->setEnabled(false);
+    abortProgramButton->setEnabled(false);
+    runProgramButton->setEnabled(true);
+    tbutton->setEnabled(true);
+    tbuttonup->setEnabled(true);
+
+
 }
 
 void MainWindow::on_message(QString msg)

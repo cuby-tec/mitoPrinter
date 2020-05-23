@@ -40,10 +40,12 @@ public slots:
     //actionZeroPoint_Z
     void on_actionZeroPoint_Z();
     void commandZeroPointDone();
+    //buttons
     void filamentDownPressed();
     void filamentDownReleased();
     void filamentUpPressed();
     void filamentUpReleased();
+    //buttons
     void on_runProgramButton();
     void on_stopProgram();// Pause program
     void on_continueProgram();
@@ -99,6 +101,14 @@ private:
     QAction* pauseProgramAction;
     QAction* stopProgramAction;
     QAction* continueProgramAction;
+
+    //Toolbar buttons
+
+    QToolButton* tbutton;
+
+    QToolButton* tbuttonup;
+
+    QToolButton* runProgramButton;
 
     QToolButton* pauseProgramButton;
 
