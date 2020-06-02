@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "rightarea.h"
+#include "drillingmachine.h"
 #include "statuslabel.h"
 #include "opengl/graphicsview.h"
 #include "opengl/openglscene.h"
@@ -63,6 +64,7 @@ private:
 
     // Machine
     RightArea *rightArea;
+    DrillingMachine* drillingMachine;
     QDockWidget* machineDoc;
 
 

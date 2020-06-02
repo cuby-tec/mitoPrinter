@@ -24,6 +24,7 @@ CONFIG += c++11
 
 SOURCES += \
     autolevel.cpp \
+    drillingmachine.cpp \
         main.cpp \
         mainwindow.cpp \
     myglobal.cpp \
@@ -80,6 +81,7 @@ SOURCES += \
 
 HEADERS += \
     autolevel.h \
+    drillingmachine.h \
         mainwindow.h \
     myglobal.h \
     rightarea.h \
@@ -163,6 +165,7 @@ HEADERS += \
 
 FORMS += \
     autolevel.ui \
+    drillingmachine.ui \
         mainwindow.ui \
     rightArea.ui \
     aboutwindow.ui \

@@ -30,6 +30,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //rWidget
 //    rightArea = new RightArea(ui->rightWidget); // rWidget
     rightArea = nullptr;
+    drillingMachine = nullptr;
     machineDoc = nullptr;
 //------------------
 //    QLabel* statusl = ui->statusLabel;
@@ -593,11 +594,18 @@ void MainWindow::clearMachine()
 
     }
 
+    if(drillingMachine != nullptr)
+    {
+        delete drillingMachine;
+        drillingMachine = nullptr;
+    }
+
     if(machineDoc != nullptr){
         removeDockWidget(machineDoc);
         delete machineDoc;
         machineDoc = nullptr;
     }
+
 }
 
 
@@ -614,13 +622,18 @@ void MainWindow::machineDrilling_onclick()
                                       Qt::RightDockWidgetArea);
 
 //     QWidget* rw = ui->rightWidget;
-     QPushButton* button = new QPushButton("childWidget",nullptr);
+//     QPushButton* button = new QPushButton("childWidget",nullptr);
 //     QPushButton* button = new QPushButton("childWidget",rw);
 //     button->show();
+//     machineDoc->setWidget(button);
 
-     machineDoc->setWidget(button);
+
+    drillingMachine = new DrillingMachine(machineDoc);
+
      machineDoc->setWindowOpacity(0.9);
      machineDoc->setFloating(false);//true
+     machineDoc->setGeometry(30,50,drillingMachine->width(),drillingMachine->height());
+     machineDoc->setWidget(drillingMachine);
 
      addDockWidget(Qt::RightDockWidgetArea,machineDoc);
 
