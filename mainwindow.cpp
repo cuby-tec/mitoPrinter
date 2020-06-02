@@ -30,6 +30,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //rWidget
 //    rightArea = new RightArea(ui->rightWidget); // rWidget
     rightArea = nullptr;
+    machineDoc = nullptr;
 //------------------
 //    QLabel* statusl = ui->statusLabel;
 //    statusLabel = new StatusLabel(ui->statusLabel); //removed
@@ -545,16 +546,13 @@ void MainWindow::machinePrinter_onclick()
     cout<<"3D printer selected.";
     //rWidget
 //        rightArea = new RightArea(ui->rightWidget); // rWidget
-    if(rightArea != nullptr){
-        delete rightArea;
-        rightArea = nullptr;
 
-    }
+    clearMachine();
 
 //    QWidget* rw = ui->rightWidget;
 //    QWidget* cw = this->centralWidget();
-    QDockWidget* rw = new QDockWidget(tr("3D printer"),this);
-    rw->setAllowedAreas(Qt::LeftDockWidgetArea |
+    machineDoc = new QDockWidget(tr("3D printer"),this);
+    machineDoc->setAllowedAreas(Qt::LeftDockWidgetArea |
                                       Qt::RightDockWidgetArea);
 
 
@@ -562,18 +560,18 @@ void MainWindow::machinePrinter_onclick()
 //    rightArea = new RightArea(rw);
 //    rightArea = new RightArea();
 //    rightArea = new RightArea("3D printer",nullptr);
-    rightArea = new RightArea("3D printer",rw);
-    rw->setWidget(rightArea);
-    rw->setWindowOpacity(0.9);
-    rw->setGeometry(30,50,rightArea->width(),rightArea->height());
-    rw->setFloating(false);//true
+    rightArea = new RightArea("3D printer",machineDoc);
+    machineDoc->setWidget(rightArea);
+    machineDoc->setWindowOpacity(0.9);
+    machineDoc->setGeometry(30,50,rightArea->width(),rightArea->height());
+    machineDoc->setFloating(false);//true
 
 //    rightArea->setParent(rw);
 //    rightArea->show();
 //    rw->show();
 
 //    addDockWidget(Qt::LeftDockWidgetArea, rw);
-    addDockWidget(Qt::RightDockWidgetArea,rw);
+    addDockWidget(Qt::RightDockWidgetArea,machineDoc);
 
 
 //    QPushButton* button = new QPushButton("childWidget",rw);
@@ -587,20 +585,44 @@ void MainWindow::machinePrinter_onclick()
 
 }
 
+void MainWindow::clearMachine()
+{
+    if(rightArea != nullptr){
+        delete rightArea;
+        rightArea = nullptr;
+
+    }
+
+    if(machineDoc != nullptr){
+        removeDockWidget(machineDoc);
+        delete machineDoc;
+        machineDoc = nullptr;
+    }
+}
+
 
 //slot
 void MainWindow::machineDrilling_onclick()
 {
     //TODO
     cout<<"Drilling selected.";
-//    if(rightArea != nullptr)
-        delete rightArea;
-    rightArea = nullptr;
-//        rightArea->hide();
-     QWidget* rw = ui->rightWidget;
-//     QPushButton* button = new QPushButton("childWidget",nullptr);
-     QPushButton* button = new QPushButton("childWidget",rw);
-     button->show();
+
+    clearMachine();
+
+    machineDoc = new QDockWidget(tr("Drilling machine"),this);
+    machineDoc->setAllowedAreas(Qt::LeftDockWidgetArea |
+                                      Qt::RightDockWidgetArea);
+
+//     QWidget* rw = ui->rightWidget;
+     QPushButton* button = new QPushButton("childWidget",nullptr);
+//     QPushButton* button = new QPushButton("childWidget",rw);
+//     button->show();
+
+     machineDoc->setWidget(button);
+     machineDoc->setWindowOpacity(0.9);
+     machineDoc->setFloating(false);//true
+
+     addDockWidget(Qt::RightDockWidgetArea,machineDoc);
 
 }
 

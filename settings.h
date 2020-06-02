@@ -11,7 +11,7 @@
 
 //
 
-#define DEBUG_EXECUTEPROGRAM
+#define DEBUG_EXECUTEPROGRAM_NO
 
 
 #endif // SSETTINGS_H

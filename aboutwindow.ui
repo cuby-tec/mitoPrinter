@@ -47,7 +47,7 @@
     <string/>
    </property>
    <property name="pixmap">
-    <pixmap>:/images/cuby-logo-250-250t.png</pixmap>
+    <pixmap resource="resource.qrc">:/images/cuby-logo-250-250t.png</pixmap>
    </property>
    <property name="scaledContents">
     <bool>true</bool>
@@ -187,8 +187,36 @@
     </url>
    </property>
   </widget>
+  <widget class="QLabel" name="label_version">
+   <property name="geometry">
+    <rect>
+     <x>210</x>
+     <y>10</y>
+     <width>81</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>version 1.48</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_Date">
+   <property name="geometry">
+    <rect>
+     <x>210</x>
+     <y>30</y>
+     <width>54</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>05/2020</string>
+   </property>
+  </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="resource.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>buttonBox</sender>

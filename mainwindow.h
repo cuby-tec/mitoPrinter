@@ -61,7 +61,10 @@ protected:
 private:
     Ui::MainWindow *ui;
 
+    // Machine
     RightArea *rightArea;
+    QDockWidget* machineDoc;
+
 
 //    StatusLabel* statusLabel;
 
@@ -128,6 +131,8 @@ private:
 
 //-----------
     void setupMachineToolBar();
+
+    void clearMachine();
 
 };
 
