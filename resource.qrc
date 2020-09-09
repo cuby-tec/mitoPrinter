@@ -21,5 +21,6 @@
         <file>images/connection_disconnected.xpm</file>
         <file>images/connection_connected.xpm</file>
         <file>images/continue_program.xpm</file>
+        <file>images/toolbar-one.xpm</file>
     </qresource>
 </RCC>

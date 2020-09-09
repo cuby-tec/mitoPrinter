@@ -1,6 +1,14 @@
 #include "drillingmachine.h"
 #include "ui_drillingmachine.h"
 
+#include <QToolBar>
+#include <QDebug>
+
+//defs =======================
+#define cout    qDebug()<<__FILE__<<__LINE__
+
+// function ==================
+
 DrillingMachine::DrillingMachine(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::DrillingMachine)
@@ -91,6 +99,12 @@ void DrillingMachine::init()
     layout_3->setAlignment(Qt::AlignTop);
 
 
+    QToolBar* toolbar = new QToolBar(this);
+    QIcon icon1("://images/toolbar-one.xpm");
+    toolbar->addAction(icon1,tr("One"),this,&DrillingMachine::action1);
+    toolbar->addAction(tr("two"));
+
+
 }
 
 // slots
@@ -128,6 +142,13 @@ void DrillingMachine::hide5(int state)
         ui->widget_5->hide();
     else
         ui->widget_5->setHidden(false);
+}
+
+void DrillingMachine::action1()
+{
+    //TODO
+    cout<<"Action1";
+
 }
 
 

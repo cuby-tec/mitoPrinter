@@ -19,8 +19,8 @@ bool MyGlobal::useTermoLog = true;
 
 QString MyGlobal::logfileDir = QString(QDir::homePath()+"/tmp");
 
-QString MyGlobal::profilefileDir = QString(QDir::currentPath());
-
+//QString MyGlobal::profilefileDir = QString(QDir::currentPath());
+QString MyGlobal::profilefileDir = QString(QDir::homePath()+"/mito");
 
 QString MyGlobal::message4("File dos't selected.");
 

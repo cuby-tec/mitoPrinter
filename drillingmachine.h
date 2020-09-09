@@ -25,6 +25,7 @@ public slots:
     void hide3(int state);  // Console
     void hide4(int state);  //model statistic
     void hide5(int state);  //autolel
+    void action1();
 
 private:
 
