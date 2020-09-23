@@ -3,9 +3,6 @@
  *
 */
 
-
-
-
 #include "usbexchange.h"
 
 //uint rIndex;
@@ -50,6 +47,7 @@ UsbExchange::sendRequest(ComDataReq_t* request)
     QString line;
     QTextStream print(stdout, QIODevice::WriteOnly); // stdin
 #endif
+
 #ifdef STDFILE
     std::FILE* pFile;
 
@@ -145,6 +143,21 @@ UsbExchange::sendRequest(ComDataReq_t* request)
 //ThermoPlot::ThermoPlot(QObject* parent) : QObject(parent)
 UsbExchange::UsbExchange(QObject *parent) : QObject(parent)
 {
+
+
+#ifdef DEVICEFILE_H
+    device_port = DeviceFile::instance();
+    static char tty[13] = "/dev/ttyUSB0";
+
+    device_port->mutex.lock();
+
+    if(!device_port->isLocked())
+        device_port->init(tty);
+    assert( device_port->isLocked());
+
+    device_port->mutex.unlock();
+#endif
+
 #ifdef    EXCHANGE_IN_CONST
 #ifdef STDFILE
     buildComData(&comdata);
@@ -201,6 +214,12 @@ UsbExchange::UsbExchange(QObject *parent) : QObject(parent)
     }
 #endif
 #endif
+}
+
+UsbExchange::~UsbExchange()
+{
+    if(device_port->isLocked())
+        device_port->close_device();
 }
 #endif
 

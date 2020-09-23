@@ -25,6 +25,7 @@ CONFIG += c++11
 SOURCES += \
     autolevel.cpp \
     drillingmachine.cpp \
+    exchange/devicefile.cpp \
         main.cpp \
         mainwindow.cpp \
     myglobal.cpp \
@@ -82,6 +83,7 @@ SOURCES += \
 HEADERS += \
     autolevel.h \
     drillingmachine.h \
+    exchange/devicefile.h \
         mainwindow.h \
     myglobal.h \
     rightarea.h \

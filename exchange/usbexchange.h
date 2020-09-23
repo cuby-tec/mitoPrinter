@@ -22,6 +22,7 @@
 #include "profiles/profile.h"
 
 #include <myglobal.h>
+#include "devicefile.h"
 
 #define VERSIONUSB 2
 
@@ -35,7 +36,7 @@ public:
     //explicit Base(QObject *parent = 0);
      explicit UsbExchange(QObject * parent = nullptr);
 
-    ~UsbExchange(){}
+    ~UsbExchange();
 
 #if VERSIONUSB==1
     void buildComData(struct ComDataReq_t* comdata);
@@ -81,6 +82,11 @@ private:
 #if VERSIONUSB==1
       void load_defaults(struct sControl* pctl);
 #endif
+
+#ifdef DEVICEFILE_H
+      DeviceFile* device_port;
+#endif
+
 
 };
 

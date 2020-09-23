@@ -1,3 +1,7 @@
+================
+09/09/2020: Файлы профилей расположены в папке ~/mito/profile
+
+================
 Application with CSS:
 $ qt_application -stylesheet style.qss
 
